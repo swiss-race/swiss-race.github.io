@@ -2,6 +2,7 @@
 // import './css/leaflet.css'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import 'leaflet-plugins/layer/vector/GPX.js'
 // import 'prova'
 // import '/Users/savare/Dropbox/PhD/Courses/DataVisualization/Project/swiss-race.github.io/node_modules/leaflet/dist/leaflet.css'
 // import get_text from './main.js'
@@ -32,31 +33,31 @@ var osmOrg=L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 // let el=L.control.elevation()
 // el.addTo(map)
 
-// var gpx = 'gps_data/Demi-marathonLausanne.gpx' // URL to your GPX file or the GPX itself
-// let track=new plugin.GPX(gpx,
-//     {
-//         async: true,
-//         marker_options: {
-//             startIconUrl: 'images/pin-icon-start.png',
-//             endIconUrl: 'images/pin-icon-end.png',
-//             shadowUrl: 'images/pin-shadow.png'
-//   }})
-//
-//
-// track.on('loaded', function(e) {
-//   map.fitBounds(e.target.getBounds());
-//     console.log(e.target.get_name())
-//     console.log(e.target.get_distance())
-//     console.log(e.target.get_total_time())
-// }).addTo(map);
-//
-//
-// let line=0
+var gpx = 'gps_data/Demi-marathonLausanne.gpx' // URL to your GPX file or the GPX itself
+let track=new L.GPX(gpx,
+    {
+        async: true,
+        marker_options: {
+            startIconUrl: '../images/pin-icon-start.png',
+            endIconUrl: '../images/pin-icon-end.png',
+            shadowUrl: '../images/pin-shadow.png'
+  }})
 
-// track.on('addline', e=> {
-//     line=e.line
-//     console.log(line._latlngs)
-// })
+
+track.on('loaded', function(e) {
+  map.fitBounds(e.target.getBounds());
+    // console.log(e.target.get_name())
+    // console.log(e.target.get_distance())
+    // console.log(e.target.get_total_time())
+}).addTo(map);
+
+//
+let line=0
+
+track.on('addline', e=> {
+    line=e.line
+    console.log(line._latlngs)
+})
 
 // track.on('addline', e => {
 //     el.addData(e.line)
@@ -75,5 +76,5 @@ var osmOrg=L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 // d3.select('body').append('p').text(track.get_total_time())
 
 
-// map.scrollWheelZoom.enable()
+map.scrollWheelZoom.enable()
 // map.on('click',mapClick)

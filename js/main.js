@@ -36,6 +36,12 @@ import * as L from 'leaflet'
 //
 /* } */
 
+
+export default () => {
+    return 'prova'
+
+}
+
 d3.selectAll("div")
     .style('color','red')
 

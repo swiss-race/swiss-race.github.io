@@ -2,7 +2,8 @@
 // import './css/leaflet.css'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import 'leaflet-plugins/layer/vector/GPX.js'
+import './gpx.js'
+// import 'leaflet.elevation'
 // import 'prova'
 // import '/Users/savare/Dropbox/PhD/Courses/DataVisualization/Project/swiss-race.github.io/node_modules/leaflet/dist/leaflet.css'
 // import get_text from './main.js'
@@ -30,17 +31,15 @@ var osmOrg=L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 // let text=get_text()
 // console.log(text)
 
-// let el=L.control.elevation()
-// el.addTo(map)
 
 var gpx = 'gps_data/Demi-marathonLausanne.gpx' // URL to your GPX file or the GPX itself
 let track=new L.GPX(gpx,
     {
         async: true,
         marker_options: {
-            startIconUrl: '../images/pin-icon-start.png',
-            endIconUrl: '../images/pin-icon-end.png',
-            shadowUrl: '../images/pin-shadow.png'
+            startIconUrl: 'images/pin-icon-start.png',
+            endIconUrl: 'images/pin-icon-end.png',
+            shadowUrl: 'images/pin-shadow.png'
   }})
 
 
@@ -59,8 +58,11 @@ track.on('addline', e=> {
     console.log(line._latlngs)
 })
 
+// let el=L.control.elevation()
+// el.addTo(map)
+
 // track.on('addline', e => {
-//     el.addData(e.line)
+//     console.log(e.line)
 // })
 
 // var g=new L.GPX("gps_data/Demi-marathonLausanne.gpx", {async: true});

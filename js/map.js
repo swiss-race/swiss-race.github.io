@@ -58,6 +58,22 @@ track.on('addline', e=> {
     console.log(line._latlngs)
 })
 
+// L.GridLayer.DebugCoords = L.GridLayer.extend({
+//     createTile: function (coords) {
+//         var tile = document.createElement('div');
+//         tile.innerHTML = [coords.x, coords.y, coords.z].join(', ');
+//         tile.style.outline = '1px solid red';
+//         return tile;
+//     }
+// });
+//
+// L.gridLayer.debugCoords = function(opts) {
+//     return new L.GridLayer.DebugCoords(opts);
+// };
+//
+// map.addLayer( L.gridLayer.debugCoords() );
+
+
 // let el=L.control.elevation()
 // el.addTo(map)
 
@@ -79,4 +95,5 @@ track.on('addline', e=> {
 
 
 map.scrollWheelZoom.enable()
+map.invalidateSize()
 // map.on('click',mapClick)

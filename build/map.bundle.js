@@ -13340,15 +13340,6 @@ __webpack_require__(10);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// import 'leaflet.elevation'
-// import 'prova'
-// import '/Users/savare/Dropbox/PhD/Courses/DataVisualization/Project/swiss-race.github.io/node_modules/leaflet/dist/leaflet.css'
-// import get_text from './main.js'
-// import "leaflet/dist/leaflet.css"
-// import * as plugin from 'leaflet-plugins/layer/vector/GPX'
-// import 'leaflet.elevation/dist/Leaflet.Elevation-0.0.2.min.js'
-
-
 // Initialize the map
 var map = _leaflet2.default.map('map', {
     scrollWheelZoom: false
@@ -13356,7 +13347,6 @@ var map = _leaflet2.default.map('map', {
 
 // Set the position and zoom level of the map
 // import * as d3 from 'd3'
-// import './css/leaflet.css'
 map.setView([46.505, 6.63], 13);
 
 // Adding all the possible layers
@@ -13378,19 +13368,79 @@ var track = new _leaflet2.default.GPX(gpx, {
         shadowUrl: 'images/pin-shadow.png'
     } });
 
-track.on('loaded', function (e) {
-    map.fitBounds(e.target.getBounds());
-    // console.log(e.target.get_name())
-    // console.log(e.target.get_distance())
-    // console.log(e.target.get_total_time())
-}).addTo(map);
+// track.on('loaded', function(e) {
+//   map.fitBounds(e.target.getBounds());
+// console.log(e.target.get_name())
+// console.log(e.target.get_distance())
+// console.log(e.target.get_total_time())
+// }).addTo(map);
 
 //
 var line = 0;
 
+var lineStyle = {
+    "color": "#ff7800",
+    "weight": 5,
+    "opacity": 0.65
+};
+
+var geojsonMarkerOptions = {
+    radius: 8,
+    fillColor: "#ff7800",
+    color: "#000",
+    weight: 1,
+    opacity: 1,
+    fillOpacity: 0.8
+};
+
+var transformToGeoJSON = function transformToGeoJSON(vector) {
+    var race = [{
+        "type": "LineString"
+    }];
+    var coordinates = [];
+    for (var i = 0; i < vector.length; i++) {
+        coordinates.push([vector[i].lng, vector[i].lat]);
+    }
+    race[0].coordinates = coordinates;
+
+    return race;
+};
+
+var geojson = {
+    "type": "FeatureCollection",
+    "features": [{ "type": "Feature", "id": 0, "properties": { "name": "Example popup on mouse over" }, "geometry": { "type": "Point", "coordinates": [6.9, 46.5] } }]
+};
+
+var addPoint = function addPoint(line) {
+    var svg = d3.select(map.getPanes().overlayPane).append('svg');
+    var g = svg.append('g').attr("class", "leaflet-zoom-hide");
+    var pointArray = line._latlngs;
+
+    console.log(pointArray.length);
+    var output = transformToGeoJSON(pointArray);
+
+    console.log(output);
+    _leaflet2.default.geoJSON(output, {
+        style: lineStyle
+    }).addTo(map);
+    _leaflet2.default.geoJSON(geojson, {
+        pointToLayer: function pointToLayer(feature, latlng) {
+            return _leaflet2.default.circleMarker(latlng, geojsonMarkerOptions);
+        },
+        onEachFeature: function onEachFeature(feature, layer) {
+            layer.bindPopup(feature.properties.name);
+            layer.on('mouseover', function (e) {
+                this.openPopup();
+            });
+            layer.on('mouseout', function (e) {
+                this.closePopup();
+            });
+        }
+    }).addTo(map);
+};
 track.on('addline', function (e) {
     line = e.line;
-    console.log(line._latlngs);
+    addPoint(line);
 });
 
 // L.GridLayer.DebugCoords = L.GridLayer.extend({

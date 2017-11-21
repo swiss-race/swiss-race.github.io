@@ -1,15 +1,7 @@
 // import * as d3 from 'd3'
-// import './css/leaflet.css'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import './gpx.js'
-// import 'leaflet.elevation'
-// import 'prova'
-// import '/Users/savare/Dropbox/PhD/Courses/DataVisualization/Project/swiss-race.github.io/node_modules/leaflet/dist/leaflet.css'
-// import get_text from './main.js'
-// import "leaflet/dist/leaflet.css"
-// import * as plugin from 'leaflet-plugins/layer/vector/GPX'
-// import 'leaflet.elevation/dist/Leaflet.Elevation-0.0.2.min.js'
 
 
 // Initialize the map
@@ -43,20 +35,93 @@ let track=new L.GPX(gpx,
   }})
 
 
-track.on('loaded', function(e) {
-  map.fitBounds(e.target.getBounds());
+// track.on('loaded', function(e) {
+//   map.fitBounds(e.target.getBounds());
     // console.log(e.target.get_name())
     // console.log(e.target.get_distance())
     // console.log(e.target.get_total_time())
-}).addTo(map);
+// }).addTo(map);
 
 //
 let line=0
 
+var lineStyle = {
+    "color": "#ff7800",
+    "weight": 5,
+    "opacity": 0.65
+};
+
+var geojsonMarkerOptions = {
+    radius: 8,
+    fillColor: "#ff7800",
+    color: "#000",
+    weight: 1,
+    opacity: 1,
+    fillOpacity: 0.8
+};
+
+
+let transformToGeoJSON = vector => {
+    let race = [{
+        "type": "LineString"
+    }];
+    let coordinates=[]
+    for (let i=0;i<vector.length;i++) {
+        coordinates.push([vector[i].lng,vector[i].lat])
+    }
+    race[0].coordinates=coordinates
+
+    return race
+}
+
+var geojson = {
+"type": "FeatureCollection",
+"features": [
+{ "type": "Feature", "id": 0, "properties": { "name": "Example popup on mouse over"  }, "geometry": { "type": "Point", "coordinates": [ 6.9, 46.5 ] } }
+]
+};
+
+let addPoint = (line) => {
+    let svg=d3.select(map.getPanes().overlayPane).append('svg')
+    let g=svg.append('g').attr("class", "leaflet-zoom-hide");
+    let pointArray=line._latlngs
+
+    console.log(pointArray.length)
+    let output=transformToGeoJSON(pointArray)
+
+    console.log(output)
+    L.geoJSON(output, {
+        style: lineStyle
+    }).addTo(map);
+    L.geoJSON(geojson, {
+        pointToLayer: (feature, latlng) => {
+            return L.circleMarker(latlng, geojsonMarkerOptions);
+        },
+        onEachFeature: function (feature, layer) {
+            layer.bindPopup(feature.properties.name);
+            layer.on('mouseover', function (e) {
+                this.openPopup();
+            });
+            layer.on('mouseout', function (e) {
+                this.closePopup();
+            });
+        }
+    }).addTo(map)
+}
 track.on('addline', e=> {
     line=e.line
-    console.log(line._latlngs)
+    addPoint(line)
 })
+
+
+
+
+
+
+
+
+
+
 
 // L.GridLayer.DebugCoords = L.GridLayer.extend({
 //     createTile: function (coords) {

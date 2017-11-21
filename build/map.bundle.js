@@ -13379,14 +13379,14 @@ var track = new _leaflet2.default.GPX(gpx, {
 var line = 0;
 
 var lineStyle = {
-    "color": "#ff7800",
+    "color": 'blue',
     "weight": 5,
     "opacity": 0.65
 };
 
 var geojsonMarkerOptions = {
     radius: 8,
-    fillColor: "#ff7800",
+    // fillColor: "#ff7800",
     color: "#000",
     weight: 1,
     opacity: 1,
@@ -13421,7 +13421,21 @@ var addPoint = function addPoint(line) {
 
     console.log(output);
     _leaflet2.default.geoJSON(output, {
-        style: lineStyle
+        style: lineStyle,
+        onEachFeature: function onEachFeature(feature, layer) {
+            layer.on('mouseover', function (e) {
+                this.setStyle({
+                    color: 'red'
+                });
+                this.openPopup();
+            });
+            layer.on('mouseout', function (e) {
+                this.setStyle({
+                    color: 'blue'
+                });
+                this.closePopup();
+            });
+        }
     }).addTo(map);
     _leaflet2.default.geoJSON(geojson, {
         pointToLayer: function pointToLayer(feature, latlng) {
@@ -13430,9 +13444,15 @@ var addPoint = function addPoint(line) {
         onEachFeature: function onEachFeature(feature, layer) {
             layer.bindPopup(feature.properties.name);
             layer.on('mouseover', function (e) {
+                this.setStyle({
+                    color: 'red'
+                });
                 this.openPopup();
             });
             layer.on('mouseout', function (e) {
+                this.setStyle({
+                    color: 'yellow'
+                });
                 this.closePopup();
             });
         }

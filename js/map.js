@@ -46,14 +46,14 @@ let track=new L.GPX(gpx,
 let line=0
 
 var lineStyle = {
-    "color": "#ff7800",
+    "color": 'blue',
     "weight": 5,
     "opacity": 0.65
 };
 
 var geojsonMarkerOptions = {
     radius: 8,
-    fillColor: "#ff7800",
+    // fillColor: "#ff7800",
     color: "#000",
     weight: 1,
     opacity: 1,
@@ -91,7 +91,21 @@ let addPoint = (line) => {
 
     console.log(output)
     L.geoJSON(output, {
-        style: lineStyle
+        style: lineStyle,
+        onEachFeature: (feature,layer)=> {
+            layer.on('mouseover', function (e) {
+                this.setStyle({
+                    color:'red'
+                })
+                this.openPopup();
+            });
+            layer.on('mouseout', function (e) {
+                this.setStyle({
+                    color:'blue'
+                })
+                this.closePopup();
+            });
+        }
     }).addTo(map);
     L.geoJSON(geojson, {
         pointToLayer: (feature, latlng) => {
@@ -100,9 +114,15 @@ let addPoint = (line) => {
         onEachFeature: function (feature, layer) {
             layer.bindPopup(feature.properties.name);
             layer.on('mouseover', function (e) {
+                this.setStyle({
+                    color:'red'
+                })
                 this.openPopup();
             });
             layer.on('mouseout', function (e) {
+                this.setStyle({
+                    color:'yellow'
+                })
                 this.closePopup();
             });
         }

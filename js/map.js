@@ -54,7 +54,7 @@ var lineStyle = {
 var geojsonMarkerOptions = {
     radius: 8,
     // fillColor: "#ff7800",
-    color: "#000",
+    color: 'green',
     weight: 1,
     opacity: 1,
     fillOpacity: 0.8
@@ -81,9 +81,37 @@ var geojson = {
 ]
 };
 
+let mouseMovePoint=L.geoJSON(geojson, {
+    pointToLayer: (feature, latlng) => {
+        return L.circleMarker(latlng, geojsonMarkerOptions);
+    },
+    onEachFeature: function (feature, layer) {
+        // layer.bindPopup(feature.properties.name);
+        layer.on('mouseover', function (e) {
+            this.setStyle({
+                color:'red'
+            })
+            this.openPopup();
+        });
+        layer.on('mouseout', function (e) {
+            this.setStyle({
+                color:'green'
+            })
+            this.closePopup();
+        });
+    }
+}).addTo(map)
+
+let circle = L.circleMarker([46.5, 6.8], {
+    color: 'red',
+    fillColor:'red',
+    fillOpacity:1,
+    radius: 5
+})
+
 let addPoint = (line) => {
-    let svg=d3.select(map.getPanes().overlayPane).append('svg')
-    let g=svg.append('g').attr("class", "leaflet-zoom-hide");
+    // let svg=d3.select(map.getPanes().overlayPane).append('svg')
+    // let g=svg.append('g').attr("class", "leaflet-zoom-hide");
     let pointArray=line._latlngs
 
     console.log(pointArray.length)
@@ -93,35 +121,30 @@ let addPoint = (line) => {
     L.geoJSON(output, {
         style: lineStyle,
         onEachFeature: (feature,layer)=> {
+            // layer.bindPopup('Ciao')
             layer.on('mouseover', function (e) {
                 this.setStyle({
                     color:'red'
                 })
                 this.openPopup();
             });
+            layer.on('mousemove',e=>{
+                let latitude=e.latlng.lat;
+                let longitude=e.latlng.lng;
+                // geojson.features[0].geometry.coordinates=[longitude,latitude]
+                // mouseMovePoint.clearLayers()
+                // mouseMovePoint.addData(geojson)
+                // mouseMovePoint.setLatLngs([6.8,46.5])
+                circle.setLatLng([latitude,longitude])
+                circle.addTo(map)
+            
+                layer.setStyle({
+                    color:'blue'
+                })
+            }) 
             layer.on('mouseout', function (e) {
                 this.setStyle({
                     color:'blue'
-                })
-                this.closePopup();
-            });
-        }
-    }).addTo(map);
-    L.geoJSON(geojson, {
-        pointToLayer: (feature, latlng) => {
-            return L.circleMarker(latlng, geojsonMarkerOptions);
-        },
-        onEachFeature: function (feature, layer) {
-            layer.bindPopup(feature.properties.name);
-            layer.on('mouseover', function (e) {
-                this.setStyle({
-                    color:'red'
-                })
-                this.openPopup();
-            });
-            layer.on('mouseout', function (e) {
-                this.setStyle({
-                    color:'yellow'
                 })
                 this.closePopup();
             });

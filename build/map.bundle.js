@@ -13387,7 +13387,7 @@ var lineStyle = {
 var geojsonMarkerOptions = {
     radius: 8,
     // fillColor: "#ff7800",
-    color: "#000",
+    color: 'green',
     weight: 1,
     opacity: 1,
     fillOpacity: 0.8
@@ -13411,9 +13411,37 @@ var geojson = {
     "features": [{ "type": "Feature", "id": 0, "properties": { "name": "Example popup on mouse over" }, "geometry": { "type": "Point", "coordinates": [6.9, 46.5] } }]
 };
 
+var mouseMovePoint = _leaflet2.default.geoJSON(geojson, {
+    pointToLayer: function pointToLayer(feature, latlng) {
+        return _leaflet2.default.circleMarker(latlng, geojsonMarkerOptions);
+    },
+    onEachFeature: function onEachFeature(feature, layer) {
+        // layer.bindPopup(feature.properties.name);
+        layer.on('mouseover', function (e) {
+            this.setStyle({
+                color: 'red'
+            });
+            this.openPopup();
+        });
+        layer.on('mouseout', function (e) {
+            this.setStyle({
+                color: 'green'
+            });
+            this.closePopup();
+        });
+    }
+}).addTo(map);
+
+var circle = _leaflet2.default.circleMarker([46.5, 6.8], {
+    color: 'red',
+    fillColor: 'red',
+    fillOpacity: 1,
+    radius: 5
+});
+
 var addPoint = function addPoint(line) {
-    var svg = d3.select(map.getPanes().overlayPane).append('svg');
-    var g = svg.append('g').attr("class", "leaflet-zoom-hide");
+    // let svg=d3.select(map.getPanes().overlayPane).append('svg')
+    // let g=svg.append('g').attr("class", "leaflet-zoom-hide");
     var pointArray = line._latlngs;
 
     console.log(pointArray.length);
@@ -13423,35 +13451,30 @@ var addPoint = function addPoint(line) {
     _leaflet2.default.geoJSON(output, {
         style: lineStyle,
         onEachFeature: function onEachFeature(feature, layer) {
+            // layer.bindPopup('Ciao')
             layer.on('mouseover', function (e) {
                 this.setStyle({
                     color: 'red'
                 });
                 this.openPopup();
+            });
+            layer.on('mousemove', function (e) {
+                var latitude = e.latlng.lat;
+                var longitude = e.latlng.lng;
+                // geojson.features[0].geometry.coordinates=[longitude,latitude]
+                // mouseMovePoint.clearLayers()
+                // mouseMovePoint.addData(geojson)
+                // mouseMovePoint.setLatLngs([6.8,46.5])
+                circle.setLatLng([latitude, longitude]);
+                circle.addTo(map);
+
+                layer.setStyle({
+                    color: 'blue'
+                });
             });
             layer.on('mouseout', function (e) {
                 this.setStyle({
                     color: 'blue'
-                });
-                this.closePopup();
-            });
-        }
-    }).addTo(map);
-    _leaflet2.default.geoJSON(geojson, {
-        pointToLayer: function pointToLayer(feature, latlng) {
-            return _leaflet2.default.circleMarker(latlng, geojsonMarkerOptions);
-        },
-        onEachFeature: function onEachFeature(feature, layer) {
-            layer.bindPopup(feature.properties.name);
-            layer.on('mouseover', function (e) {
-                this.setStyle({
-                    color: 'red'
-                });
-                this.openPopup();
-            });
-            layer.on('mouseout', function (e) {
-                this.setStyle({
-                    color: 'yellow'
                 });
                 this.closePopup();
             });

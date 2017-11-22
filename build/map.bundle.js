@@ -22787,11 +22787,13 @@ var addElevationPlot = function addElevationPlot(raceVector) {
         return xScale(d[0]);
     }).attr("cy", function (d) {
         return yScale(d[1]);
-    }).style('opacity', .3).on("mouseover", function (d) {
+    }).style('opacity', 0).on("mouseover", function (d) {
+        d3.select(this).style('opacity', 1);
         div.transition().duration(200).style("opacity", .9);
         console.log('here');
         div.html(d[0] + "<br/>" + d[1]).style("left", d3.event.pageX + "px").style("top", d3.event.pageY - 28 + "px");
     }).on("mouseout", function (d) {
+        d3.select(this).style('opacity', 0);
         div.transition().duration(500).style("opacity", 0);
     });
 };

@@ -22651,9 +22651,6 @@ function distanceInKmBetweenEarthCoordinates(lat1, lon1, lat2, lon2) {
 }
 
 var transformToGeoJSON = function transformToGeoJSON(vector) {
-    // let race = [{
-    //     "type": "LineString"
-    // }];
     var race = [];
 
     for (var i = 0; i < vector.length - 1; i++) {
@@ -22687,9 +22684,6 @@ var transformToGeoJSON = function transformToGeoJSON(vector) {
         raceElement.elevation = elevation;
         race.push(raceElement);
     }
-    // race[0].coordinates=coordinates
-    // race[0].distances=distances
-    // race[0].elevation=elevation
     console.log(race);
 
     return race;
@@ -22738,13 +22732,13 @@ var addElevationPlot = function addElevationPlot(raceVector) {
 
     var n = dataset.length;
 
-    // 5. X scale will use the index of our data
+    // 5. X scale 
     var xScale = d3.scaleLinear().domain([0, d3.max(dataset, function (d) {
         return d[0];
     })]) // input
     .range([0, width]); // output
 
-    // 6. Y scale will use the randomly generate number
+    // 6. Y scale 
     var dataRange = d3.max(dataset, function (d) {
         return d[1];
     }) - d3.min(dataset, function (d) {
@@ -22781,6 +22775,25 @@ var addElevationPlot = function addElevationPlot(raceVector) {
     svg.append("path").datum(dataset) // 10. Binds data to the line
     .attr("class", "line") // Assign a class for styling
     .attr("d", line); // 11. Calls the line generator
+
+    // Labels
+    svg.append("text").attr("class", "x label").attr("text-anchor", "end").attr("x", width).attr("y", height - 6).text("Distance");
+    svg.append("text").attr("class", "y label").attr("text-anchor", "end").attr("y", 6).attr("dy", ".75em").attr("transform", "rotate(-90)").text("Elevation");
+
+    // Define the div for the tooltip
+    var div = d3.select("body").append("div").attr("class", "tooltip").style("opacity", 0);
+    // Add the scatterplot
+    svg.selectAll("dot").data(dataset).enter().append("circle").attr("r", 5).attr("cx", function (d) {
+        return xScale(d[0]);
+    }).attr("cy", function (d) {
+        return yScale(d[1]);
+    }).style('opacity', .3).on("mouseover", function (d) {
+        div.transition().duration(200).style("opacity", .9);
+        console.log('here');
+        div.html(d[0] + "<br/>" + d[1]).style("left", d3.event.pageX + "px").style("top", d3.event.pageY - 28 + "px");
+    }).on("mouseout", function (d) {
+        div.transition().duration(500).style("opacity", 0);
+    });
 };
 
 var addPoint = function addPoint(line) {

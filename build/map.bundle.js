@@ -22619,7 +22619,7 @@ var line = 0;
 
 var lineStyle = {
     "color": 'blue',
-    "weight": 5,
+    "weight": 7,
     "opacity": 0.65
 };
 
@@ -22682,6 +22682,7 @@ var transformToGeoJSON = function transformToGeoJSON(vector) {
         raceElement.distances = distances;
         raceElement.cumulativeDistance = cumulativeDistance;
         raceElement.elevation = elevation;
+        raceElement.i = i;
         race.push(raceElement);
     }
     console.log(race);
@@ -22714,7 +22715,14 @@ var circle = _leaflet2.default.circleMarker([46.5, 6.8], {
     color: 'red',
     fillColor: 'red',
     fillOpacity: 1,
-    radius: 5
+    radius: 5,
+    class: 1
+});
+circle.on('mouseover', function () {
+    mouseoverOpacity('circle' + circle.class.toString());
+});
+circle.on('mouseout', function () {
+    mouseoutOpacity('circle' + circle.class.toString());
 });
 circle.bindPopup('Runner information');
 
@@ -22783,19 +22791,28 @@ var addElevationPlot = function addElevationPlot(raceVector) {
     // Define the div for the tooltip
     var div = d3.select("body").append("div").attr("class", "tooltip").style("opacity", 0);
     // Add the scatterplot
-    svg.selectAll("dot").data(dataset).enter().append("circle").attr("r", 5).attr("cx", function (d) {
+    svg.selectAll('aaascasc').data(dataset).enter().append("circle").attr("r", 5).attr("cx", function (d) {
         return xScale(d[0]);
     }).attr("cy", function (d) {
         return yScale(d[1]);
+    }).attr("class", function (d, i) {
+        return 'circle' + i.toString();
     }).style('opacity', 0).on("mouseover", function (d) {
         d3.select(this).style('opacity', 1);
-        div.transition().duration(200).style("opacity", .9);
-        console.log('here');
-        div.html(d[0] + "<br/>" + d[1]).style("left", d3.event.pageX + "px").style("top", d3.event.pageY - 28 + "px");
+        div.transition().duration(200).style("opacity", 1);
+        div.html(d[0].toFixed(2) + 'km' + "<br/>" + d[1] + 'm').style("left", d3.event.pageX + "px").style("top", d3.event.pageY - 28 + "px");
     }).on("mouseout", function (d) {
         d3.select(this).style('opacity', 0);
         div.transition().duration(500).style("opacity", 0);
     });
+};
+
+var mouseoverOpacity = function mouseoverOpacity(className) {
+    d3.select('.' + className).style('opacity', 1);
+};
+
+var mouseoutOpacity = function mouseoutOpacity(className) {
+    d3.select('.' + className).style('opacity', 0);
 };
 
 var addPoint = function addPoint(line) {
@@ -22812,33 +22829,57 @@ var addPoint = function addPoint(line) {
         onEachFeature: function onEachFeature(feature, layer) {
             // layer.bindPopup('Ciao')
             layer.on('mouseover', function (e) {
+                // Change elevation plot
+                var index = feature.i;
+                var className = 'circle' + index.toString();
+
+                var latitude = e.latlng.lat;
+                var longitude = e.latlng.lng;
+
+                // circle.openPopup()
+                circle.setLatLng([latitude, longitude]);
+                circle.class = index;
+                circle._popup.setContent(feature.elevation[0].toString());
+                circle.addTo(map);
+
                 this.setStyle({
                     color: 'red'
                 });
                 this.openPopup();
-            });
-            layer.on('mousemove', function (e) {
-                var latitude = e.latlng.lat;
-                var longitude = e.latlng.lng;
-                // geojson.features[0].geometry.coordinates=[longitude,latitude]
-                // mouseMovePoint.clearLayers()
-                // mouseMovePoint.addData(geojson)
-                // mouseMovePoint.setLatLngs([6.8,46.5])
-                console.log(circle);
-                circle.openPopup();
-                circle.setLatLng([latitude, longitude]);
-                circle._popup.setContent(feature.elevation[0].toString());
-                circle.addTo(map);
 
-                layer.setStyle({
-                    color: 'blue'
-                });
+                mouseoverOpacity(className);
             });
+            // layer.on('mousemove',e=>{
+            //     let latitude=e.latlng.lat;
+            //     let longitude=e.latlng.lng;
+            //     // geojson.features[0].geometry.coordinates=[longitude,latitude]
+            //     // mouseMovePoint.clearLayers()
+            //     // mouseMovePoint.addData(geojson)
+            //     // mouseMovePoint.setLatLngs([6.8,46.5])
+            //     circle.openPopup()
+            //     circle.setLatLng([latitude,longitude])
+            //     circle._popup.setContent(feature.elevation[0].toString())
+            //     circle.addTo(map)
+            //
+            //     layer.setStyle({
+            //         color:'blue'
+            //     })
+            //
+            //     // Change elevation plot
+            //     const index=feature.i
+            //     const className='circle'+index.toString()
+            //     mouseoverOpacity(className)
+            //
+            // })
             layer.on('mouseout', function (e) {
                 this.setStyle({
                     color: 'blue'
                 });
                 this.closePopup();
+
+                var index = feature.i;
+                var className = 'circle' + index.toString();
+                mouseoutOpacity(className);
             });
         }
     }).addTo(map);

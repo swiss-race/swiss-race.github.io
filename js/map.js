@@ -47,7 +47,7 @@ let line=0
 
 var lineStyle = {
     "color": 'blue',
-    "weight": 5,
+    "weight": 7,
     "opacity": 0.65
 };
 
@@ -112,6 +112,7 @@ let transformToGeoJSON = vector => {
         raceElement.distances=distances
         raceElement.cumulativeDistance=cumulativeDistance
         raceElement.elevation=elevation
+        raceElement.i=i
         race.push(raceElement)
     }
     console.log(race)
@@ -145,7 +146,14 @@ let circle = L.circleMarker([46.5, 6.8], {
     color: 'red',
     fillColor:'red',
     fillOpacity:1,
-    radius: 5
+    radius: 5,
+    class: 1
+})
+circle.on('mouseover', ()=> {
+    mouseoverOpacity('circle'+circle.class.toString())
+})
+circle.on('mouseout', ()=> {
+    mouseoutOpacity('circle'+circle.class.toString())
 })
 circle.bindPopup('Runner information');
 
@@ -227,20 +235,19 @@ let addElevationPlot = raceVector => {
         .attr("class", "tooltip")
         .style("opacity", 0);
     // Add the scatterplot
-    svg.selectAll("dot")
-        .data(dataset)
+    svg.selectAll('aaascasc').data(dataset)
     .enter().append("circle")
         .attr("r", 5)
         .attr("cx", function(d) { return xScale(d[0]); })
         .attr("cy", function(d) { return yScale(d[1]); })
+        .attr("class",(d,i) => {return 'circle'+i.toString()})
         .style('opacity',0)
         .on("mouseover", function(d) {
             d3.select(this).style('opacity',1)
             div.transition()
                 .duration(200)
-                .style("opacity", .9);
-            console.log('here')
-            div	.html((d[0]) + "<br/>"  + d[1])
+                .style("opacity", 1);
+            div	.html(d[0].toFixed(2)+'km' + "<br/>"  + d[1]+'m')
                 .style("left", (d3.event.pageX) + "px")
                 .style("top", (d3.event.pageY - 28) + "px");
             })
@@ -250,9 +257,18 @@ let addElevationPlot = raceVector => {
                 .duration(500)
                 .style("opacity", 0);
         });
-
 }
     
+let mouseoverOpacity = className => {
+    d3.select('.'+className)
+        .style('opacity',1)
+}
+
+let mouseoutOpacity = className => {
+    d3.select('.'+className)
+        .style('opacity',0)
+}
+
 let addPoint = (line) => {
     // let svg=d3.select(map.getPanes().overlayPane).append('svg')
     // let g=svg.append('g').attr("class", "leaflet-zoom-hide");
@@ -267,33 +283,57 @@ let addPoint = (line) => {
         onEachFeature: (feature,layer)=> {
             // layer.bindPopup('Ciao')
             layer.on('mouseover', function (e) {
+                // Change elevation plot
+                const index=feature.i
+                const className='circle'+index.toString()
+
+                let latitude=e.latlng.lat;
+                let longitude=e.latlng.lng;
+                
+                // circle.openPopup()
+                circle.setLatLng([latitude,longitude])
+                circle.class=index
+                circle._popup.setContent(feature.elevation[0].toString())
+                circle.addTo(map)
+
                 this.setStyle({
                     color:'red'
                 })
                 this.openPopup();
+                
+                mouseoverOpacity(className)
             });
-            layer.on('mousemove',e=>{
-                let latitude=e.latlng.lat;
-                let longitude=e.latlng.lng;
-                // geojson.features[0].geometry.coordinates=[longitude,latitude]
-                // mouseMovePoint.clearLayers()
-                // mouseMovePoint.addData(geojson)
-                // mouseMovePoint.setLatLngs([6.8,46.5])
-                console.log(circle)
-                circle.openPopup()
-                circle.setLatLng([latitude,longitude])
-                circle._popup.setContent(feature.elevation[0].toString())
-                circle.addTo(map)
-            
-                layer.setStyle({
-                    color:'blue'
-                })
-            }) 
+            // layer.on('mousemove',e=>{
+            //     let latitude=e.latlng.lat;
+            //     let longitude=e.latlng.lng;
+            //     // geojson.features[0].geometry.coordinates=[longitude,latitude]
+            //     // mouseMovePoint.clearLayers()
+            //     // mouseMovePoint.addData(geojson)
+            //     // mouseMovePoint.setLatLngs([6.8,46.5])
+            //     circle.openPopup()
+            //     circle.setLatLng([latitude,longitude])
+            //     circle._popup.setContent(feature.elevation[0].toString())
+            //     circle.addTo(map)
+            //
+            //     layer.setStyle({
+            //         color:'blue'
+            //     })
+            //
+            //     // Change elevation plot
+            //     const index=feature.i
+            //     const className='circle'+index.toString()
+            //     mouseoverOpacity(className)
+            //
+            // })
             layer.on('mouseout', function (e) {
                 this.setStyle({
                     color:'blue'
                 })
                 this.closePopup();
+
+                const index=feature.i
+                const className='circle'+index.toString()
+                mouseoutOpacity(className)
             });
         }
     }).addTo(map)

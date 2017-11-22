@@ -41,3 +41,10 @@ html,body {
 
 #container {width:100%;
     float:left;}
+
+/* For the elevation plot */
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 2px;
+}

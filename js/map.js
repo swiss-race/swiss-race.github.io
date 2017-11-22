@@ -1,4 +1,4 @@
-// import * as d3 from 'd3'
+import * as d3 from 'd3'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import './gpx.js'
@@ -35,12 +35,12 @@ let track=new L.GPX(gpx,
   }})
 
 
-// track.on('loaded', function(e) {
-//   map.fitBounds(e.target.getBounds());
-    // console.log(e.target.get_name())
-    // console.log(e.target.get_distance())
-    // console.log(e.target.get_total_time())
-// }).addTo(map);
+track.on('loaded', function(e) {
+  map.fitBounds(e.target.getBounds());
+  //   console.log(e.target.get_name())
+  //   console.log(e.target.get_distance())
+  //   console.log(e.target.get_total_time())
+})
 
 //
 let line=0
@@ -60,47 +60,92 @@ var geojsonMarkerOptions = {
     fillOpacity: 0.8
 };
 
+function degreesToRadians(degrees) {
+  return degrees * Math.PI / 180;
+}
+
+function distanceInKmBetweenEarthCoordinates(lat1, lon1, lat2, lon2) {
+  var earthRadiusKm = 6371;
+
+  var dLat = degreesToRadians(lat2-lat1);
+  var dLon = degreesToRadians(lon2-lon1);
+
+  lat1 = degreesToRadians(lat1);
+  lat2 = degreesToRadians(lat2);
+
+  var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+          Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+  return earthRadiusKm * c;
+}
 
 let transformToGeoJSON = vector => {
-    let race = [{
-        "type": "LineString"
-    }];
-    let coordinates=[]
-    for (let i=0;i<vector.length;i++) {
+    // let race = [{
+    //     "type": "LineString"
+    // }];
+    let race=[]
+
+    for (let i=0;i<vector.length-1;i++) {
+        let coordinates=[]
+        let distances=[]
+        let cumulativeDistance=[]
+        let elevation=[]
+
+        // coordinates
         coordinates.push([vector[i].lng,vector[i].lat])
+        coordinates.push([vector[i+1].lng,vector[i+1].lat])
+
+        // distance
+        const distance=distanceInKmBetweenEarthCoordinates(vector[i+1].lat,vector[i+1].lng,
+                vector[i].lat,vector[i].lng)
+        distances.push(distance)
+        if (i==0) {
+            cumulativeDistance.push(distance)
+        } else {
+            cumulativeDistance.push(distance+race[i-1].cumulativeDistance[0])
+        }
+
+        // elevation
+        elevation.push(vector[i].meta.ele)
+
+        // new element
+        let raceElement={}
+        raceElement.type='LineString'
+        raceElement.coordinates=coordinates
+        raceElement.distances=distances
+        raceElement.cumulativeDistance=cumulativeDistance
+        raceElement.elevation=elevation
+        race.push(raceElement)
     }
-    race[0].coordinates=coordinates
+    // race[0].coordinates=coordinates
+    // race[0].distances=distances
+    // race[0].elevation=elevation
+    console.log(race)
 
     return race
 }
 
-var geojson = {
-"type": "FeatureCollection",
-"features": [
-{ "type": "Feature", "id": 0, "properties": { "name": "Example popup on mouse over"  }, "geometry": { "type": "Point", "coordinates": [ 6.9, 46.5 ] } }
-]
-};
 
-let mouseMovePoint=L.geoJSON(geojson, {
-    pointToLayer: (feature, latlng) => {
-        return L.circleMarker(latlng, geojsonMarkerOptions);
-    },
-    onEachFeature: function (feature, layer) {
-        // layer.bindPopup(feature.properties.name);
-        layer.on('mouseover', function (e) {
-            this.setStyle({
-                color:'red'
-            })
-            this.openPopup();
-        });
-        layer.on('mouseout', function (e) {
-            this.setStyle({
-                color:'green'
-            })
-            this.closePopup();
-        });
-    }
-}).addTo(map)
+/* let mouseMovePoint=L.geoJSON(geojson, { */
+    // pointToLayer: (feature, latlng) => {
+    //     return L.circleMarker(latlng, geojsonMarkerOptions);
+    // },
+    // onEachFeature: function (feature, layer) {
+    //     // layer.bindPopup(feature.properties.name);
+    //     layer.on('mouseover', function (e) {
+    //         this.setStyle({
+    //             color:'red'
+    //         })
+    //         this.openPopup();
+    //     });
+    //     layer.on('mouseout', function (e) {
+    //         this.setStyle({
+    //             color:'green'
+    //         })
+    //         this.closePopup();
+    //     });
+    // }
+/* }).addTo(map) */
 
 let circle = L.circleMarker([46.5, 6.8], {
     color: 'red',
@@ -108,7 +153,68 @@ let circle = L.circleMarker([46.5, 6.8], {
     fillOpacity:1,
     radius: 5
 })
+circle.bindPopup('Runner information');
 
+let addElevationPlot = raceVector => {
+    let dataset=[]
+    for (let i=0;i<raceVector.length;i++) {
+        dataset.push([raceVector[i].cumulativeDistance[0],raceVector[i].elevation[0]])
+    }
+    console.log(dataset)
+
+    // set the dimensions and margins of the graph
+    var margin = {top: 20, right: 20, bottom: 30, left: 50},
+        width = 960 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
+
+    const n=dataset.length
+
+    // 5. X scale will use the index of our data
+    var xScale = d3.scaleLinear()
+        .domain([0, d3.max(dataset,d=>d[0])]) // input
+        .range([0, width]); // output
+
+    // 6. Y scale will use the randomly generate number
+    const dataRange=d3.max(dataset,d=>d[1])-d3.min(dataset,d=>d[1])
+    var yScale = d3.scaleLinear()
+        .domain([d3.min(dataset,d=>d[1])-dataRange/10, d3.max(dataset,d=>d[1])+dataRange/10]) // input
+        .range([height, 0]); // output
+
+    // 7. d3's line generator
+    var line = d3.line()
+        .x(function(d, i) { return xScale(d[0]); }) // set the x values for the line generator
+        .y(function(d) { return yScale(d[1]); }) // set the y values for the line generator 
+        .curve(d3.curveMonotoneX) // apply smoothing to the line
+
+    // append the svg obgect to the body of the page
+    // appends a 'group' element to 'svg'
+    // moves the 'group' element to the top left margin
+    var svg = d3.select("body").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform",
+              "translate(" + margin.left + "," + margin.top + ")");
+
+    // 3. Call the x axis in a group tag
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(xScale)); // Create an axis component with d3.axisBottom
+
+    // 4. Call the y axis in a group tag
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(d3.axisLeft(yScale)); // Create an axis component with d3.axisLeft
+
+    // 9. Append the path, bind the data, and call the line generator
+    svg.append("path")
+        .datum(dataset) // 10. Binds data to the line
+        .attr("class", "line") // Assign a class for styling
+        .attr("d", line); // 11. Calls the line generator
+
+}
+    
 let addPoint = (line) => {
     // let svg=d3.select(map.getPanes().overlayPane).append('svg')
     // let g=svg.append('g').attr("class", "leaflet-zoom-hide");
@@ -135,7 +241,10 @@ let addPoint = (line) => {
                 // mouseMovePoint.clearLayers()
                 // mouseMovePoint.addData(geojson)
                 // mouseMovePoint.setLatLngs([6.8,46.5])
+                console.log(circle)
+                circle.openPopup()
                 circle.setLatLng([latitude,longitude])
+                circle._popup.setContent(feature.elevation[0].toString())
                 circle.addTo(map)
             
                 layer.setStyle({
@@ -150,6 +259,9 @@ let addPoint = (line) => {
             });
         }
     }).addTo(map)
+
+    addElevationPlot(output)
+
 }
 track.on('addline', e=> {
     line=e.line
@@ -159,7 +271,18 @@ track.on('addline', e=> {
 
 
 
-
+/* let plot=d3.select('body').append('svg') */
+//     .attr('width',960)
+//     .attr('height',500)
+// let container=plot.append("g").attr("transform", "translate(20,20)")
+// container.append("rect")
+//                .attr("width", 920)
+//                .attr("height", 460);
+//
+//
+// const scale=d3.scaleLinear()
+//     .domain([0,22000])
+    /* .range([300,500]) */
 
 
 

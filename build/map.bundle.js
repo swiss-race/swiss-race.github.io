@@ -22576,10 +22576,15 @@ __webpack_require__(464);
 
 __webpack_require__(472);
 
+var _utilities = __webpack_require__(474);
+
+var utilities = _interopRequireWildcard(_utilities);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+//////    ADD MAP   ////////
 // Initialize the map
 var map = _leaflet2.default.map('map', {
     scrollWheelZoom: false
@@ -22589,14 +22594,12 @@ var map = _leaflet2.default.map('map', {
 map.setView([46.505, 6.63], 13);
 
 // Adding all the possible layers
-
 var osmOrg = _leaflet2.default.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
-// let text=get_text()
-// console.log(text)
-
+map.scrollWheelZoom.enable();
+map.invalidateSize();
 
 var gpx = 'gps_data/Demi-marathonLausanne.gpx'; // URL to your GPX file or the GPX itself
 var track = new _leaflet2.default.GPX(gpx, {
@@ -22614,8 +22617,12 @@ track.on('loaded', function (e) {
     //   console.log(e.target.get_total_time())
 });
 
-//
-var line = 0;
+track.on('addline', function (e) {
+    var line = e.line;
+    addPoint(line);
+});
+
+/////  MAP ANNOTATIONS PROPERTIES   /////
 
 var lineStyle = {
     "color": 'blue',
@@ -22623,113 +22630,48 @@ var lineStyle = {
     "opacity": 0.65
 };
 
-var geojsonMarkerOptions = {
-    radius: 8,
-    // fillColor: "#ff7800",
-    color: 'green',
-    weight: 1,
-    opacity: 1,
-    fillOpacity: 0.8
-};
-
-function degreesToRadians(degrees) {
-    return degrees * Math.PI / 180;
-}
-
-function distanceInKmBetweenEarthCoordinates(lat1, lon1, lat2, lon2) {
-    var earthRadiusKm = 6371;
-
-    var dLat = degreesToRadians(lat2 - lat1);
-    var dLon = degreesToRadians(lon2 - lon1);
-
-    lat1 = degreesToRadians(lat1);
-    lat2 = degreesToRadians(lat2);
-
-    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return earthRadiusKm * c;
-}
-
-var transformToGeoJSON = function transformToGeoJSON(vector) {
-    var race = [];
-
-    for (var i = 0; i < vector.length - 1; i++) {
-        var coordinates = [];
-        var distances = [];
-        var cumulativeDistance = [];
-        var elevation = [];
-
-        // coordinates
-        coordinates.push([vector[i].lng, vector[i].lat]);
-        coordinates.push([vector[i + 1].lng, vector[i + 1].lat]);
-
-        // distance
-        var distance = distanceInKmBetweenEarthCoordinates(vector[i + 1].lat, vector[i + 1].lng, vector[i].lat, vector[i].lng);
-        distances.push(distance);
-        if (i == 0) {
-            cumulativeDistance.push(distance);
-        } else {
-            cumulativeDistance.push(distance + race[i - 1].cumulativeDistance[0]);
-        }
-
-        // elevation
-        elevation.push(vector[i].meta.ele);
-
-        // new element
-        var raceElement = {};
-        raceElement.type = 'LineString';
-        raceElement.coordinates = coordinates;
-        raceElement.distances = distances;
-        raceElement.cumulativeDistance = cumulativeDistance;
-        raceElement.elevation = elevation;
-        raceElement.i = i;
-        race.push(raceElement);
-    }
-    console.log(race);
-
-    return race;
-};
-
-/* let mouseMovePoint=L.geoJSON(geojson, { */
-// pointToLayer: (feature, latlng) => {
-//     return L.circleMarker(latlng, geojsonMarkerOptions);
-// },
-// onEachFeature: function (feature, layer) {
-//     // layer.bindPopup(feature.properties.name);
-//     layer.on('mouseover', function (e) {
-//         this.setStyle({
-//             color:'red'
-//         })
-//         this.openPopup();
-//     });
-//     layer.on('mouseout', function (e) {
-//         this.setStyle({
-//             color:'green'
-//         })
-//         this.closePopup();
-//     });
-// }
-/* }).addTo(map) */
-
-var circle = _leaflet2.default.circleMarker([46.5, 6.8], {
-    color: 'red',
+var circleStyle = { color: 'red',
     fillColor: 'red',
     fillOpacity: 1,
     radius: 5,
     class: 1
-});
+};
+
+var circle = _leaflet2.default.circleMarker([46.5, 6.8], circleStyle);
+
 circle.on('mouseover', function () {
     mouseoverOpacity('circle' + circle.class.toString());
+    circle.openPopup();
 });
 circle.on('mouseout', function () {
     mouseoutOpacity('circle' + circle.class.toString());
+    circle.closePopup();
 });
 circle.bindPopup('Runner information');
 
+var setCircleInPosition = function setCircleInPosition(circle, index, elevation, latitude, longitude) {
+    console.log('circle set in position' + latitude);
+    circle.setLatLng([latitude, longitude]);
+    circle.class = index;
+    circle._popup.setContent(elevation);
+    circle.addTo(map);
+};
+
+var mouseoverOpacity = function mouseoverOpacity(className) {
+    d3.select('.' + className).style('opacity', 1);
+};
+
+var mouseoutOpacity = function mouseoutOpacity(className) {
+    d3.select('.' + className).style('opacity', 0);
+};
+
+/////  PLOT   /////
+
 var addElevationPlot = function addElevationPlot(raceVector) {
+    console.log(raceVector);
     var dataset = [];
     for (var i = 0; i < raceVector.length; i++) {
-        dataset.push([raceVector[i].cumulativeDistance[0], raceVector[i].elevation[0]]);
+        dataset.push([raceVector[i].cumulativeDistance[0], raceVector[i].elevation[0], raceVector[i].coordinates[0][1], raceVector[i].coordinates[0][0], i]);
     }
     console.log(dataset);
 
@@ -22801,26 +22743,61 @@ var addElevationPlot = function addElevationPlot(raceVector) {
         d3.select(this).style('opacity', 1);
         div.transition().duration(200).style("opacity", 1);
         div.html(d[0].toFixed(2) + 'km' + "<br/>" + d[1] + 'm').style("left", d3.event.pageX + "px").style("top", d3.event.pageY - 28 + "px");
+        var latitude = d[2];
+        var longitude = d[3];
+        var index = d[4];
+        setCircleInPosition(circle, index, d[1], latitude, longitude);
     }).on("mouseout", function (d) {
         d3.select(this).style('opacity', 0);
         div.transition().duration(500).style("opacity", 0);
     });
 };
 
-var mouseoverOpacity = function mouseoverOpacity(className) {
-    d3.select('.' + className).style('opacity', 1);
-};
+////  DISPLAY TRACK   ////
 
-var mouseoutOpacity = function mouseoutOpacity(className) {
-    d3.select('.' + className).style('opacity', 0);
+var transformToGeoJSON = function transformToGeoJSON(vector) {
+    var race = [];
+
+    for (var i = 0; i < vector.length - 1; i++) {
+        var coordinates = [];
+        var distances = [];
+        var cumulativeDistance = [];
+        var elevation = [];
+
+        // coordinates
+        coordinates.push([vector[i].lng, vector[i].lat]);
+        coordinates.push([vector[i + 1].lng, vector[i + 1].lat]);
+
+        // distance
+        var distance = utilities.distanceInKmBetweenEarthCoordinates(vector[i + 1].lat, vector[i + 1].lng, vector[i].lat, vector[i].lng);
+        distances.push(distance);
+        if (i == 0) {
+            cumulativeDistance.push(distance);
+        } else {
+            cumulativeDistance.push(distance + race[i - 1].cumulativeDistance[0]);
+        }
+
+        // elevation
+        elevation.push(vector[i].meta.ele);
+
+        // new element
+        var raceElement = {};
+        raceElement.type = 'LineString';
+        raceElement.coordinates = coordinates;
+        raceElement.distances = distances;
+        raceElement.cumulativeDistance = cumulativeDistance;
+        raceElement.elevation = elevation;
+        raceElement.i = i;
+        race.push(raceElement);
+    }
+    console.log(race);
+
+    return race;
 };
 
 var addPoint = function addPoint(line) {
-    // let svg=d3.select(map.getPanes().overlayPane).append('svg')
-    // let g=svg.append('g').attr("class", "leaflet-zoom-hide");
     var pointArray = line._latlngs;
 
-    console.log(pointArray.length);
     var output = transformToGeoJSON(pointArray);
 
     console.log(output);
@@ -22836,60 +22813,34 @@ var addPoint = function addPoint(line) {
                 var latitude = e.latlng.lat;
                 var longitude = e.latlng.lng;
 
-                // circle.openPopup()
-                circle.setLatLng([latitude, longitude]);
-                circle.class = index;
-                circle._popup.setContent(feature.elevation[0].toString());
-                circle.addTo(map);
+                var elevation = feature.elevation[0].toString();
 
-                this.setStyle({
-                    color: 'red'
-                });
-                this.openPopup();
+                setCircleInPosition(circle, index, elevation, latitude, longitude);
 
-                mouseoverOpacity(className);
+                // this.setStyle({
+                //     color:'red'
+                // })
+                // this.openPopup();
+
+                // mouseoverOpacity(className)
             });
-            // layer.on('mousemove',e=>{
-            //     let latitude=e.latlng.lat;
-            //     let longitude=e.latlng.lng;
-            //     // geojson.features[0].geometry.coordinates=[longitude,latitude]
-            //     // mouseMovePoint.clearLayers()
-            //     // mouseMovePoint.addData(geojson)
-            //     // mouseMovePoint.setLatLngs([6.8,46.5])
-            //     circle.openPopup()
-            //     circle.setLatLng([latitude,longitude])
-            //     circle._popup.setContent(feature.elevation[0].toString())
-            //     circle.addTo(map)
-            //
-            //     layer.setStyle({
-            //         color:'blue'
-            //     })
-            //
-            //     // Change elevation plot
-            //     const index=feature.i
-            //     const className='circle'+index.toString()
-            //     mouseoverOpacity(className)
-            //
-            // })
-            layer.on('mouseout', function (e) {
-                this.setStyle({
-                    color: 'blue'
-                });
-                this.closePopup();
 
-                var index = feature.i;
-                var className = 'circle' + index.toString();
-                mouseoutOpacity(className);
+            layer.on('mouseout', function (e) {
+                // this.setStyle({
+                //     color:'blue'
+                // })
+                // this.closePopup();
+
+
+                // const index=feature.i
+                // const className='circle'+index.toString()
+                // mouseoutOpacity(className)
             });
         }
     }).addTo(map);
 
     addElevationPlot(output);
 };
-track.on('addline', function (e) {
-    line = e.line;
-    addPoint(line);
-});
 
 /* let plot=d3.select('body').append('svg') */
 //     .attr('width',960)
@@ -22940,8 +22891,6 @@ track.on('addline', function (e) {
 // d3.select('body').append('p').text(track.get_total_time())
 
 
-map.scrollWheelZoom.enable();
-map.invalidateSize();
 // map.on('click',mapClick)
 
 /***/ }),
@@ -37719,6 +37668,36 @@ module.exports = function(module) {
 	return module;
 };
 
+
+/***/ }),
+/* 474 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.distanceInKmBetweenEarthCoordinates = distanceInKmBetweenEarthCoordinates;
+
+function degreesToRadians(degrees) {
+  return degrees * Math.PI / 180;
+}
+
+function distanceInKmBetweenEarthCoordinates(lat1, lon1, lat2, lon2) {
+  var earthRadiusKm = 6371;
+
+  var dLat = degreesToRadians(lat2 - lat1);
+  var dLon = degreesToRadians(lon2 - lon1);
+
+  lat1 = degreesToRadians(lat1);
+  lat2 = degreesToRadians(lat2);
+
+  var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return earthRadiusKm * c;
+}
 
 /***/ })
 /******/ ]);

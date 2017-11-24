@@ -2,8 +2,9 @@ import * as d3 from 'd3'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import './gpx.js'
+import * as utilities from './utilities.js'
 
-
+//////    ADD MAP   ////////
 // Initialize the map
 var map = L.map('map', {
   scrollWheelZoom: false
@@ -13,16 +14,12 @@ var map = L.map('map', {
 map.setView([46.505, 6.63], 13);
 
 // Adding all the possible layers
-
 var osmOrg=L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
-
-
-// let text=get_text()
-// console.log(text)
-
+map.scrollWheelZoom.enable()
+map.invalidateSize()
 
 var gpx = 'gps_data/Demi-marathonLausanne.gpx' // URL to your GPX file or the GPX itself
 let track=new L.GPX(gpx,
@@ -42,125 +39,63 @@ track.on('loaded', function(e) {
   //   console.log(e.target.get_total_time())
 })
 
-//
-let line=0
+track.on('addline', e=> {
+    let line=e.line
+    addPoint(line)
+})
 
-var lineStyle = {
+/////  MAP ANNOTATIONS PROPERTIES   /////
+
+let lineStyle = {
     "color": 'blue',
     "weight": 7,
     "opacity": 0.65
-};
-
-var geojsonMarkerOptions = {
-    radius: 8,
-    // fillColor: "#ff7800",
-    color: 'green',
-    weight: 1,
-    opacity: 1,
-    fillOpacity: 0.8
-};
-
-function degreesToRadians(degrees) {
-  return degrees * Math.PI / 180;
 }
 
-function distanceInKmBetweenEarthCoordinates(lat1, lon1, lat2, lon2) {
-  var earthRadiusKm = 6371;
-
-  var dLat = degreesToRadians(lat2-lat1);
-  var dLon = degreesToRadians(lon2-lon1);
-
-  lat1 = degreesToRadians(lat1);
-  lat2 = degreesToRadians(lat2);
-
-  var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-          Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
-  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-  return earthRadiusKm * c;
-}
-
-let transformToGeoJSON = vector => {
-    let race=[]
-
-    for (let i=0;i<vector.length-1;i++) {
-        let coordinates=[]
-        let distances=[]
-        let cumulativeDistance=[]
-        let elevation=[]
-
-        // coordinates
-        coordinates.push([vector[i].lng,vector[i].lat])
-        coordinates.push([vector[i+1].lng,vector[i+1].lat])
-
-        // distance
-        const distance=distanceInKmBetweenEarthCoordinates(vector[i+1].lat,vector[i+1].lng,
-                vector[i].lat,vector[i].lng)
-        distances.push(distance)
-        if (i==0) {
-            cumulativeDistance.push(distance)
-        } else {
-            cumulativeDistance.push(distance+race[i-1].cumulativeDistance[0])
-        }
-
-        // elevation
-        elevation.push(vector[i].meta.ele)
-
-        // new element
-        let raceElement={}
-        raceElement.type='LineString'
-        raceElement.coordinates=coordinates
-        raceElement.distances=distances
-        raceElement.cumulativeDistance=cumulativeDistance
-        raceElement.elevation=elevation
-        raceElement.i=i
-        race.push(raceElement)
-    }
-    console.log(race)
-
-    return race
-}
-
-
-/* let mouseMovePoint=L.geoJSON(geojson, { */
-    // pointToLayer: (feature, latlng) => {
-    //     return L.circleMarker(latlng, geojsonMarkerOptions);
-    // },
-    // onEachFeature: function (feature, layer) {
-    //     // layer.bindPopup(feature.properties.name);
-    //     layer.on('mouseover', function (e) {
-    //         this.setStyle({
-    //             color:'red'
-    //         })
-    //         this.openPopup();
-    //     });
-    //     layer.on('mouseout', function (e) {
-    //         this.setStyle({
-    //             color:'green'
-    //         })
-    //         this.closePopup();
-    //     });
-    // }
-/* }).addTo(map) */
-
-let circle = L.circleMarker([46.5, 6.8], {
-    color: 'red',
+let circleStyle = { color: 'red',
     fillColor:'red',
     fillOpacity:1,
     radius: 5,
     class: 1
-})
+}
+
+let circle = L.circleMarker([46.5, 6.8], circleStyle)
+
 circle.on('mouseover', ()=> {
     mouseoverOpacity('circle'+circle.class.toString())
+    circle.openPopup()
 })
 circle.on('mouseout', ()=> {
     mouseoutOpacity('circle'+circle.class.toString())
+    circle.closePopup()
 })
 circle.bindPopup('Runner information');
 
+let setCircleInPosition = (circle,index,elevation,latitude,longitude) => {
+    console.log('circle set in position'+latitude)
+    circle.setLatLng([latitude,longitude])
+    circle.class=index
+    circle._popup.setContent(elevation)
+    circle.addTo(map)
+}
+
+let mouseoverOpacity = className => {
+    d3.select('.'+className)
+        .style('opacity',1)
+}
+
+let mouseoutOpacity = className => {
+    d3.select('.'+className)
+        .style('opacity',0)
+}
+
+/////  PLOT   /////
+
 let addElevationPlot = raceVector => {
+    console.log(raceVector)
     let dataset=[]
     for (let i=0;i<raceVector.length;i++) {
-        dataset.push([raceVector[i].cumulativeDistance[0],raceVector[i].elevation[0]])
+        dataset.push([raceVector[i].cumulativeDistance[0],raceVector[i].elevation[0],raceVector[i].coordinates[0][1],raceVector[i].coordinates[0][0],i])
     }
     console.log(dataset)
 
@@ -250,6 +185,11 @@ let addElevationPlot = raceVector => {
             div	.html(d[0].toFixed(2)+'km' + "<br/>"  + d[1]+'m')
                 .style("left", (d3.event.pageX) + "px")
                 .style("top", (d3.event.pageY - 28) + "px");
+            const latitude=d[2]
+            const longitude=d[3]
+            const index=d[4]
+            setCircleInPosition(circle,index,d[1],latitude,longitude)
+
             })
         .on("mouseout", function(d) {
             d3.select(this).style('opacity',0)
@@ -259,22 +199,53 @@ let addElevationPlot = raceVector => {
         });
 }
     
-let mouseoverOpacity = className => {
-    d3.select('.'+className)
-        .style('opacity',1)
+////  DISPLAY TRACK   ////
+
+let transformToGeoJSON = vector => {
+    let race=[]
+
+    for (let i=0;i<vector.length-1;i++) {
+        let coordinates=[]
+        let distances=[]
+        let cumulativeDistance=[]
+        let elevation=[]
+
+        // coordinates
+        coordinates.push([vector[i].lng,vector[i].lat])
+        coordinates.push([vector[i+1].lng,vector[i+1].lat])
+
+        // distance
+        const distance=utilities.distanceInKmBetweenEarthCoordinates(vector[i+1].lat,vector[i+1].lng,
+                vector[i].lat,vector[i].lng)
+        distances.push(distance)
+        if (i==0) {
+            cumulativeDistance.push(distance)
+        } else {
+            cumulativeDistance.push(distance+race[i-1].cumulativeDistance[0])
+        }
+
+        // elevation
+        elevation.push(vector[i].meta.ele)
+
+        // new element
+        let raceElement={}
+        raceElement.type='LineString'
+        raceElement.coordinates=coordinates
+        raceElement.distances=distances
+        raceElement.cumulativeDistance=cumulativeDistance
+        raceElement.elevation=elevation
+        raceElement.i=i
+        race.push(raceElement)
+    }
+    console.log(race)
+
+    return race
 }
 
-let mouseoutOpacity = className => {
-    d3.select('.'+className)
-        .style('opacity',0)
-}
 
 let addPoint = (line) => {
-    // let svg=d3.select(map.getPanes().overlayPane).append('svg')
-    // let g=svg.append('g').attr("class", "leaflet-zoom-hide");
     let pointArray=line._latlngs
 
-    console.log(pointArray.length)
     let output=transformToGeoJSON(pointArray)
 
     console.log(output)
@@ -290,50 +261,28 @@ let addPoint = (line) => {
                 let latitude=e.latlng.lat;
                 let longitude=e.latlng.lng;
                 
-                // circle.openPopup()
-                circle.setLatLng([latitude,longitude])
-                circle.class=index
-                circle._popup.setContent(feature.elevation[0].toString())
-                circle.addTo(map)
+                let elevation=feature.elevation[0].toString()
+     
+                setCircleInPosition(circle,index,elevation,latitude,longitude)
 
-                this.setStyle({
-                    color:'red'
-                })
-                this.openPopup();
+                // this.setStyle({
+                //     color:'red'
+                // })
+                // this.openPopup();
                 
-                mouseoverOpacity(className)
+                // mouseoverOpacity(className)
             });
-            // layer.on('mousemove',e=>{
-            //     let latitude=e.latlng.lat;
-            //     let longitude=e.latlng.lng;
-            //     // geojson.features[0].geometry.coordinates=[longitude,latitude]
-            //     // mouseMovePoint.clearLayers()
-            //     // mouseMovePoint.addData(geojson)
-            //     // mouseMovePoint.setLatLngs([6.8,46.5])
-            //     circle.openPopup()
-            //     circle.setLatLng([latitude,longitude])
-            //     circle._popup.setContent(feature.elevation[0].toString())
-            //     circle.addTo(map)
-            //
-            //     layer.setStyle({
-            //         color:'blue'
-            //     })
-            //
-            //     // Change elevation plot
-            //     const index=feature.i
-            //     const className='circle'+index.toString()
-            //     mouseoverOpacity(className)
-            //
-            // })
+            
             layer.on('mouseout', function (e) {
-                this.setStyle({
-                    color:'blue'
-                })
-                this.closePopup();
+                // this.setStyle({
+                //     color:'blue'
+                // })
+                // this.closePopup();
 
-                const index=feature.i
-                const className='circle'+index.toString()
-                mouseoutOpacity(className)
+
+                // const index=feature.i
+                // const className='circle'+index.toString()
+                // mouseoutOpacity(className)
             });
         }
     }).addTo(map)
@@ -341,10 +290,6 @@ let addPoint = (line) => {
     addElevationPlot(output)
 
 }
-track.on('addline', e=> {
-    line=e.line
-    addPoint(line)
-})
 
 
 
@@ -403,6 +348,4 @@ track.on('addline', e=> {
 // d3.select('body').append('p').text(track.get_total_time())
 
 
-map.scrollWheelZoom.enable()
-map.invalidateSize()
 // map.on('click',mapClick)

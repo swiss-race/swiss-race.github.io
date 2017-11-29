@@ -22650,7 +22650,7 @@ circle.on('mouseout', function () {
 circle.bindPopup('Runner information');
 
 var setCircleInPosition = function setCircleInPosition(circle, index, elevation, latitude, longitude) {
-    console.log('circle set in position' + latitude);
+    // console.log('circle set in position'+latitude)
     circle.setLatLng([latitude, longitude]);
     circle.class = index;
     circle._popup.setContent(elevation);
@@ -22739,17 +22739,57 @@ var addElevationPlot = function addElevationPlot(raceVector) {
         return yScale(d[1]);
     }).attr("class", function (d, i) {
         return 'circle' + i.toString();
-    }).style('opacity', 0).on("mouseover", function (d) {
-        d3.select(this).style('opacity', 1);
+    }).style('opacity', 0);
+    // .on("mouseover", function(d) {
+    //     d3.select(this).style('opacity',1)
+    //     div.transition()
+    //         .duration(200)
+    //         .style("opacity", 1);
+    //     div	.html(d[0].toFixed(2)+'km' + "<br/>"  + d[1]+'m')
+    //         .style("left", (d3.event.pageX) + "px")
+    //         .style("top", (d3.event.pageY - 28) + "px");
+    //     const latitude=d[2]
+    //     const longitude=d[3]
+    //     const index=d[4]
+    //     setCircleInPosition(circle,index,d[1],latitude,longitude)
+    //
+    //     })
+    // .on("mouseout", function(d) {
+    //     d3.select(this).style('opacity',0)
+    //     div.transition()
+    //         .duration(500)
+    //         .style("opacity", 0);
+    // });
+    var rect = svg.append("rect").attr("class", "overlay").attr("width", width).attr("height", height).on("mouseover", function () {}).on("mouseout", function () {
+
+        console.log('MOUSEOUT');
+        // d3.select(this).style('opacity',0)
+        // div.transition()
+        //     .duration(500)
+        //     .style("opacity", 0);
+    });
+
+    var bisect = d3.bisector(function (d) {
+        return d[0];
+    }).left;
+    console.log(xScale);
+    var outVariable = 0;
+    rect.on("mousemove", function () {
+        var x0 = xScale.invert(d3.mouse(d3.event.currentTarget)[0]);
+        var i = bisect(dataset, x0, 1);
+        var d = dataset[i - 1];
+        // console.log(outVariable)
+        mouseoutOpacity('circle' + outVariable.toString());
+        outVariable = i;
+        // const d=dataset[i]
+        mouseoverOpacity('circle' + i.toString());
         div.transition().duration(200).style("opacity", 1);
         div.html(d[0].toFixed(2) + 'km' + "<br/>" + d[1] + 'm').style("left", d3.event.pageX + "px").style("top", d3.event.pageY - 28 + "px");
         var latitude = d[2];
         var longitude = d[3];
         var index = d[4];
         setCircleInPosition(circle, index, d[1], latitude, longitude);
-    }).on("mouseout", function (d) {
-        d3.select(this).style('opacity', 0);
-        div.transition().duration(500).style("opacity", 0);
+        // let d=
     });
 };
 
@@ -22816,13 +22856,6 @@ var addPoint = function addPoint(line) {
                 var elevation = feature.elevation[0].toString();
 
                 setCircleInPosition(circle, index, elevation, latitude, longitude);
-
-                // this.setStyle({
-                //     color:'red'
-                // })
-                // this.openPopup();
-
-                // mouseoverOpacity(className)
             });
 
             layer.on('mouseout', function (e) {

@@ -72,7 +72,7 @@ circle.on('mouseout', ()=> {
 circle.bindPopup('Runner information');
 
 let setCircleInPosition = (circle,index,elevation,latitude,longitude) => {
-    console.log('circle set in position'+latitude)
+    // console.log('circle set in position'+latitude)
     circle.setLatLng([latitude,longitude])
     circle.class=index
     circle._popup.setContent(elevation)
@@ -107,18 +107,18 @@ let addElevationPlot = raceVector => {
     const n=dataset.length
 
     // 5. X scale 
-    var xScale = d3.scaleLinear()
+    let xScale = d3.scaleLinear()
         .domain([0, d3.max(dataset,d=>d[0])]) // input
         .range([0, width]); // output
 
     // 6. Y scale 
     const dataRange=d3.max(dataset,d=>d[1])-d3.min(dataset,d=>d[1])
-    var yScale = d3.scaleLinear()
+    let yScale = d3.scaleLinear()
         .domain([d3.min(dataset,d=>d[1])-dataRange/10, d3.max(dataset,d=>d[1])+dataRange/10]) // input
         .range([height, 0]); // output
 
     // 7. d3's line generator
-    var line = d3.line()
+    let line = d3.line()
         .x(function(d, i) { return xScale(d[0]); }) // set the x values for the line generator
         .y(function(d) { return yScale(d[1]); }) // set the y values for the line generator 
         .curve(d3.curveMonotoneX) // apply smoothing to the line
@@ -177,27 +177,66 @@ let addElevationPlot = raceVector => {
         .attr("cy", function(d) { return yScale(d[1]); })
         .attr("class",(d,i) => {return 'circle'+i.toString()})
         .style('opacity',0)
-        .on("mouseover", function(d) {
-            d3.select(this).style('opacity',1)
-            div.transition()
-                .duration(200)
-                .style("opacity", 1);
-            div	.html(d[0].toFixed(2)+'km' + "<br/>"  + d[1]+'m')
-                .style("left", (d3.event.pageX) + "px")
-                .style("top", (d3.event.pageY - 28) + "px");
-            const latitude=d[2]
-            const longitude=d[3]
-            const index=d[4]
-            setCircleInPosition(circle,index,d[1],latitude,longitude)
+        // .on("mouseover", function(d) {
+        //     d3.select(this).style('opacity',1)
+        //     div.transition()
+        //         .duration(200)
+        //         .style("opacity", 1);
+        //     div	.html(d[0].toFixed(2)+'km' + "<br/>"  + d[1]+'m')
+        //         .style("left", (d3.event.pageX) + "px")
+        //         .style("top", (d3.event.pageY - 28) + "px");
+        //     const latitude=d[2]
+        //     const longitude=d[3]
+        //     const index=d[4]
+        //     setCircleInPosition(circle,index,d[1],latitude,longitude)
+        //
+        //     })
+        // .on("mouseout", function(d) {
+        //     d3.select(this).style('opacity',0)
+        //     div.transition()
+        //         .duration(500)
+        //         .style("opacity", 0);
+        // });
+    let rect=svg.append("rect")
+      .attr("class", "overlay")
+      .attr("width", width)
+      .attr("height", height)
+      .on("mouseover", function() {  })
+      .on("mouseout", function() { 
+        
+          console.log('MOUSEOUT')
+        // d3.select(this).style('opacity',0)
+        // div.transition()
+        //     .duration(500)
+        //     .style("opacity", 0);
+      });
 
-            })
-        .on("mouseout", function(d) {
-            d3.select(this).style('opacity',0)
-            div.transition()
-                .duration(500)
-                .style("opacity", 0);
-        });
+    let bisect= d3.bisector(function(d) { return d[0]; }).left
+    console.log(xScale)
+    let outVariable=0
+    rect.on("mousemove", () => {
+        let x0=xScale.invert(d3.mouse(d3.event.currentTarget)[0])
+        let i=bisect(dataset,x0,1)
+        const d=dataset[i-1]
+        // console.log(outVariable)
+        mouseoutOpacity('circle'+outVariable.toString())
+        outVariable=i
+        // const d=dataset[i]
+        mouseoverOpacity('circle'+i.toString())
+        div.transition()
+            .duration(200)
+            .style("opacity", 1);
+        div	.html(d[0].toFixed(2)+'km' + "<br/>"  + d[1]+'m')
+            .style("left", (d3.event.pageX) + "px")
+            .style("top", (d3.event.pageY - 28) + "px");
+        const latitude=d[2]
+        const longitude=d[3]
+        const index=d[4]
+        setCircleInPosition(circle,index,d[1],latitude,longitude)
+        // let d=
+    });
 }
+
     
 ////  DISPLAY TRACK   ////
 
@@ -265,12 +304,6 @@ let addPoint = (line) => {
      
                 setCircleInPosition(circle,index,elevation,latitude,longitude)
 
-                // this.setStyle({
-                //     color:'red'
-                // })
-                // this.openPopup();
-                
-                // mouseoverOpacity(className)
             });
             
             layer.on('mouseout', function (e) {

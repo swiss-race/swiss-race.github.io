@@ -101,8 +101,8 @@ let addElevationPlot = raceVector => {
 
     // set the dimensions and margins of the graph
     var margin = {top: 20, right: 20, bottom: 30, left: 50},
-        width = 960 - margin.left - margin.right,
-        height = 500 - margin.top - margin.bottom;
+        width = 500 - margin.left - margin.right,
+        height = 200 - margin.top - margin.bottom;
 
     const n=dataset.length
 
@@ -126,7 +126,7 @@ let addElevationPlot = raceVector => {
     // append the svg obgect to the body of the page
     // appends a 'group' element to 'svg'
     // moves the 'group' element to the top left margin
-    var svg = d3.select("body").append("svg")
+    var svg = d3.select("#plot").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
       .append("g")
@@ -177,26 +177,7 @@ let addElevationPlot = raceVector => {
         .attr("cy", function(d) { return yScale(d[1]); })
         .attr("class",(d,i) => {return 'circle'+i.toString()})
         .style('opacity',0)
-        // .on("mouseover", function(d) {
-        //     d3.select(this).style('opacity',1)
-        //     div.transition()
-        //         .duration(200)
-        //         .style("opacity", 1);
-        //     div	.html(d[0].toFixed(2)+'km' + "<br/>"  + d[1]+'m')
-        //         .style("left", (d3.event.pageX) + "px")
-        //         .style("top", (d3.event.pageY - 28) + "px");
-        //     const latitude=d[2]
-        //     const longitude=d[3]
-        //     const index=d[4]
-        //     setCircleInPosition(circle,index,d[1],latitude,longitude)
-        //
-        //     })
-        // .on("mouseout", function(d) {
-        //     d3.select(this).style('opacity',0)
-        //     div.transition()
-        //         .duration(500)
-        //         .style("opacity", 0);
-        // });
+        
     let rect=svg.append("rect")
       .attr("class", "overlay")
       .attr("width", width)

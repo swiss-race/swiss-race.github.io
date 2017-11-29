@@ -66,3 +66,21 @@ div.tooltip {
   fill: none;
   pointer-events: all;
 }
+
+#backgroundPlot {
+    width: 500px;
+    height: 200px;
+    position:absolute;
+    top:50px;
+    right:50px;
+    margin-left:00px;
+    margin-top:00px;
+    outline:1px solid green;
+    pointer-events:none;
+    color:black;
+    background-color:white;
+    opacity:1;
+}
+#plot {
+    opacity:1;
+}

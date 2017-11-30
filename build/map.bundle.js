@@ -22585,42 +22585,47 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 //////    ADD MAP   ////////
-// Initialize the map
-var map = _leaflet2.default.map('map', {
-    scrollWheelZoom: false
-});
+var getMap = function getMap() {
+    // Initialize the map
+    var map = _leaflet2.default.map('map', {
+        scrollWheelZoom: false
+    });
 
-// Set the position and zoom level of the map
-map.setView([46.505, 6.63], 13);
+    // Set the position and zoom level of the map
+    map.setView([46.905, 7.93], 8);
 
-// Adding all the possible layers
-var osmOrg = _leaflet2.default.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
+    // Adding all the possible layers
+    var osmOrg = _leaflet2.default.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
 
-map.scrollWheelZoom.enable();
-map.invalidateSize();
+    map.scrollWheelZoom.enable();
+    map.invalidateSize();
+    return map;
+};
+var map = getMap();
 
 var gpx = 'gps_data/Demi-marathonLausanne.gpx'; // URL to your GPX file or the GPX itself
-var track = new _leaflet2.default.GPX(gpx, {
-    async: true,
-    marker_options: {
-        startIconUrl: 'images/pin-icon-start.png',
-        endIconUrl: 'images/pin-icon-end.png',
-        shadowUrl: 'images/pin-shadow.png'
-    } });
 
-track.on('loaded', function (e) {
-    map.fitBounds(e.target.getBounds());
-    //   console.log(e.target.get_name())
-    //   console.log(e.target.get_distance())
-    //   console.log(e.target.get_total_time())
-});
+var addTrack = function addTrack(gpx) {
+    var track = new _leaflet2.default.GPX(gpx, {
+        async: true,
+        marker_options: {
+            startIconUrl: 'images/pin-icon-start.png',
+            endIconUrl: 'images/pin-icon-end.png',
+            shadowUrl: 'images/pin-shadow.png'
+        } });
 
-track.on('addline', function (e) {
-    var line = e.line;
-    addPoint(line);
-});
+    track.on('loaded', function (e) {
+        map.fitBounds(e.target.getBounds());
+    });
+
+    track.on('addline', function (e) {
+        var line = e.line;
+        addPoint(line);
+    });
+};
+addTrack(gpx);
 
 /////  MAP ANNOTATIONS PROPERTIES   /////
 
@@ -22673,7 +22678,10 @@ var mouseoutOpacity = function mouseoutOpacity(className) {
 /////  PLOT   /////
 
 var addElevationPlot = function addElevationPlot(raceVector) {
-    console.log(raceVector);
+
+    // Set div opacity to 1
+    d3.select('#backgroundPlot').style('opacity', 1);
+
     var dataset = [];
     for (var i = 0; i < raceVector.length; i++) {
         dataset.push([raceVector[i].cumulativeDistance[0], raceVector[i].elevation[0], raceVector[i].coordinates[0][1], raceVector[i].coordinates[0][0], i]);
@@ -22744,9 +22752,7 @@ var addElevationPlot = function addElevationPlot(raceVector) {
         return 'circle' + i.toString();
     }).style('opacity', 0);
 
-    var rect = svg.append("rect").attr("class", "overlay").attr("width", width).attr("height", height).on("mouseover", function () {}).on("mouseout", function () {
-        // console.log('MOUSEOUT')
-    });
+    var rect = svg.append("rect").attr("class", "overlay").attr("width", width).attr("height", height).on("mouseover", function () {}).on("mouseout", function () {});
 
     var bisect = d3.bisector(function (d) {
         return d[0];
@@ -22766,7 +22772,6 @@ var addElevationPlot = function addElevationPlot(raceVector) {
         var longitude = d[3];
         var index = d[4];
         setCircleInPosition(circle, index, d[1], latitude, longitude);
-        // let d=
     });
 };
 
@@ -22835,73 +22840,12 @@ var addPoint = function addPoint(line) {
                 setCircleInPosition(circle, index, elevation, latitude, longitude);
             });
 
-            layer.on('mouseout', function (e) {
-                // this.setStyle({
-                //     color:'blue'
-                // })
-                // this.closePopup();
-
-
-                // const index=feature.i
-                // const className='circle'+index.toString()
-                // mouseoutOpacity(className)
-            });
+            layer.on('mouseout', function () {});
         }
     }).addTo(map);
 
     addElevationPlot(output);
 };
-
-/* let plot=d3.select('body').append('svg') */
-//     .attr('width',960)
-//     .attr('height',500)
-// let container=plot.append("g").attr("transform", "translate(20,20)")
-// container.append("rect")
-//                .attr("width", 920)
-//                .attr("height", 460);
-//
-//
-// const scale=d3.scaleLinear()
-//     .domain([0,22000])
-/* .range([300,500]) */
-
-// L.GridLayer.DebugCoords = L.GridLayer.extend({
-//     createTile: function (coords) {
-//         var tile = document.createElement('div');
-//         tile.innerHTML = [coords.x, coords.y, coords.z].join(', ');
-//         tile.style.outline = '1px solid red';
-//         return tile;
-//     }
-// });
-//
-// L.gridLayer.debugCoords = function(opts) {
-//     return new L.GridLayer.DebugCoords(opts);
-// };
-//
-// map.addLayer( L.gridLayer.debugCoords() );
-
-
-// let el=L.control.elevation()
-// el.addTo(map)
-
-// track.on('addline', e => {
-//     console.log(e.line)
-// })
-
-// var g=new L.GPX("gps_data/Demi-marathonLausanne.gpx", {async: true});
-// g.on("addline",function(e){
-//     el.addData(e.line);
-// });
-// g.on("addline",function(e){
-//     el.addData(e.line);
-// });
-// g.addTo(map);
-//
-
-// d3.select('body').append('p').text(track.get_total_time())
-
-
-// map.on('click',mapClick)
 
 /***/ }),
 /* 173 */

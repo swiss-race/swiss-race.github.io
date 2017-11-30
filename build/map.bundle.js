@@ -22635,7 +22635,9 @@ var circleStyle = { color: 'red',
     fillOpacity: 1,
     radius: 5,
     class: 1
-};
+
+    // Define the div for the tooltip
+};var div = d3.select("body").append("div").attr("class", "tooltip").attr("data-number", 10).style("opacity", 0);
 
 var circle = _leaflet2.default.circleMarker([46.5, 6.8], circleStyle);
 
@@ -22658,6 +22660,9 @@ var setCircleInPosition = function setCircleInPosition(circle, index, elevation,
 };
 
 var mouseoverOpacity = function mouseoverOpacity(className) {
+    var previous_position = div.attr('data-number');
+    mouseoutOpacity('circle' + previous_position.toString());
+    div.transition().duration(500).style("opacity", 0);
     d3.select('.' + className).style('opacity', 1);
 };
 
@@ -22730,8 +22735,6 @@ var addElevationPlot = function addElevationPlot(raceVector) {
     svg.append("text").attr("class", "x label").attr("text-anchor", "end").attr("x", width).attr("y", height - 6).text("Distance");
     svg.append("text").attr("class", "y label").attr("text-anchor", "end").attr("y", 6).attr("dy", ".75em").attr("transform", "rotate(-90)").text("Elevation");
 
-    // Define the div for the tooltip
-    var div = d3.select("body").append("div").attr("class", "tooltip").style("opacity", 0);
     // Add the scatterplot
     svg.selectAll('aaascasc').data(dataset).enter().append("circle").attr("r", 5).attr("cx", function (d) {
         return xScale(d[0]);
@@ -22742,29 +22745,22 @@ var addElevationPlot = function addElevationPlot(raceVector) {
     }).style('opacity', 0);
 
     var rect = svg.append("rect").attr("class", "overlay").attr("width", width).attr("height", height).on("mouseover", function () {}).on("mouseout", function () {
-
-        console.log('MOUSEOUT');
-        // d3.select(this).style('opacity',0)
-        // div.transition()
-        //     .duration(500)
-        //     .style("opacity", 0);
+        // console.log('MOUSEOUT')
     });
 
     var bisect = d3.bisector(function (d) {
         return d[0];
     }).left;
-    console.log(xScale);
-    var outVariable = 0;
+
     rect.on("mousemove", function () {
         var x0 = xScale.invert(d3.mouse(d3.event.currentTarget)[0]);
         var i = bisect(dataset, x0, 1);
         var d = dataset[i - 1];
-        // console.log(outVariable)
-        mouseoutOpacity('circle' + outVariable.toString());
-        outVariable = i;
-        // const d=dataset[i]
+
         mouseoverOpacity('circle' + i.toString());
         div.transition().duration(200).style("opacity", 1);
+        div.attr('data-number', i);
+
         div.html(d[0].toFixed(2) + 'km' + "<br/>" + d[1] + 'm').style("left", d3.event.pageX + "px").style("top", d3.event.pageY - 28 + "px");
         var latitude = d[2];
         var longitude = d[3];

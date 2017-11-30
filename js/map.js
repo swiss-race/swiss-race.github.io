@@ -59,6 +59,12 @@ let circleStyle = { color: 'red',
     class: 1
 }
 
+// Define the div for the tooltip
+let div = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .attr("data-number",10)
+    .style("opacity", 0);
+
 let circle = L.circleMarker([46.5, 6.8], circleStyle)
 
 circle.on('mouseover', ()=> {
@@ -80,6 +86,11 @@ let setCircleInPosition = (circle,index,elevation,latitude,longitude) => {
 }
 
 let mouseoverOpacity = className => {
+    const previous_position=div.attr('data-number')
+    mouseoutOpacity('circle'+previous_position.toString())
+    div.transition()
+        .duration(500)
+        .style("opacity", 0);
     d3.select('.'+className)
         .style('opacity',1)
 }
@@ -165,10 +176,6 @@ let addElevationPlot = raceVector => {
         .attr("transform", "rotate(-90)")
         .text("Elevation")
 
-    // Define the div for the tooltip
-    var div = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
     // Add the scatterplot
     svg.selectAll('aaascasc').data(dataset)
     .enter().append("circle")
@@ -184,29 +191,22 @@ let addElevationPlot = raceVector => {
       .attr("height", height)
       .on("mouseover", function() {  })
       .on("mouseout", function() { 
-        
-          console.log('MOUSEOUT')
-        // d3.select(this).style('opacity',0)
-        // div.transition()
-        //     .duration(500)
-        //     .style("opacity", 0);
+          // console.log('MOUSEOUT')
       });
 
     let bisect= d3.bisector(function(d) { return d[0]; }).left
-    console.log(xScale)
-    let outVariable=0
+
     rect.on("mousemove", () => {
         let x0=xScale.invert(d3.mouse(d3.event.currentTarget)[0])
         let i=bisect(dataset,x0,1)
         const d=dataset[i-1]
-        // console.log(outVariable)
-        mouseoutOpacity('circle'+outVariable.toString())
-        outVariable=i
-        // const d=dataset[i]
+
         mouseoverOpacity('circle'+i.toString())
         div.transition()
             .duration(200)
             .style("opacity", 1);
+        div.attr('data-number',i)
+
         div	.html(d[0].toFixed(2)+'km' + "<br/>"  + d[1]+'m')
             .style("left", (d3.event.pageX) + "px")
             .style("top", (d3.event.pageY - 28) + "px");

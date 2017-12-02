@@ -22584,7 +22584,15 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 /// ADD TRACK //
+var Track = function Track(track) {
+    _classCallCheck(this, Track);
+
+    this.track = track;
+};
+
 var addTrack = function addTrack(gpx, map) {
     var isLeftBar = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
 
@@ -22596,14 +22604,17 @@ var addTrack = function addTrack(gpx, map) {
             shadowUrl: 'images/pin-shadow.png'
         } });
 
+    var trackClass = new Track(track);
+
     track.on('loaded', function (e) {
         map.fitBounds(e.target.getBounds());
     });
 
     track.on('addline', function (e) {
         var line = e.line;
-        addPoint(line, map, isLeftBar);
+        trackClass.gpsTrack = addPoint(line, map, isLeftBar);
     });
+    return trackClass;
 };
 
 var disableMapInteractions = function disableMapInteractions(map) {
@@ -22617,6 +22628,30 @@ var disableMapInteractions = function disableMapInteractions(map) {
     document.getElementById('map').style.cursor = 'default';
 };
 
+//////    ADD MAP   ////////
+var getMap = function getMap() {
+    // Initialize the map
+    var map = _leaflet2.default.map('map', {
+        scrollWheelZoom: false
+    });
+
+    // Set the position and zoom level of the map
+    map.setView([46.905, 7.93], 8);
+
+    // Adding all the possible layers
+    var osmOrg = _leaflet2.default.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    map.scrollWheelZoom.enable();
+    map.invalidateSize();
+
+    return map;
+};
+var map = getMap();
+
+// addTrack(gpx)
+
 var gpxLausanne = 'gps_data/Demi-marathonLausanne.gpx'; // URL to your GPX file or the GPX itself
 var gpxLausanne10 = 'gps_data/10km-Lausanne.gpx'; // URL to your GPX file or the GPX itself
 var gpxLausanne20 = 'gps_data/20km-Lausanne.gpx'; // URL to your GPX file or the GPX itself
@@ -22627,6 +22662,7 @@ var gpxList = [gpxLausanne, gpxLausanne20, gpxLausanne10, gpxZurich, gpxLuzern];
 var leftBar = d3.select('#leftBar');
 var sheet = window.document.styleSheets[0];
 
+var currentTrack = 0;
 var leftSideBarRule = ' {height: 200px; width:90%; z-index:0; opacity:1; pointer-events:none; }';
 
 var _loop = function _loop(i) {
@@ -22637,9 +22673,13 @@ var _loop = function _loop(i) {
     var leftSideBarContainer = leftBar.append('div').attr('id', 'leftSideBarContainer').attr('data-colorchange', 1);
 
     leftSideBarContainer.on('click', function () {
+        if (currentTrack) {
+            map.removeLayer(currentTrack.gpsTrack);
+        }
         d3.selectAll('#leftSideBarContainer').attr('data-colorchange', 1).style('background', 'rgba(255,255,255,0.01');
         leftSideBarContainer.style('background', 'rgba(0,0,255,0.6)');
         leftSideBarContainer.attr('data-colorchange', 0);
+        currentTrack = addTrack(gpxList[i], map);
     });
     leftSideBarContainer.on('mouseover', function () {
         if (leftSideBarContainer.attr('data-colorchange') == 1) {
@@ -22675,43 +22715,6 @@ for (var i = 0; i < gpxList.length; i++) {
     _loop(i);
 }
 
-//////    ADD MAP   ////////
-var getMap = function getMap() {
-    // Initialize the map
-    var map = _leaflet2.default.map('map', {
-        scrollWheelZoom: false
-    });
-
-    // Set the position and zoom level of the map
-    map.setView([46.905, 7.93], 8);
-
-    // Adding all the possible layers
-    var osmOrg = _leaflet2.default.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-
-    map.scrollWheelZoom.enable();
-    map.invalidateSize();
-
-    var circleLausanne = _leaflet2.default.circle([46.5, 6.8], {
-        color: 'red',
-        fillColor: '#f03',
-        fillOpacity: 0.5,
-        radius: 2000
-    }).addTo(map);
-
-    // circleLausanne.on('click',() => {console.log("ciao")})
-    circleLausanne.on('click', function () {
-        addTrack(gpxLausanne, map);
-        map.removeLayer(circleLausanne);
-    });
-    return map;
-};
-var map = getMap();
-
-// addTrack(gpx)
-
-
 /////  MAP ANNOTATIONS PROPERTIES   /////
 
 var lineStyle = {
@@ -22743,6 +22746,7 @@ circle.bindPopup('Runner information');
 
 var setCircleInPosition = function setCircleInPosition(circle, index, elevation, latitude, longitude) {
     // console.log('circle set in position'+latitude)
+    circle.bringToFront();
     circle.setLatLng([latitude, longitude]);
     circle.class = index;
     circle._popup.setContent(elevation);
@@ -22771,7 +22775,6 @@ var addElevationPlot = function addElevationPlot(raceVector) {
     for (var i = 0; i < raceVector.length; i++) {
         dataset.push([raceVector[i].cumulativeDistance[0], raceVector[i].elevation[0], raceVector[i].coordinates[0][1], raceVector[i].coordinates[0][0], i]);
     }
-    console.log(dataset);
 
     // set the dimensions and margins of the graph
     var margin = { top: 20, right: 20, bottom: 30, left: 50 },
@@ -22913,7 +22916,7 @@ var addPoint = function addPoint(line, map, isLeftBar) {
             style: lineStyle
         }).addTo(map);
     } else {
-        _leaflet2.default.geoJSON(output, {
+        var track = _leaflet2.default.geoJSON(output, {
             style: lineStyle,
             onEachFeature: function onEachFeature(feature, layer) {
                 // layer.bindPopup('Ciao')
@@ -22932,9 +22935,11 @@ var addPoint = function addPoint(line, map, isLeftBar) {
 
                 layer.on('mouseout', function () {});
             }
-        }).addTo(map);
+        });
+        track.addTo(map);
 
         addElevationPlot(output);
+        return track;
     }
 };
 

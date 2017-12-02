@@ -70,8 +70,8 @@ div.tooltip {
 #leftBar {width:20%;
     height:100%;
     overflow-y: scroll;
-    background-color:white;
-    opacity:1;
+    background: rgba(255,255,255,0.5);
+    /* opacity:0.5; */
     color:black;
     position:absolute;
     top:00px;
@@ -80,14 +80,16 @@ div.tooltip {
     padding:0;
 }
 
-#mapLeftBar { 
+#leftSideBarContainer { 
     height: 200px; 
-    width:90%;
-    z-index:0;
-    margin-left:auto;
-    margin-right:auto;
-    margin-top:0;
-    padding:0;
+    width:100%;
+    padding-left:5%;
+    padding-right:5%;
+    padding-top:10px;
+    padding-bottom:10px;
+    opacity:1;
+    background: rgba(255,255,255,0.01);
+    /* background-color:blue; */
 }
 
 #map { height: 700px; 

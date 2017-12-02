@@ -26,6 +26,17 @@ let addTrack = (gpx,map,isLeftBar=0) => {
     })
 }
 
+let disableMapInteractions= map => {
+    map.dragging.disable();
+    map.touchZoom.disable();
+    map.doubleClickZoom.disable();
+    map.scrollWheelZoom.disable();
+    map.boxZoom.disable();
+    map.keyboard.disable();
+    if (map.tap) map.tap.disable();
+    document.getElementById('map').style.cursor='default';
+}
+
 
 let  gpxLausanne = 'gps_data/Demi-marathonLausanne.gpx' // URL to your GPX file or the GPX itself
 let  gpxLausanne10 = 'gps_data/10km-Lausanne.gpx' // URL to your GPX file or the GPX itself
@@ -37,20 +48,38 @@ let gpxList=[gpxLausanne,gpxLausanne20,gpxLausanne10,gpxZurich,gpxLuzern]
 let leftBar=d3.select('#leftBar')
 const sheet=window.document.styleSheets[0]
 
-const leftSideBarRule=' {height: 200px; width:90%; z-index:0; margin-left:auto; margin-right:auto; margin-top:10px; padding-top:10px;}'
+const leftSideBarRule=' {height: 200px; width:90%; z-index:0; opacity:1; pointer-events:none; }'
 for (let i=0;i<gpxList.length;i++) {
 
     let nameDiv='#mapLeftBar'+i.toString()
     let nameDivLeaflet='mapLeftBar'+i.toString()
     sheet.insertRule(nameDiv+leftSideBarRule)
-    leftBar.append('div')
+    let leftSideBarContainer=leftBar.append('div')
+        .attr('id','leftSideBarContainer')
+        .attr('class','leftSideBarContainer'+i.toString())
+
+    leftSideBarContainer.on('click',() => {
+    })
+    leftSideBarContainer.on('mouseover',() => {
+        leftSideBarContainer.style('background','rgba(10,10,10,0.6)')
+        leftSideBarContainer.style('cursor','pointer')
+    })
+    leftSideBarContainer.on('mouseout',() => {
+        leftSideBarContainer.style('background','rgba(255,255,255,0.01)')
+    })
+    leftSideBarContainer.append('div')
         .attr('id',nameDivLeaflet)
 
+    console.log(leftSideBarContainer)
     let leftSideBarMap=L.map(nameDivLeaflet, {
-        scrollWheelZoom:false })
+        scrollWheelZoom:false,
+        zoomControl:false,
+        attributionControl:false
+    })
     var osmOrg=L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(leftSideBarMap);
+    disableMapInteractions(leftSideBarMap)
 
     addTrack(gpxList[i],leftSideBarMap,1)
 }

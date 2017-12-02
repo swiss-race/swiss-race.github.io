@@ -4,6 +4,59 @@ import 'leaflet/dist/leaflet.css'
 import './gpx.js'
 import * as utilities from './utilities.js'
 
+/// ADD TRACK //
+let addTrack = (gpx,map,isLeftBar=0) => {
+    let track=new L.GPX(gpx,
+        {
+            async: true,
+            marker_options: {
+                startIconUrl: 'images/pin-icon-start.png',
+                endIconUrl: 'images/pin-icon-end.png',
+                shadowUrl: 'images/pin-shadow.png'
+      }})
+
+
+    track.on('loaded', function(e) {
+        map.fitBounds(e.target.getBounds());
+    })
+
+    track.on('addline', e=> {
+        let line=e.line
+        addPoint(line,map,isLeftBar)
+    })
+}
+
+
+let  gpxLausanne = 'gps_data/Demi-marathonLausanne.gpx' // URL to your GPX file or the GPX itself
+let  gpxLausanne10 = 'gps_data/10km-Lausanne.gpx' // URL to your GPX file or the GPX itself
+let  gpxLausanne20 = 'gps_data/20km-Lausanne.gpx' // URL to your GPX file or the GPX itself
+let gpxZurich = 'gps_data/Zurich-marathon.gpx' // URL to your GPX file or the GPX itself
+let gpxLuzern = 'gps_data/marathon-Luzern.gpx' // URL to your GPX file or the GPX itself
+let gpxList=[gpxLausanne,gpxLausanne20,gpxLausanne10,gpxZurich,gpxLuzern]
+
+let leftBar=d3.select('#leftBar')
+const sheet=window.document.styleSheets[0]
+
+const leftSideBarRule=' {height: 200px; width:90%; z-index:0; margin-left:auto; margin-right:auto; margin-top:10px; padding-top:10px;}'
+for (let i=0;i<gpxList.length;i++) {
+
+    let nameDiv='#mapLeftBar'+i.toString()
+    let nameDivLeaflet='mapLeftBar'+i.toString()
+    sheet.insertRule(nameDiv+leftSideBarRule)
+    leftBar.append('div')
+        .attr('id',nameDivLeaflet)
+
+    let leftSideBarMap=L.map(nameDivLeaflet, {
+        scrollWheelZoom:false })
+    var osmOrg=L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(leftSideBarMap);
+
+    addTrack(gpxList[i],leftSideBarMap,1)
+}
+
+
+
 //////    ADD MAP   ////////
 let getMap = () => {
     // Initialize the map
@@ -21,33 +74,25 @@ let getMap = () => {
 
     map.scrollWheelZoom.enable()
     map.invalidateSize()
+
+    var circleLausanne = L.circle([46.5, 6.8], {
+        color: 'red',
+        fillColor: '#f03',
+        fillOpacity: 0.5,
+        radius: 2000
+    }).addTo(map);
+
+    // circleLausanne.on('click',() => {console.log("ciao")})
+    circleLausanne.on('click',() => {
+        addTrack(gpxLausanne,map)
+        map.removeLayer(circleLausanne)
+    })
     return map
 }
 let map=getMap()
 
-var gpx = 'gps_data/Demi-marathonLausanne.gpx' // URL to your GPX file or the GPX itself
 
-let addTrack = gpx => {
-    let track=new L.GPX(gpx,
-        {
-            async: true,
-            marker_options: {
-                startIconUrl: 'images/pin-icon-start.png',
-                endIconUrl: 'images/pin-icon-end.png',
-                shadowUrl: 'images/pin-shadow.png'
-      }})
-
-
-    track.on('loaded', function(e) {
-        map.fitBounds(e.target.getBounds());
-    })
-
-    track.on('addline', e=> {
-        let line=e.line
-        addPoint(line)
-    })
-}
-addTrack(gpx)
+// addTrack(gpx)
 
 
 /////  MAP ANNOTATIONS PROPERTIES   /////
@@ -216,8 +261,8 @@ let addElevationPlot = raceVector => {
         div.attr('data-number',i)
 
         div	.html(d[0].toFixed(2)+'km' + "<br/>"  + d[1]+'m')
-            .style("left", (d3.event.pageX) + "px")
-            .style("top", (d3.event.pageY - 28) + "px");
+            .style("left", (d3.event.pageX+20) + "px")
+            .style("top", (d3.event.pageY - 48) + "px");
         const latitude=d[2]
         const longitude=d[3]
         const index=d[4]
@@ -270,35 +315,42 @@ let transformToGeoJSON = vector => {
 }
 
 
-let addPoint = (line) => {
+let addPoint = (line,map,isLeftBar) => {
     let pointArray=line._latlngs
 
     let output=transformToGeoJSON(pointArray)
 
     console.log(output)
-    L.geoJSON(output, {
-        style: lineStyle,
-        onEachFeature: (feature,layer)=> {
-            // layer.bindPopup('Ciao')
-            layer.on('mouseover', function (e) {
-                // Change elevation plot
-                const index=feature.i
-                const className='circle'+index.toString()
+    if (isLeftBar) {
+        L.geoJSON(output, {
+            style: lineStyle,
+        }).addTo(map)
+    }
+    else {
+        L.geoJSON(output, {
+            style: lineStyle,
+            onEachFeature: (feature,layer)=> {
+                // layer.bindPopup('Ciao')
+                layer.on('mouseover', function (e) {
+                    // Change elevation plot
+                    const index=feature.i
+                    const className='circle'+index.toString()
 
-                let latitude=e.latlng.lat;
-                let longitude=e.latlng.lng;
+                    let latitude=e.latlng.lat;
+                    let longitude=e.latlng.lng;
+                    
+                    let elevation=feature.elevation[0].toString()
+         
+                    setCircleInPosition(circle,index,elevation,latitude,longitude)
+
+                });
                 
-                let elevation=feature.elevation[0].toString()
-     
-                setCircleInPosition(circle,index,elevation,latitude,longitude)
+                layer.on('mouseout', () =>{})
+            }
+        }).addTo(map)
 
-            });
-            
-            layer.on('mouseout', () =>{})
-        }
-    }).addTo(map)
-
-    addElevationPlot(output)
+        addElevationPlot(output)
+    }
 
 }
 

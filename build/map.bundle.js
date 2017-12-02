@@ -22584,6 +22584,55 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+/// ADD TRACK //
+var addTrack = function addTrack(gpx, map) {
+    var isLeftBar = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+
+    var track = new _leaflet2.default.GPX(gpx, {
+        async: true,
+        marker_options: {
+            startIconUrl: 'images/pin-icon-start.png',
+            endIconUrl: 'images/pin-icon-end.png',
+            shadowUrl: 'images/pin-shadow.png'
+        } });
+
+    track.on('loaded', function (e) {
+        map.fitBounds(e.target.getBounds());
+    });
+
+    track.on('addline', function (e) {
+        var line = e.line;
+        addPoint(line, map, isLeftBar);
+    });
+};
+
+var gpxLausanne = 'gps_data/Demi-marathonLausanne.gpx'; // URL to your GPX file or the GPX itself
+var gpxLausanne10 = 'gps_data/10km-Lausanne.gpx'; // URL to your GPX file or the GPX itself
+var gpxLausanne20 = 'gps_data/20km-Lausanne.gpx'; // URL to your GPX file or the GPX itself
+var gpxZurich = 'gps_data/Zurich-marathon.gpx'; // URL to your GPX file or the GPX itself
+var gpxLuzern = 'gps_data/marathon-Luzern.gpx'; // URL to your GPX file or the GPX itself
+var gpxList = [gpxLausanne, gpxLausanne20, gpxLausanne10, gpxZurich, gpxLuzern];
+
+var leftBar = d3.select('#leftBar');
+var sheet = window.document.styleSheets[0];
+
+var leftSideBarRule = ' {height: 200px; width:90%; z-index:0; margin-left:auto; margin-right:auto; margin-top:10px; padding-top:10px;}';
+for (var i = 0; i < gpxList.length; i++) {
+
+    var nameDiv = '#mapLeftBar' + i.toString();
+    var nameDivLeaflet = 'mapLeftBar' + i.toString();
+    sheet.insertRule(nameDiv + leftSideBarRule);
+    leftBar.append('div').attr('id', nameDivLeaflet);
+
+    var leftSideBarMap = _leaflet2.default.map(nameDivLeaflet, {
+        scrollWheelZoom: false });
+    var osmOrg = _leaflet2.default.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(leftSideBarMap);
+
+    addTrack(gpxList[i], leftSideBarMap, 1);
+}
+
 //////    ADD MAP   ////////
 var getMap = function getMap() {
     // Initialize the map
@@ -22601,31 +22650,25 @@ var getMap = function getMap() {
 
     map.scrollWheelZoom.enable();
     map.invalidateSize();
+
+    var circleLausanne = _leaflet2.default.circle([46.5, 6.8], {
+        color: 'red',
+        fillColor: '#f03',
+        fillOpacity: 0.5,
+        radius: 2000
+    }).addTo(map);
+
+    // circleLausanne.on('click',() => {console.log("ciao")})
+    circleLausanne.on('click', function () {
+        addTrack(gpxLausanne, map);
+        map.removeLayer(circleLausanne);
+    });
     return map;
 };
 var map = getMap();
 
-var gpx = 'gps_data/Demi-marathonLausanne.gpx'; // URL to your GPX file or the GPX itself
+// addTrack(gpx)
 
-var addTrack = function addTrack(gpx) {
-    var track = new _leaflet2.default.GPX(gpx, {
-        async: true,
-        marker_options: {
-            startIconUrl: 'images/pin-icon-start.png',
-            endIconUrl: 'images/pin-icon-end.png',
-            shadowUrl: 'images/pin-shadow.png'
-        } });
-
-    track.on('loaded', function (e) {
-        map.fitBounds(e.target.getBounds());
-    });
-
-    track.on('addline', function (e) {
-        var line = e.line;
-        addPoint(line);
-    });
-};
-addTrack(gpx);
 
 /////  MAP ANNOTATIONS PROPERTIES   /////
 
@@ -22683,8 +22726,8 @@ var addElevationPlot = function addElevationPlot(raceVector) {
     d3.select('#backgroundPlot').style('opacity', 1);
 
     var dataset = [];
-    for (var i = 0; i < raceVector.length; i++) {
-        dataset.push([raceVector[i].cumulativeDistance[0], raceVector[i].elevation[0], raceVector[i].coordinates[0][1], raceVector[i].coordinates[0][0], i]);
+    for (var _i = 0; _i < raceVector.length; _i++) {
+        dataset.push([raceVector[_i].cumulativeDistance[0], raceVector[_i].elevation[0], raceVector[_i].coordinates[0][1], raceVector[_i].coordinates[0][0], _i]);
     }
     console.log(dataset);
 
@@ -22767,7 +22810,7 @@ var addElevationPlot = function addElevationPlot(raceVector) {
         div.transition().duration(200).style("opacity", 1);
         div.attr('data-number', i);
 
-        div.html(d[0].toFixed(2) + 'km' + "<br/>" + d[1] + 'm').style("left", d3.event.pageX + "px").style("top", d3.event.pageY - 28 + "px");
+        div.html(d[0].toFixed(2) + 'km' + "<br/>" + d[1] + 'm').style("left", d3.event.pageX + 20 + "px").style("top", d3.event.pageY - 48 + "px");
         var latitude = d[2];
         var longitude = d[3];
         var index = d[4];
@@ -22780,27 +22823,27 @@ var addElevationPlot = function addElevationPlot(raceVector) {
 var transformToGeoJSON = function transformToGeoJSON(vector) {
     var race = [];
 
-    for (var i = 0; i < vector.length - 1; i++) {
+    for (var _i2 = 0; _i2 < vector.length - 1; _i2++) {
         var coordinates = [];
         var distances = [];
         var cumulativeDistance = [];
         var elevation = [];
 
         // coordinates
-        coordinates.push([vector[i].lng, vector[i].lat]);
-        coordinates.push([vector[i + 1].lng, vector[i + 1].lat]);
+        coordinates.push([vector[_i2].lng, vector[_i2].lat]);
+        coordinates.push([vector[_i2 + 1].lng, vector[_i2 + 1].lat]);
 
         // distance
-        var distance = utilities.distanceInKmBetweenEarthCoordinates(vector[i + 1].lat, vector[i + 1].lng, vector[i].lat, vector[i].lng);
+        var distance = utilities.distanceInKmBetweenEarthCoordinates(vector[_i2 + 1].lat, vector[_i2 + 1].lng, vector[_i2].lat, vector[_i2].lng);
         distances.push(distance);
-        if (i == 0) {
+        if (_i2 == 0) {
             cumulativeDistance.push(distance);
         } else {
-            cumulativeDistance.push(distance + race[i - 1].cumulativeDistance[0]);
+            cumulativeDistance.push(distance + race[_i2 - 1].cumulativeDistance[0]);
         }
 
         // elevation
-        elevation.push(vector[i].meta.ele);
+        elevation.push(vector[_i2].meta.ele);
 
         // new element
         var raceElement = {};
@@ -22809,7 +22852,7 @@ var transformToGeoJSON = function transformToGeoJSON(vector) {
         raceElement.distances = distances;
         raceElement.cumulativeDistance = cumulativeDistance;
         raceElement.elevation = elevation;
-        raceElement.i = i;
+        raceElement.i = _i2;
         race.push(raceElement);
     }
     console.log(race);
@@ -22817,34 +22860,40 @@ var transformToGeoJSON = function transformToGeoJSON(vector) {
     return race;
 };
 
-var addPoint = function addPoint(line) {
+var addPoint = function addPoint(line, map, isLeftBar) {
     var pointArray = line._latlngs;
 
     var output = transformToGeoJSON(pointArray);
 
     console.log(output);
-    _leaflet2.default.geoJSON(output, {
-        style: lineStyle,
-        onEachFeature: function onEachFeature(feature, layer) {
-            // layer.bindPopup('Ciao')
-            layer.on('mouseover', function (e) {
-                // Change elevation plot
-                var index = feature.i;
-                var className = 'circle' + index.toString();
+    if (isLeftBar) {
+        _leaflet2.default.geoJSON(output, {
+            style: lineStyle
+        }).addTo(map);
+    } else {
+        _leaflet2.default.geoJSON(output, {
+            style: lineStyle,
+            onEachFeature: function onEachFeature(feature, layer) {
+                // layer.bindPopup('Ciao')
+                layer.on('mouseover', function (e) {
+                    // Change elevation plot
+                    var index = feature.i;
+                    var className = 'circle' + index.toString();
 
-                var latitude = e.latlng.lat;
-                var longitude = e.latlng.lng;
+                    var latitude = e.latlng.lat;
+                    var longitude = e.latlng.lng;
 
-                var elevation = feature.elevation[0].toString();
+                    var elevation = feature.elevation[0].toString();
 
-                setCircleInPosition(circle, index, elevation, latitude, longitude);
-            });
+                    setCircleInPosition(circle, index, elevation, latitude, longitude);
+                });
 
-            layer.on('mouseout', function () {});
-        }
-    }).addTo(map);
+                layer.on('mouseout', function () {});
+            }
+        }).addTo(map);
 
-    addElevationPlot(output);
+        addElevationPlot(output);
+    }
 };
 
 /***/ }),

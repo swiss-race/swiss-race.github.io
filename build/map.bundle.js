@@ -22634,15 +22634,23 @@ var _loop = function _loop(i) {
     var nameDiv = '#mapLeftBar' + i.toString();
     var nameDivLeaflet = 'mapLeftBar' + i.toString();
     sheet.insertRule(nameDiv + leftSideBarRule);
-    var leftSideBarContainer = leftBar.append('div').attr('id', 'leftSideBarContainer').attr('class', 'leftSideBarContainer' + i.toString());
+    var leftSideBarContainer = leftBar.append('div').attr('id', 'leftSideBarContainer').attr('data-colorchange', 1);
 
-    leftSideBarContainer.on('click', function () {});
+    leftSideBarContainer.on('click', function () {
+        d3.selectAll('#leftSideBarContainer').attr('data-colorchange', 1).style('background', 'rgba(255,255,255,0.01');
+        leftSideBarContainer.style('background', 'rgba(0,0,255,0.6)');
+        leftSideBarContainer.attr('data-colorchange', 0);
+    });
     leftSideBarContainer.on('mouseover', function () {
-        leftSideBarContainer.style('background', 'rgba(10,10,10,0.6)');
+        if (leftSideBarContainer.attr('data-colorchange') == 1) {
+            leftSideBarContainer.style('background', 'rgba(10,10,10,0.6)');
+        }
         leftSideBarContainer.style('cursor', 'pointer');
     });
     leftSideBarContainer.on('mouseout', function () {
-        leftSideBarContainer.style('background', 'rgba(255,255,255,0.01)');
+        if (leftSideBarContainer.attr('data-colorchange') == 1) {
+            leftSideBarContainer.style('background', 'rgba(255,255,255,0.01)');
+        }
     });
     leftSideBarContainer.append('div').attr('id', nameDivLeaflet);
 

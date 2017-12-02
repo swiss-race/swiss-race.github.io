@@ -22591,6 +22591,7 @@ var Track = function Track(track) {
     _classCallCheck(this, Track);
 
     this.track = track;
+    this.gpsTrack = 0; // It will be initialised in track.on('loaded')
 };
 
 var addTrack = function addTrack(gpx, map) {
@@ -22676,6 +22677,8 @@ var _loop = function _loop(i) {
         if (currentTrack) {
             map.removeLayer(currentTrack.gpsTrack);
         }
+        d3.select('#elevationPlotSVG').remove();
+        d3.select('#backgroundPlot').style('opacity', 0);
         d3.selectAll('#leftSideBarContainer').attr('data-colorchange', 1).style('background', 'rgba(255,255,255,0.01');
         leftSideBarContainer.style('background', 'rgba(0,0,255,0.6)');
         leftSideBarContainer.attr('data-colorchange', 0);
@@ -22814,7 +22817,7 @@ var addElevationPlot = function addElevationPlot(raceVector) {
     // append the svg obgect to the body of the page
     // appends a 'group' element to 'svg'
     // moves the 'group' element to the top left margin
-    var svg = d3.select("#plot").append("svg").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    var svg = d3.select("#plot").append("svg").attr('id', 'elevationPlotSVG').attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     // 3. Call the x axis in a group tag
     svg.append("g").attr("class", "x axis").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(xScale)); // Create an axis component with d3.axisBottom

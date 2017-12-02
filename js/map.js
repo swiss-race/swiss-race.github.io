@@ -8,6 +8,7 @@ import * as utilities from './utilities.js'
 class Track {
     constructor(track) {
         this.track=track
+        this.gpsTrack=0 // It will be initialised in track.on('loaded')
     }
 }
 
@@ -96,6 +97,8 @@ for (let i=0;i<gpxList.length;i++) {
         if (currentTrack) {
             map.removeLayer(currentTrack.gpsTrack)
         }
+        d3.select('#elevationPlotSVG').remove()
+        d3.select('#backgroundPlot').style('opacity',0)
         d3.selectAll('#leftSideBarContainer')
             .attr('data-colorchange',1)
             .style('background','rgba(255,255,255,0.01')
@@ -231,7 +234,8 @@ let addElevationPlot = raceVector => {
     // append the svg obgect to the body of the page
     // appends a 'group' element to 'svg'
     // moves the 'group' element to the top left margin
-    var svg = d3.select("#plot").append("svg")
+    let svg = d3.select("#plot").append("svg")
+        .attr('id','elevationPlotSVG')
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
       .append("g")

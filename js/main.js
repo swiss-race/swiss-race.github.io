@@ -41,7 +41,7 @@ for (let i=0;i<gpxList.length;i++) {
 
     leftSideBarContainer.on('click',() => {
         if (currentTrack) {
-            map.removeLayer(currentTrack.gpsTrack)
+            map.removeLayer(currentTrack)
         }
         d3.select('#elevationPlotSVG').remove()
         d3.select('#backgroundPlot').style('opacity',0)
@@ -55,7 +55,7 @@ for (let i=0;i<gpxList.length;i++) {
             trackUtils.addTrack(gpxList[i],map,resolve)
         })
         mainMapPromise.then((line) => {
-            addPoint(line,map,0)
+            currentTrack=addPoint(line,map,0)
         })
     })
 
@@ -86,7 +86,6 @@ for (let i=0;i<gpxList.length;i++) {
         trackUtils.addTrack(gpxList[i],leftSideBarMap,resolve)
     })
     sideBarPromise.then((line) => {
-        console.log(line)
         addPoint(line,leftSideBarMap,1)
     })
 }

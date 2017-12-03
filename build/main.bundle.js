@@ -22624,7 +22624,7 @@ var _loop = function _loop(i) {
 
     leftSideBarContainer.on('click', function () {
         if (currentTrack) {
-            map.removeLayer(currentTrack.gpsTrack);
+            map.removeLayer(currentTrack);
         }
         d3.select('#elevationPlotSVG').remove();
         d3.select('#backgroundPlot').style('opacity', 0);
@@ -22636,9 +22636,10 @@ var _loop = function _loop(i) {
             trackUtils.addTrack(gpxList[i], map, resolve);
         });
         mainMapPromise.then(function (line) {
-            addPoint(line, map, 0);
+            currentTrack = addPoint(line, map, 0);
         });
     });
+
     leftSideBarContainer.on('mouseover', function () {
         if (leftSideBarContainer.attr('data-colorchange') == 1) {
             leftSideBarContainer.style('background', 'rgba(10,10,10,0.6)');
@@ -22664,7 +22665,6 @@ var _loop = function _loop(i) {
         trackUtils.addTrack(gpxList[i], leftSideBarMap, resolve);
     });
     sideBarPromise.then(function (line) {
-        console.log(line);
         addPoint(line, leftSideBarMap, 1);
     });
 };
@@ -37728,16 +37728,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
 /// ADD TRACK //
-var Track = function Track(track) {
-    _classCallCheck(this, Track);
-
-    this.track = track;
-    this.gpsTrack = 0; // It will be initialised in track.on('loaded')
-};
-
 var addTrack = function addTrack(gpx, map, resolve) {
     var track = new L.GPX(gpx, {
         async: true,

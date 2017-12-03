@@ -1,12 +1,5 @@
 
 /// ADD TRACK //
-class Track {
-    constructor(track) {
-        this.track=track
-        this.gpsTrack=0 // It will be initialised in track.on('loaded')
-    }
-}
-
 let addTrack = (gpx,map,resolve) => {
     let track=new L.GPX(gpx,
         {

@@ -22576,7 +22576,15 @@ __webpack_require__(464);
 
 __webpack_require__(472);
 
-var _utilities = __webpack_require__(474);
+var _map = __webpack_require__(474);
+
+var mapUtils = _interopRequireWildcard(_map);
+
+var _track = __webpack_require__(475);
+
+var trackUtils = _interopRequireWildcard(_track);
+
+var _utilities = __webpack_require__(476);
 
 var utilities = _interopRequireWildcard(_utilities);
 
@@ -22584,71 +22592,15 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/// ADD TRACK //
-var Track = function Track(track) {
-    _classCallCheck(this, Track);
-
-    this.track = track;
-    this.gpsTrack = 0; // It will be initialised in track.on('loaded')
-};
-
-var addTrack = function addTrack(gpx, map) {
-    var isLeftBar = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-
-    var track = new Track(new _leaflet2.default.GPX(gpx, {
-        async: true,
-        marker_options: {
-            startIconUrl: 'images/pin-icon-start.png',
-            endIconUrl: 'images/pin-icon-end.png',
-            shadowUrl: 'images/pin-shadow.png'
-        } }));
-
-    track.track.on('loaded', function (e) {
-        map.fitBounds(e.target.getBounds());
-    });
-
-    track.track.on('addline', function (e) {
-        var line = e.line;
-        track.gpsTrack = addPoint(line, map, isLeftBar);
-    });
-    return track;
-};
-
-var disableMapInteractions = function disableMapInteractions(map) {
-    map.dragging.disable();
-    map.touchZoom.disable();
-    map.doubleClickZoom.disable();
-    map.scrollWheelZoom.disable();
-    map.boxZoom.disable();
-    map.keyboard.disable();
-    if (map.tap) map.tap.disable();
-    document.getElementById('map').style.cursor = 'default';
-};
-
 //////    ADD MAP   ////////
-var getMap = function getMap() {
-    // Initialize the map
-    var map = _leaflet2.default.map('map', {
-        scrollWheelZoom: false
-    });
+var map = mapUtils.getMap('map', { scrollWheelZoom: true });
 
-    map.setView([46.905, 7.93], 8);
-
-    // Adding all the possible layers
-    var osmOrg = _leaflet2.default.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-
-    map.scrollWheelZoom.enable();
-    map.invalidateSize();
-
-    return map;
-};
-var map = getMap();
-
-// addTrack(gpx)
+var promise = new Promise(function (resolve, reject) {
+    resolve('ciao');
+});
+promise.then(function (message) {
+    console.log(message);
+});
 
 var gpxLausanne = 'gps_data/Demi-marathonLausanne.gpx'; // URL to your GPX file or the GPX itself
 var gpxLausanne10 = 'gps_data/10km-Lausanne.gpx'; // URL to your GPX file or the GPX itself
@@ -22679,7 +22631,10 @@ var _loop = function _loop(i) {
         d3.selectAll('#leftSideBarContainer').attr('data-colorchange', 1).style('background', 'rgba(255,255,255,0.01');
         leftSideBarContainer.style('background', 'rgba(0,0,255,0.6)');
         leftSideBarContainer.attr('data-colorchange', 0);
-        currentTrack = addTrack(gpxList[i], map);
+
+        var trackPromise = new Promise(function (resolve, reject) {});
+
+        currentTrack = trackUtils.addTrack(gpxList[i], map);
     });
     leftSideBarContainer.on('mouseover', function () {
         if (leftSideBarContainer.attr('data-colorchange') == 1) {
@@ -22694,24 +22649,18 @@ var _loop = function _loop(i) {
     });
     leftSideBarContainer.append('div').attr('id', nameDivLeaflet);
 
-    console.log(leftSideBarContainer);
-    var leftSideBarMap = _leaflet2.default.map(nameDivLeaflet, {
+    var sideBarParams = {
         scrollWheelZoom: false,
         zoomControl: false,
         attributionControl: false
-    });
-    osmOrg = _leaflet2.default.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(leftSideBarMap);
+    };
+    var leftSideBarMap = mapUtils.getMap(nameDivLeaflet, sideBarParams);
+    mapUtils.disableMapInteractions(leftSideBarMap);
 
-    disableMapInteractions(leftSideBarMap);
-
-    addTrack(gpxList[i], leftSideBarMap, 1);
+    trackUtils.addTrack(gpxList[i], leftSideBarMap, 1);
 };
 
 for (var i = 0; i < gpxList.length; i++) {
-    var osmOrg;
-
     _loop(i);
 }
 
@@ -22919,7 +22868,6 @@ var addPoint = function addPoint(line, map, isLeftBar) {
         var track = _leaflet2.default.geoJSON(output, {
             style: lineStyle,
             onEachFeature: function onEachFeature(feature, layer) {
-                // layer.bindPopup('Ciao')
                 layer.on('mouseover', function (e) {
                     // Change elevation plot
                     var index = feature.i;
@@ -37727,6 +37675,96 @@ module.exports = function(module) {
 
 
 Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var disableMapInteractions = function disableMapInteractions(map) {
+    map.dragging.disable();
+    map.touchZoom.disable();
+    map.doubleClickZoom.disable();
+    map.scrollWheelZoom.disable();
+    map.boxZoom.disable();
+    map.keyboard.disable();
+    if (map.tap) map.tap.disable();
+    document.getElementById('map').style.cursor = 'default';
+};
+
+var getMap = function getMap() {
+    var divName = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'map';
+    var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    // Initialize the map
+    var map = L.map(divName, params);
+
+    map.setView([46.905, 7.93], 8);
+
+    // Adding all the possible layers
+    var osmOrg = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    map.invalidateSize();
+
+    return map;
+};
+
+exports.disableMapInteractions = disableMapInteractions;
+exports.getMap = getMap;
+
+/***/ }),
+/* 475 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/// ADD TRACK //
+var Track = function Track(track) {
+    _classCallCheck(this, Track);
+
+    this.track = track;
+    this.gpsTrack = 0; // It will be initialised in track.on('loaded')
+};
+
+var addTrack = function addTrack(gpx, map) {
+    var isLeftBar = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+
+    var track = new Track(new L.GPX(gpx, {
+        async: true,
+        marker_options: {
+            startIconUrl: 'images/pin-icon-start.png',
+            endIconUrl: 'images/pin-icon-end.png',
+            shadowUrl: 'images/pin-shadow.png'
+        } }));
+
+    track.track.on('loaded', function (e) {
+        map.fitBounds(e.target.getBounds());
+    });
+
+    track.track.on('addline', function (e) {
+        var line = e.line;
+        track.gpsTrack = line;
+        track.gpsTrack = addPoint(line, map, isLeftBar);
+    });
+    return track;
+};
+
+exports.addTrack = addTrack;
+
+/***/ }),
+/* 476 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.distanceInKmBetweenEarthCoordinates = distanceInKmBetweenEarthCoordinates;
@@ -37751,4 +37789,4 @@ function distanceInKmBetweenEarthCoordinates(lat1, lon1, lat2, lon2) {
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=map.bundle.js.map
+//# sourceMappingURL=main.bundle.js.map

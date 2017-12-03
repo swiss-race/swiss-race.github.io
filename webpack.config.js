@@ -4,7 +4,7 @@ var webpack = require('webpack');
 
  module.exports = {
      entry: {
-         map:'./js/map.js',
+         main:'./js/main.js',
          // leaflet:'./node_modules/leaflet/dist/leaflet.css'
      },
      // resolve: {

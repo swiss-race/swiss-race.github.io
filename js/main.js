@@ -51,12 +51,14 @@ for (let i=0;i<gpxList.length;i++) {
         leftSideBarContainer.style('background','rgba(0,0,255,0.6)')
         leftSideBarContainer.attr('data-colorchange',0)
         
-        let trackPromise=new Promise((resolve,reject) => {
-            
+        let mainMapPromise=new Promise((resolve,reject) => {
+            trackUtils.addTrack(gpxList[i],map,resolve)
         })
-
-        currentTrack=trackUtils.addTrack(gpxList[i],map)
+        mainMapPromise.then((line) => {
+            addPoint(line,map,0)
+        })
     })
+
     leftSideBarContainer.on('mouseover',() => {
         if (leftSideBarContainer.attr('data-colorchange')==1) {
             leftSideBarContainer.style('background','rgba(10,10,10,0.6)')

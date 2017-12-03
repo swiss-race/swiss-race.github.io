@@ -22632,9 +22632,12 @@ var _loop = function _loop(i) {
         leftSideBarContainer.style('background', 'rgba(0,0,255,0.6)');
         leftSideBarContainer.attr('data-colorchange', 0);
 
-        var trackPromise = new Promise(function (resolve, reject) {});
-
-        currentTrack = trackUtils.addTrack(gpxList[i], map);
+        var mainMapPromise = new Promise(function (resolve, reject) {
+            trackUtils.addTrack(gpxList[i], map, resolve);
+        });
+        mainMapPromise.then(function (line) {
+            addPoint(line, map, 0);
+        });
     });
     leftSideBarContainer.on('mouseover', function () {
         if (leftSideBarContainer.attr('data-colorchange') == 1) {

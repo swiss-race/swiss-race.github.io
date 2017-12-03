@@ -22657,7 +22657,13 @@ var _loop = function _loop(i) {
     var leftSideBarMap = mapUtils.getMap(nameDivLeaflet, sideBarParams);
     mapUtils.disableMapInteractions(leftSideBarMap);
 
-    trackUtils.addTrack(gpxList[i], leftSideBarMap, 1);
+    var sideBarPromise = new Promise(function (resolve, reject) {
+        trackUtils.addTrack(gpxList[i], leftSideBarMap, resolve);
+    });
+    sideBarPromise.then(function (line) {
+        console.log(line);
+        addPoint(line, leftSideBarMap, 1);
+    });
 };
 
 for (var i = 0; i < gpxList.length; i++) {
@@ -22694,7 +22700,6 @@ circle.on('mouseout', function () {
 circle.bindPopup('Runner information');
 
 var setCircleInPosition = function setCircleInPosition(circle, index, elevation, latitude, longitude) {
-    // console.log('circle set in position'+latitude)
     circle.bringToFront();
     circle.setLatLng([latitude, longitude]);
     circle.class = index;
@@ -22849,7 +22854,6 @@ var transformToGeoJSON = function transformToGeoJSON(vector) {
         raceElement.i = i;
         race.push(raceElement);
     }
-    console.log(race);
 
     return race;
 };
@@ -22859,7 +22863,6 @@ var addPoint = function addPoint(line, map, isLeftBar) {
 
     var output = transformToGeoJSON(pointArray);
 
-    console.log(output);
     if (isLeftBar) {
         _leaflet2.default.geoJSON(output, {
             style: lineStyle
@@ -37732,27 +37735,24 @@ var Track = function Track(track) {
     this.gpsTrack = 0; // It will be initialised in track.on('loaded')
 };
 
-var addTrack = function addTrack(gpx, map) {
-    var isLeftBar = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-
-    var track = new Track(new L.GPX(gpx, {
+var addTrack = function addTrack(gpx, map, resolve) {
+    var track = new L.GPX(gpx, {
         async: true,
         marker_options: {
             startIconUrl: 'images/pin-icon-start.png',
             endIconUrl: 'images/pin-icon-end.png',
             shadowUrl: 'images/pin-shadow.png'
-        } }));
+        } });
 
-    track.track.on('loaded', function (e) {
+    track.on('loaded', function (e) {
         map.fitBounds(e.target.getBounds());
     });
 
-    track.track.on('addline', function (e) {
+    track.on('addline', function (e) {
         var line = e.line;
-        track.gpsTrack = line;
-        track.gpsTrack = addPoint(line, map, isLeftBar);
+        resolve(line);
+        // track.gpsTrack=addPoint(line,map,isLeftBar)
     });
-    return track;
 };
 
 exports.addTrack = addTrack;

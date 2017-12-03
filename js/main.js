@@ -80,7 +80,13 @@ for (let i=0;i<gpxList.length;i++) {
     let leftSideBarMap=mapUtils.getMap(nameDivLeaflet,sideBarParams)
     mapUtils.disableMapInteractions(leftSideBarMap)
 
-    trackUtils.addTrack(gpxList[i],leftSideBarMap,1)
+    let sideBarPromise=new Promise((resolve,reject) => {
+        trackUtils.addTrack(gpxList[i],leftSideBarMap,resolve)
+    })
+    sideBarPromise.then((line) => {
+        console.log(line)
+        addPoint(line,leftSideBarMap,1)
+    })
 }
 
 
@@ -121,7 +127,6 @@ circle.on('mouseout', ()=> {
 circle.bindPopup('Runner information');
 
 let setCircleInPosition = (circle,index,elevation,latitude,longitude) => {
-    // console.log('circle set in position'+latitude)
     circle.bringToFront()
     circle.setLatLng([latitude,longitude])
     circle.class=index
@@ -302,7 +307,6 @@ let transformToGeoJSON = vector => {
         raceElement.i=i
         race.push(raceElement)
     }
-    console.log(race)
 
     return race
 }
@@ -313,7 +317,6 @@ let addPoint = (line,map,isLeftBar) => {
 
     let output=transformToGeoJSON(pointArray)
 
-    console.log(output)
     if (isLeftBar) {
         L.geoJSON(output, {
             style: lineStyle,

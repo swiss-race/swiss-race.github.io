@@ -7,19 +7,15 @@ import * as trackUtils from './track.js'
 import * as utilities from './utilities.js'
 import * as elevationUtils from './elevation.js'
 import * as annotations from './annotations.js'
+import * as gpx_files from './gpx_files.js'
 
 
-//////    ADD MAP   ////////
+//////    ADD MAIN MAP   ////////
 let map=mapUtils.getMap('map',{scrollWheelZoom:true})
 
 
-let  gpxLausanne = 'gps_data/Demi-marathonLausanne.gpx' // URL to your GPX file or the GPX itself
-let  gpxLausanne10 = 'gps_data/10km-Lausanne.gpx' // URL to your GPX file or the GPX itself
-let  gpxLausanne20 = 'gps_data/20km-Lausanne.gpx' // URL to your GPX file or the GPX itself
-let gpxZurich = 'gps_data/Zurich-marathon.gpx' // URL to your GPX file or the GPX itself
-let gpxLuzern = 'gps_data/marathon-Luzern.gpx' // URL to your GPX file or the GPX itself
-let gpxList=[gpxLausanne,gpxLausanne20,gpxLausanne10,gpxZurich,gpxLuzern]
-
+////// ADD SIDE BAR //////
+let gpxList=gpx_files.gpxList
 let leftBar=d3.select('#leftBar')
 const sheet=window.document.styleSheets[0]
 
@@ -27,12 +23,20 @@ let currentTrack=0
 const leftSideBarRule=' {height: 200px; width:90%; z-index:0; opacity:1; pointer-events:none; }'
 for (let i=0;i<gpxList.length;i++) {
 
+    // Modify css for a new map
     let nameDiv='#mapLeftBar'+i.toString()
     let nameDivLeaflet='mapLeftBar'+i.toString()
     sheet.insertRule(nameDiv+leftSideBarRule)
+
+
+    // Add container
     let leftSideBarContainer=leftBar.append('div')
         .attr('id','leftSideBarContainer')
         .attr('data-colorchange',1)
+
+    let infoRace=leftSideBarContainer.append('div')
+        .attr('class','leftSideBarInfo')
+    infoRace.html('')
 
     leftSideBarContainer.on('click',() => {
         if (currentTrack) {
@@ -45,29 +49,39 @@ for (let i=0;i<gpxList.length;i++) {
             .style('background','rgba(255,255,255,0.01')
         leftSideBarContainer.style('background','rgba(0,0,255,0.6)')
         leftSideBarContainer.attr('data-colorchange',0)
+        d3.selectAll('.leftSideBarInfo').style('color','black')
+        infoRace.style('color','white')
         
         let mainMapPromise=new Promise((resolve,reject) => {
             trackUtils.addTrack(gpxList[i],map,resolve)
         })
-        mainMapPromise.then((line) => {
-            currentTrack=addPoint(line,map,0)
+        mainMapPromise.then((object) => {
+            let line=object[1]
+            currentTrack=mapUtils.addPoint(line,map,0)
         })
     })
-
     leftSideBarContainer.on('mouseover',() => {
         if (leftSideBarContainer.attr('data-colorchange')==1) {
             leftSideBarContainer.style('background','rgba(10,10,10,0.6)')
         }
         leftSideBarContainer.style('cursor','pointer')
+        infoRace.style('color','white')
     })
     leftSideBarContainer.on('mouseout',() => {
         if (leftSideBarContainer.attr('data-colorchange')==1) {
             leftSideBarContainer.style('background','rgba(255,255,255,0.01)')
+            infoRace.style('color','black')
+        }
+        else {
+            infoRace.style('color','white')
         }
     })
+
+
+    // Add map in container
+
     leftSideBarContainer.append('div')
         .attr('id',nameDivLeaflet)
-
 
     let sideBarParams={
         scrollWheelZoom:false,
@@ -80,57 +94,16 @@ for (let i=0;i<gpxList.length;i++) {
     let sideBarPromise=new Promise((resolve,reject) => {
         trackUtils.addTrack(gpxList[i],leftSideBarMap,resolve)
     })
-    sideBarPromise.then((line) => {
-        addPoint(line,leftSideBarMap,1)
+    sideBarPromise.then((object) => {
+        let track=object[0]
+        const trackName=track._info.name
+        infoRace.html(trackName)
+
+        let line=object[1]
+        mapUtils.addPoint(object[1],leftSideBarMap,1)
     })
 }
 
-
-
-
-
-
-////  DISPLAY TRACK   ////
-
-
-let addPoint = (line,map,isLeftBar) => {
-    let pointArray=line._latlngs
-
-    let output=utilities.transformToGeoJSON(pointArray)
-
-    if (isLeftBar) {
-        L.geoJSON(output, {
-            style: annotations.lineStyle,
-        }).addTo(map)
-    }
-    else {
-        let track=L.geoJSON(output, {
-            style: annotations.lineStyle,
-            onEachFeature: (feature,layer)=> {
-                layer.on('mouseover', function (e) {
-                    // Change elevation plot
-                    const index=feature.i
-                    const className='circle'+index.toString()
-
-                    let latitude=e.latlng.lat;
-                    let longitude=e.latlng.lng;
-                    
-                    let elevation=feature.elevation[0].toString()
-         
-                    annotations.setCircleInPosition(annotations.circle,index,elevation,latitude,longitude,map)
-
-                });
-                
-                layer.on('mouseout', () =>{})
-            }
-        })
-        track.addTo(map)
-
-        elevationUtils.addElevationPlot(output,annotations.circle)
-        return track
-    }
-
-}
 
 
 

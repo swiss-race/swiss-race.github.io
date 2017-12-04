@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "d3": "^4.11.0",
+    "file-system": "^2.2.2",
     "leaflet": "^1.0.3",
     "leaflet-plugins": "^3.0.1",
     "leaflet.elevation": "0.0.3"

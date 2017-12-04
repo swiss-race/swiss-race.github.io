@@ -17,7 +17,7 @@ let addTrack = (gpx,map,resolve) => {
 
     track.on('addline', e=> {
         let line=e.line
-        resolve(line)
+        resolve([track,line])
         // track.gpsTrack=addPoint(line,map,isLeftBar)
     })
 }

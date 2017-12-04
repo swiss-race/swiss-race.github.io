@@ -8,8 +8,33 @@ import * as utilities from './utilities.js'
 import * as elevationUtils from './elevation.js'
 import * as annotations from './annotations.js'
 import * as gpx_files from './gpx_files.js'
+// import $ from 'jquery'
+// window.$ = $;
+// window.jQuery = jQuery;
+
+// console.log(window.jQuery)
+// console.log($)
 
 
+// var top1 = $('#header').offset()
+let lastPosition=0
+window.onscroll = () => {
+    let position=window.pageYOffset
+    if(position>40 && lastPosition<position){
+        d3.select('#header')
+            .style('background','rgba(255,255,255,0.6)')
+            .style('color','red')
+        lastPosition=position
+    
+    } else {
+        d3.select('#header')
+            .style('background','rgba(255,0,0,0.8)')
+            // .style('background-color','red')
+            .style('color','white')
+        lastPosition=position
+    }
+        
+}
 //////    ADD MAIN MAP   ////////
 let map=mapUtils.getMap('map',{scrollWheelZoom:true})
 
@@ -47,13 +72,14 @@ for (let i=0;i<gpxList.length;i++) {
         d3.selectAll('#leftSideBarContainer')
             .attr('data-colorchange',1)
             .style('background','rgba(255,255,255,0.01')
-        leftSideBarContainer.style('background','rgba(0,0,255,0.6)')
+        // leftSideBarContainer.style('background','rgba(0,0,255,0.6)')
+        leftSideBarContainer.style('background','rgba(255,0,0,1)')
         leftSideBarContainer.attr('data-colorchange',0)
-        d3.selectAll('.leftSideBarInfo').style('color','black')
+        d3.selectAll('.leftSideBarInfo').style('color','red')
         infoRace.style('color','white')
         
         let mainMapPromise=new Promise((resolve,reject) => {
-            trackUtils.addTrack(gpxList[i],map,[300,0],resolve)
+            trackUtils.addTrack(gpxList[i],map,[400,0],resolve)
         })
         mainMapPromise.then((object) => {
             let line=object[1]
@@ -62,7 +88,7 @@ for (let i=0;i<gpxList.length;i++) {
     })
     leftSideBarContainer.on('mouseover',() => {
         if (leftSideBarContainer.attr('data-colorchange')==1) {
-            leftSideBarContainer.style('background','rgba(10,10,10,0.6)')
+            leftSideBarContainer.style('background','rgba(255,0,0,0.8)')
         }
         leftSideBarContainer.style('cursor','pointer')
         infoRace.style('color','white')
@@ -70,7 +96,7 @@ for (let i=0;i<gpxList.length;i++) {
     leftSideBarContainer.on('mouseout',() => {
         if (leftSideBarContainer.attr('data-colorchange')==1) {
             leftSideBarContainer.style('background','rgba(255,255,255,0.01)')
-            infoRace.style('color','black')
+            infoRace.style('color','red')
         }
         else {
             infoRace.style('color','white')

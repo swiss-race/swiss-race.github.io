@@ -23346,6 +23346,28 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+// import $ from 'jquery'
+// window.$ = $;
+// window.jQuery = jQuery;
+
+// console.log(window.jQuery)
+// console.log($)
+
+
+// var top1 = $('#header').offset()
+var lastPosition = 0;
+window.onscroll = function () {
+    var position = window.pageYOffset;
+    if (position > 40 && lastPosition < position) {
+        d3.select('#header').style('background', 'rgba(255,255,255,0.6)').style('color', 'red');
+        lastPosition = position;
+    } else {
+        d3.select('#header').style('background', 'rgba(255,0,0,0.8)')
+        // .style('background-color','red')
+        .style('color', 'white');
+        lastPosition = position;
+    }
+};
 //////    ADD MAIN MAP   ////////
 var map = mapUtils.getMap('map', { scrollWheelZoom: true });
 
@@ -23377,13 +23399,14 @@ var _loop = function _loop(i) {
         d3.select('#elevationPlotSVG').remove();
         d3.select('#backgroundPlot').style('opacity', 0);
         d3.selectAll('#leftSideBarContainer').attr('data-colorchange', 1).style('background', 'rgba(255,255,255,0.01');
-        leftSideBarContainer.style('background', 'rgba(0,0,255,0.6)');
+        // leftSideBarContainer.style('background','rgba(0,0,255,0.6)')
+        leftSideBarContainer.style('background', 'rgba(255,0,0,1)');
         leftSideBarContainer.attr('data-colorchange', 0);
-        d3.selectAll('.leftSideBarInfo').style('color', 'black');
+        d3.selectAll('.leftSideBarInfo').style('color', 'red');
         infoRace.style('color', 'white');
 
         var mainMapPromise = new Promise(function (resolve, reject) {
-            trackUtils.addTrack(gpxList[i], map, [300, 0], resolve);
+            trackUtils.addTrack(gpxList[i], map, [400, 0], resolve);
         });
         mainMapPromise.then(function (object) {
             var line = object[1];
@@ -23392,7 +23415,7 @@ var _loop = function _loop(i) {
     });
     leftSideBarContainer.on('mouseover', function () {
         if (leftSideBarContainer.attr('data-colorchange') == 1) {
-            leftSideBarContainer.style('background', 'rgba(10,10,10,0.6)');
+            leftSideBarContainer.style('background', 'rgba(255,0,0,0.8)');
         }
         leftSideBarContainer.style('cursor', 'pointer');
         infoRace.style('color', 'white');
@@ -23400,7 +23423,7 @@ var _loop = function _loop(i) {
     leftSideBarContainer.on('mouseout', function () {
         if (leftSideBarContainer.attr('data-colorchange') == 1) {
             leftSideBarContainer.style('background', 'rgba(255,255,255,0.01)');
-            infoRace.style('color', 'black');
+            infoRace.style('color', 'red');
         } else {
             infoRace.style('color', 'white');
         }

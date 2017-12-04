@@ -4,13 +4,15 @@
     font-size:24px;
     line-height:40px;
     /* overflow: hidden; */
-    background-color: black;
+    /* background-color: red; */
+    background:rgba(255,0,0,0.8);
     position: fixed; 
     top: 00px; /* Position the navbar at the top of the page */
     margin:auto;
     /* padding:0.5em; */
     color:white;
     z-index:2;
+    transition: 0.5s;
 }
 
 #headerLeft {
@@ -71,16 +73,16 @@ div.tooltip {
 }
 
 #leftBar {width:20%;
-    height:100%;
+    height:95%;
     overflow-y: scroll;
-    background: rgba(255,255,255,0.5);
+    background: rgba(255,255,255,0.6);
     /* opacity:0.5; */
     color:black;
     position:fixed;
     top:00px;
-    margin-left:00px;
+    margin-left:70px;
     margin-top:40px;
-    padding:0;
+    padding-bottom:40px;
 }
 
 #leftSideBarContainer { 
@@ -91,14 +93,14 @@ div.tooltip {
     padding-top:10px;
     padding-bottom:10px;
     opacity:1;
-    color:black;
+    color:red;
     background: rgba(255,255,255,0.01);
     /* background-color:blue; */
 }
 
 .leftSideBarInfo {
     width:90%;
-    color:black;
+    /* background:rgba(255,0,0,0.6); */
     font-size:25px;
     text-align:center;
     margin:0;

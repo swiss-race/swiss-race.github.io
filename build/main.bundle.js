@@ -23400,7 +23400,7 @@ var _loop = function _loop(i) {
         d3.select('#backgroundPlot').style('opacity', 0);
         d3.selectAll('#leftSideBarContainer').attr('data-colorchange', 1).style('background', 'rgba(255,255,255,0.01');
         // leftSideBarContainer.style('background','rgba(0,0,255,0.6)')
-        leftSideBarContainer.style('background', 'rgba(255,0,0,1)');
+        leftSideBarContainer.style('background', 'rgba(255,0,0,0.8)');
         leftSideBarContainer.attr('data-colorchange', 0);
         d3.selectAll('.leftSideBarInfo').style('color', 'red');
         infoRace.style('color', 'white');

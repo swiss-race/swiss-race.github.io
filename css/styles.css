@@ -88,12 +88,13 @@ div.tooltip {
     padding-top:10px;
     padding-bottom:10px;
     opacity:1;
-    color:black
+    color:black;
     background: rgba(255,255,255,0.01);
     /* background-color:blue; */
 }
 
 .leftSideBarInfo {
+    width:90%;
     color:black;
     font-size:25px;
     text-align:center;

@@ -53,7 +53,7 @@ for (let i=0;i<gpxList.length;i++) {
         infoRace.style('color','white')
         
         let mainMapPromise=new Promise((resolve,reject) => {
-            trackUtils.addTrack(gpxList[i],map,resolve)
+            trackUtils.addTrack(gpxList[i],map,[300,0],resolve)
         })
         mainMapPromise.then((object) => {
             let line=object[1]
@@ -92,7 +92,7 @@ for (let i=0;i<gpxList.length;i++) {
     mapUtils.disableMapInteractions(leftSideBarMap)
 
     let sideBarPromise=new Promise((resolve,reject) => {
-        trackUtils.addTrack(gpxList[i],leftSideBarMap,resolve)
+        trackUtils.addTrack(gpxList[i],leftSideBarMap,[0,0],resolve)
     })
     sideBarPromise.then((object) => {
         let track=object[0]

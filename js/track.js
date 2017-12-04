@@ -1,6 +1,6 @@
 
 /// ADD TRACK //
-let addTrack = (gpx,map,resolve) => {
+let addTrack = (gpx,map,paddingTopLeft,resolve) => {
     let track=new L.GPX(gpx,
         {
             async: true,
@@ -12,7 +12,7 @@ let addTrack = (gpx,map,resolve) => {
 
 
     track.on('loaded', function(e) {
-        map.fitBounds(e.target.getBounds());
+        map.fitBounds(e.target.getBounds(),{paddingTopLeft:paddingTopLeft});
     })
 
     track.on('addline', e=> {

@@ -23383,7 +23383,7 @@ var _loop = function _loop(i) {
         infoRace.style('color', 'white');
 
         var mainMapPromise = new Promise(function (resolve, reject) {
-            trackUtils.addTrack(gpxList[i], map, resolve);
+            trackUtils.addTrack(gpxList[i], map, [300, 0], resolve);
         });
         mainMapPromise.then(function (object) {
             var line = object[1];
@@ -23419,7 +23419,7 @@ var _loop = function _loop(i) {
     mapUtils.disableMapInteractions(leftSideBarMap);
 
     var sideBarPromise = new Promise(function (resolve, reject) {
-        trackUtils.addTrack(gpxList[i], leftSideBarMap, resolve);
+        trackUtils.addTrack(gpxList[i], leftSideBarMap, [0, 0], resolve);
     });
     sideBarPromise.then(function (object) {
         var track = object[0];
@@ -37851,7 +37851,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 /// ADD TRACK //
-var addTrack = function addTrack(gpx, map, resolve) {
+var addTrack = function addTrack(gpx, map, paddingTopLeft, resolve) {
     var track = new L.GPX(gpx, {
         async: true,
         marker_options: {
@@ -37861,7 +37861,7 @@ var addTrack = function addTrack(gpx, map, resolve) {
         } });
 
     track.on('loaded', function (e) {
-        map.fitBounds(e.target.getBounds());
+        map.fitBounds(e.target.getBounds(), { paddingTopLeft: paddingTopLeft });
     });
 
     track.on('addline', function (e) {

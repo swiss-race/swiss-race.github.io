@@ -1,13 +1,16 @@
 #header {
-    overflow: hidden;
+    width:100%;
+    height:40px;
+    font-size:24px;
+    line-height:40px;
+    /* overflow: hidden; */
     background-color: black;
-    /* position: fixed; [> Set the navbar to fixed position <] */
-    top: 0; /* Position the navbar at the top of the page */
-    width: 100%; /* Full width */    
-    padding:0.5em;
+    position: fixed; 
+    top: 00px; /* Position the navbar at the top of the page */
+    margin:auto;
+    /* padding:0.5em; */
     color:white;
-    margin-top:0px;
-    /* margin-bottom:1em; */
+    z-index:2;
 }
 
 #headerLeft {
@@ -73,10 +76,10 @@ div.tooltip {
     background: rgba(255,255,255,0.5);
     /* opacity:0.5; */
     color:black;
-    position:absolute;
+    position:fixed;
     top:00px;
     margin-left:00px;
-    margin-top:00px;
+    margin-top:40px;
     padding:0;
 }
 
@@ -104,7 +107,7 @@ div.tooltip {
 #map { height: 700px; 
     width:100%;
     z-index:0;
-    margin:0;
+    margin-top:40px;
     padding:0;
 }
 

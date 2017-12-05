@@ -35,6 +35,56 @@ window.onscroll = () => {
     }
         
 }
+
+class MainMapStatus {
+    constructor(view,leftBar) {
+        this._view = view;
+        this._leftBar = leftBar;
+    }
+    get view() {
+        return this._view
+    }
+    get leftBar() {
+        return this._leftBar
+    }
+    set leftBar(newLeftBar) {
+        this._leftBar=newLeftBar
+    }
+}
+
+let mainMapStatus=new MainMapStatus(0,0)
+console.log(mainMapStatus.view)
+
+
+let homeButton=d3.select('#homeButton')
+homeButton.on('mouseover',() => {
+    homeButton.style('cursor','pointer')
+})
+homeButton.on('mouseout',() => {
+})
+
+let raceButton=d3.select('#raceButton')
+raceButton.on('mouseover',() => {
+    homeButton.style('cursor','pointer')
+    let color=d3.select('#header').style('color')
+    raceButton.style('border-bottom','2px solid '+color)
+})
+raceButton.on('mouseout',() => {
+    raceButton.style('border-bottom','0px')
+})
+raceButton.on('click',() => {
+    let leftBar=d3.select('#leftBar')
+    if (mainMapStatus.leftBar==0) {
+        leftBar.style('opacity',1)
+        leftBar.style('pointer-events','all')
+        mainMapStatus.leftBar=1
+    } else {
+        leftBar.style('opacity',0)
+        leftBar.style('pointer-events','none')
+        mainMapStatus.leftBar=0
+    }
+})
+
 //////    ADD MAIN MAP   ////////
 let map=mapUtils.getMap('map',{scrollWheelZoom:true})
 
@@ -102,7 +152,6 @@ for (let i=0;i<gpxList.length;i++) {
             infoRace.style('color','white')
         }
     })
-
 
     // Add map in container
 

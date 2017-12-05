@@ -23306,6 +23306,8 @@ exports.addElevationPlot = addElevationPlot;
 "use strict";
 
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _d = __webpack_require__(48);
 
 var d3 = _interopRequireWildcard(_d);
@@ -23346,6 +23348,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 // import $ from 'jquery'
 // window.$ = $;
 // window.jQuery = jQuery;
@@ -23368,6 +23372,64 @@ window.onscroll = function () {
         lastPosition = position;
     }
 };
+
+var MainMapStatus = function () {
+    function MainMapStatus(view, leftBar) {
+        _classCallCheck(this, MainMapStatus);
+
+        this._view = view;
+        this._leftBar = leftBar;
+    }
+
+    _createClass(MainMapStatus, [{
+        key: 'view',
+        get: function get() {
+            return this._view;
+        }
+    }, {
+        key: 'leftBar',
+        get: function get() {
+            return this._leftBar;
+        },
+        set: function set(newLeftBar) {
+            this._leftBar = newLeftBar;
+        }
+    }]);
+
+    return MainMapStatus;
+}();
+
+var mainMapStatus = new MainMapStatus(0, 0);
+console.log(mainMapStatus.view);
+
+var homeButton = d3.select('#homeButton');
+homeButton.on('mouseover', function () {
+    homeButton.style('cursor', 'pointer');
+});
+homeButton.on('mouseout', function () {});
+
+var raceButton = d3.select('#raceButton');
+raceButton.on('mouseover', function () {
+    homeButton.style('cursor', 'pointer');
+    var color = d3.select('#header').style('color');
+    raceButton.style('border-bottom', '2px solid ' + color);
+});
+raceButton.on('mouseout', function () {
+    raceButton.style('border-bottom', '0px');
+});
+raceButton.on('click', function () {
+    var leftBar = d3.select('#leftBar');
+    if (mainMapStatus.leftBar == 0) {
+        leftBar.style('opacity', 1);
+        leftBar.style('pointer-events', 'all');
+        mainMapStatus.leftBar = 1;
+    } else {
+        leftBar.style('opacity', 0);
+        leftBar.style('pointer-events', 'none');
+        mainMapStatus.leftBar = 0;
+    }
+});
+
 //////    ADD MAIN MAP   ////////
 var map = mapUtils.getMap('map', { scrollWheelZoom: true });
 

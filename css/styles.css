@@ -25,19 +25,22 @@
     margin-left:70px;
     width:20%;
     text-align:center;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -ms-user-select: none;
 }
 
-
-#headerRight {
-    padding-right:5em;
-    text-align:right;
+#searchButton {
+    width:10%;
+    height:70px;
+    text-align:center;
     float:right;
-}
-
-#buttonRight {
-    padding-right:2em;
-    text-align:right;
-    float:right;
+    line-height:40px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -ms-user-select: none;
 }
 
 

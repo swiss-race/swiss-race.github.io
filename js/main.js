@@ -36,13 +36,17 @@ window.onscroll = () => {
         
 }
 
-class MainMapStatus {
-    constructor(view,leftBar) {
+class MainStatus {
+    constructor(view,leftBar,currentTrack=0) {
         this._view = view;
         this._leftBar = leftBar;
+        this._currentTrack = currentTrack;
     }
     get view() {
         return this._view
+    }
+    set view(newView) {
+        this._view=newView
     }
     get leftBar() {
         return this._leftBar
@@ -52,8 +56,10 @@ class MainMapStatus {
     }
 }
 
-let mainMapStatus=new MainMapStatus(0,0)
-console.log(mainMapStatus.view)
+let mainStatus=new MainStatus(0,0)
+//
+//////    ADD MAIN MAP   ////////
+let map=mapUtils.getMap('map',{scrollWheelZoom:true})
 
 
 let homeButton=d3.select('#homeButton')
@@ -62,39 +68,47 @@ homeButton.on('mouseover',() => {
 })
 homeButton.on('mouseout',() => {
 })
+homeButton.on('click',() => {
+    if (mainStatus.view==1) {
+        map.removeLayer(mainStatus.currentTrack)
+        mainStatus.currentTrack=0
+        mainStatus.view=0
+    }
+    d3.select('#elevationPlotSVG').remove()
+    d3.select('#backgroundPlot').style('opacity',0)
+    d3.selectAll('#leftSideBarContainer')
+        .attr('data-colorchange',1)
+        .style('background','rgba(255,255,255,0.01')
+    d3.selectAll('.leftSideBarInfo').style('color','red')
+})
 
 let raceButton=d3.select('#raceButton')
 raceButton.on('mouseover',() => {
-    homeButton.style('cursor','pointer')
     let color=d3.select('#header').style('color')
     raceButton.style('border-bottom','2px solid '+color)
+    raceButton.style('cursor','pointer')
 })
 raceButton.on('mouseout',() => {
     raceButton.style('border-bottom','0px')
 })
 raceButton.on('click',() => {
     let leftBar=d3.select('#leftBar')
-    if (mainMapStatus.leftBar==0) {
+    if (mainStatus.leftBar==0) {
         leftBar.style('opacity',1)
         leftBar.style('pointer-events','all')
-        mainMapStatus.leftBar=1
+        mainStatus.leftBar=1
     } else {
         leftBar.style('opacity',0)
         leftBar.style('pointer-events','none')
-        mainMapStatus.leftBar=0
+        mainStatus.leftBar=0
     }
 })
-
-//////    ADD MAIN MAP   ////////
-let map=mapUtils.getMap('map',{scrollWheelZoom:true})
-
 
 ////// ADD SIDE BAR //////
 let gpxList=gpx_files.gpxList
 let leftBar=d3.select('#leftBar')
 const sheet=window.document.styleSheets[0]
 
-let currentTrack=0
 const leftSideBarRule=' {height: 200px; width:90%; z-index:0; opacity:1; pointer-events:none; }'
 for (let i=0;i<gpxList.length;i++) {
 
@@ -114,8 +128,10 @@ for (let i=0;i<gpxList.length;i++) {
     infoRace.html('')
 
     leftSideBarContainer.on('click',() => {
-        if (currentTrack) {
-            map.removeLayer(currentTrack)
+        if (mainStatus.view==1) {
+            map.removeLayer(mainStatus.currentTrack)
+            mainStatus.currentTrack=0
+            mainStatus.view=0
         }
         d3.select('#elevationPlotSVG').remove()
         d3.select('#backgroundPlot').style('opacity',0)
@@ -133,7 +149,9 @@ for (let i=0;i<gpxList.length;i++) {
         })
         mainMapPromise.then((object) => {
             let line=object[1]
-            currentTrack=mapUtils.addPoint(line,map,0)
+            let currentTrack=mapUtils.addPoint(line,map,0)
+            mainStatus.view=1
+            mainStatus.currentTrack=currentTrack
         })
     })
     leftSideBarContainer.on('mouseover',() => {

@@ -23373,18 +23373,24 @@ window.onscroll = function () {
     }
 };
 
-var MainMapStatus = function () {
-    function MainMapStatus(view, leftBar) {
-        _classCallCheck(this, MainMapStatus);
+var MainStatus = function () {
+    function MainStatus(view, leftBar) {
+        var currentTrack = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+
+        _classCallCheck(this, MainStatus);
 
         this._view = view;
         this._leftBar = leftBar;
+        this._currentTrack = currentTrack;
     }
 
-    _createClass(MainMapStatus, [{
+    _createClass(MainStatus, [{
         key: 'view',
         get: function get() {
             return this._view;
+        },
+        set: function set(newView) {
+            this._view = newView;
         }
     }, {
         key: 'leftBar',
@@ -23396,49 +23402,58 @@ var MainMapStatus = function () {
         }
     }]);
 
-    return MainMapStatus;
+    return MainStatus;
 }();
 
-var mainMapStatus = new MainMapStatus(0, 0);
-console.log(mainMapStatus.view);
+var mainStatus = new MainStatus(0, 0);
+//
+//////    ADD MAIN MAP   ////////
+var map = mapUtils.getMap('map', { scrollWheelZoom: true });
 
 var homeButton = d3.select('#homeButton');
 homeButton.on('mouseover', function () {
     homeButton.style('cursor', 'pointer');
 });
 homeButton.on('mouseout', function () {});
+homeButton.on('click', function () {
+    if (mainStatus.view == 1) {
+        map.removeLayer(mainStatus.currentTrack);
+        mainStatus.currentTrack = 0;
+        mainStatus.view = 0;
+    }
+    d3.select('#elevationPlotSVG').remove();
+    d3.select('#backgroundPlot').style('opacity', 0);
+    d3.selectAll('#leftSideBarContainer').attr('data-colorchange', 1).style('background', 'rgba(255,255,255,0.01');
+    d3.selectAll('.leftSideBarInfo').style('color', 'red');
+});
 
 var raceButton = d3.select('#raceButton');
 raceButton.on('mouseover', function () {
-    homeButton.style('cursor', 'pointer');
     var color = d3.select('#header').style('color');
     raceButton.style('border-bottom', '2px solid ' + color);
+    raceButton.style('cursor', 'pointer');
 });
 raceButton.on('mouseout', function () {
     raceButton.style('border-bottom', '0px');
 });
 raceButton.on('click', function () {
     var leftBar = d3.select('#leftBar');
-    if (mainMapStatus.leftBar == 0) {
+    if (mainStatus.leftBar == 0) {
         leftBar.style('opacity', 1);
         leftBar.style('pointer-events', 'all');
-        mainMapStatus.leftBar = 1;
+        mainStatus.leftBar = 1;
     } else {
         leftBar.style('opacity', 0);
         leftBar.style('pointer-events', 'none');
-        mainMapStatus.leftBar = 0;
+        mainStatus.leftBar = 0;
     }
 });
-
-//////    ADD MAIN MAP   ////////
-var map = mapUtils.getMap('map', { scrollWheelZoom: true });
 
 ////// ADD SIDE BAR //////
 var gpxList = gpx_files.gpxList;
 var leftBar = d3.select('#leftBar');
 var sheet = window.document.styleSheets[0];
 
-var currentTrack = 0;
 var leftSideBarRule = ' {height: 200px; width:90%; z-index:0; opacity:1; pointer-events:none; }';
 
 var _loop = function _loop(i) {
@@ -23455,8 +23470,10 @@ var _loop = function _loop(i) {
     infoRace.html('');
 
     leftSideBarContainer.on('click', function () {
-        if (currentTrack) {
-            map.removeLayer(currentTrack);
+        if (mainStatus.view == 1) {
+            map.removeLayer(mainStatus.currentTrack);
+            mainStatus.currentTrack = 0;
+            mainStatus.view = 0;
         }
         d3.select('#elevationPlotSVG').remove();
         d3.select('#backgroundPlot').style('opacity', 0);
@@ -23472,7 +23489,9 @@ var _loop = function _loop(i) {
         });
         mainMapPromise.then(function (object) {
             var line = object[1];
-            currentTrack = mapUtils.addPoint(line, map, 0);
+            var currentTrack = mapUtils.addPoint(line, map, 0);
+            mainStatus.view = 1;
+            mainStatus.currentTrack = currentTrack;
         });
     });
     leftSideBarContainer.on('mouseover', function () {

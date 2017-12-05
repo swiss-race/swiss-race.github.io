@@ -37924,9 +37924,11 @@ var addPoint = function addPoint(line, map, isLeftBar) {
                     var latitude = e.latlng.lat;
                     var longitude = e.latlng.lng;
 
-                    var elevation = feature.elevation[0].toString();
+                    var km = feature.cumulativeDistance[0].toString().substr(0, 5) + 'km<br />';
+                    var elevation = feature.elevation[0].toString() + 'm';
 
-                    annotations.setCircleInPosition(annotations.circle, index, elevation, latitude, longitude, map);
+                    var popupString = '<p style="text-align:center">' + km + elevation + '</p>';
+                    annotations.setCircleInPosition(annotations.circle, index, popupString, latitude, longitude, map);
                 });
 
                 layer.on('mouseout', function () {});

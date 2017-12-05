@@ -127,8 +127,8 @@ div.tooltip {
     width: 500px;
     height: 200px;
     position:absolute;
-    top:50px;
-    right:50px;
+    top:25px;
+    right:25px;
     margin-left:00px;
     margin-top:00px;
     /* outline:1px solid green; */

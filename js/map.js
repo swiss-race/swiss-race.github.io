@@ -55,9 +55,12 @@ let addPoint = (line,map,isLeftBar) => {
                     let latitude=e.latlng.lat;
                     let longitude=e.latlng.lng;
                     
-                    let elevation=feature.elevation[0].toString()
+                    let km=feature.cumulativeDistance[0].toString().substr(0,5)+'km<br />'
+                    let elevation=feature.elevation[0].toString()+'m'
          
-                    annotations.setCircleInPosition(annotations.circle,index,elevation,latitude,longitude,map)
+                    
+                    let popupString='<p style="text-align:center">'+km+elevation+'</p>'
+                    annotations.setCircleInPosition(annotations.circle,index,popupString,latitude,longitude,map)
 
                 });
                 

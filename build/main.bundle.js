@@ -5458,7 +5458,7 @@ function clipEdges(x0, y0, x1, y1) {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.mouseoutOpacity = exports.mouseoverOpacity = exports.setCircleInPosition = exports.circle = exports.div = exports.lineStyle = undefined;
+exports.addCirclesToMap = exports.setCirclesInPositions = exports.createRunnersCircles = exports.mouseoutOpacity = exports.mouseoverOpacity = exports.setCircleInPosition = exports.circle = exports.div = exports.lineStyle = undefined;
 
 var _d = __webpack_require__(48);
 
@@ -5518,12 +5518,56 @@ var mouseoutOpacity = function mouseoutOpacity(className) {
     d3.select('.' + className).style('opacity', 0);
 };
 
+///////////////
+/// Runners ///
+var runnersStyle = { color: 'red',
+    fillColor: 'red',
+    fillOpacity: 1,
+    radius: 2,
+    seconds: 0,
+    devX: 0,
+    devY: 0,
+    male: 0,
+    birth: 0,
+    count: 0
+};
+
+var createRunnersCircles = function createRunnersCircles(runnersData) {
+    var runnersCircles = [];
+    for (var i = 0; i < runnersData.length; i++) {
+        var _circle = L.circleMarker([46.5, 6.8], runnersStyle);
+        _circle.seconds = runnersData[i][0];
+        _circle.devX = runnersData[i][1];
+        _circle.devY = runnersData[i][2];
+        _circle.male = runnersData[i][3];
+        _circle.birth = runnersData[i][4];
+        _circle.count = runnersData[i][5];
+        runnersCircles.push(_circle);
+    }
+    return runnersCircles;
+};
+
+var setCirclesInPositions = function setCirclesInPositions(circles, positions) {
+    for (var i = 0; i < circles.length; i++) {
+        circles[i].setLatLng([positions[i][0] + circles[i].devX, positions[i][1] + circles[i].devY]);
+    }
+};
+
+var addCirclesToMap = function addCirclesToMap(circles, map) {
+    for (var i = 0; i < circles.length; i++) {
+        circles[i].addTo(map);
+    }
+};
+
 exports.lineStyle = lineStyle;
 exports.div = div;
 exports.circle = circle;
 exports.setCircleInPosition = setCircleInPosition;
 exports.mouseoverOpacity = mouseoverOpacity;
 exports.mouseoutOpacity = mouseoutOpacity;
+exports.createRunnersCircles = createRunnersCircles;
+exports.setCirclesInPositions = setCirclesInPositions;
+exports.addCirclesToMap = addCirclesToMap;
 
 /***/ }),
 /* 92 */
@@ -23478,20 +23522,41 @@ var _loop = function _loop(i) {
         d3.select('#elevationPlotSVG').remove();
         d3.select('#backgroundPlot').style('opacity', 0);
         d3.selectAll('#leftSideBarContainer').attr('data-colorchange', 1).style('background', 'rgba(255,255,255,0.01');
-        // leftSideBarContainer.style('background','rgba(0,0,255,0.6)')
         leftSideBarContainer.style('background', 'rgba(255,0,0,0.8)');
         leftSideBarContainer.attr('data-colorchange', 0);
         d3.selectAll('.leftSideBarInfo').style('color', 'red');
         infoRace.style('color', 'white');
 
+        // Add track 
         var mainMapPromise = new Promise(function (resolve, reject) {
             trackUtils.addTrack(gpxList[i], map, [400, 0], resolve);
         });
-        mainMapPromise.then(function (object) {
-            var line = object[1];
-            var currentTrack = mapUtils.addPoint(line, map, 0);
-            mainStatus.view = 1;
-            mainStatus.currentTrack = currentTrack;
+        // mainMapPromise.then((object) => {
+        //     let line=object[1]
+        //     let currentTrack=mapUtils.addPoint(line,map,0)
+        //     mainStatus.view=1
+        //     mainStatus.currentTrack=currentTrack
+        // })
+
+        // Add new moving points
+        var sliderPromise = new Promise(function (resolve, reject) {
+            d3.csv('dataset/df_20kmLausanne_count.csv', function (data) {
+                resolve(data);
+            });
+        });
+        sliderPromise.then(function (object) {
+            var runnersData = parseRunners(object);
+            var runnersCircles = drawRunners(runnersData);
+            mainMapPromise.then(function (object) {
+                var track = object[1]._latlngs;
+                var positionsArray = [];
+                for (var _i = 0; _i < runnersCircles.length; _i++) {
+                    positionsArray.push([track[0].lat, track[0].lng]);
+                }
+                annotations.setCirclesInPositions(runnersCircles, positionsArray);
+                annotations.addCirclesToMap(runnersCircles, map);
+                console.log(runnersCircles);
+            });
         });
     });
     leftSideBarContainer.on('mouseover', function () {
@@ -23538,6 +23603,50 @@ var _loop = function _loop(i) {
 for (var i = 0; i < gpxList.length; i++) {
     _loop(i);
 }
+
+var parseRunners = function parseRunners(data) {
+
+    // std = track_width/2
+    var stdX = 0.01; // standard deviation in terms of latitude and longitude
+    var stdY = 0.015; // standard deviation in terms of latitude and longitude
+    var runners_data = new Array(data.length);
+    for (var i = 0; i < data.length; i++) {
+        runners_data[i] = new Array(5);
+    }
+    var distances_all_runners = new Array(data.length).fill(0);
+    var time_all_runners = new Array(data.length).fill(0);
+
+    var max_count = 0;
+    for (i = 0; i < data.length; i++) {
+        var fist_split = data[i].Time.split(' ')[2];
+        var second_split = fist_split.split(':');
+        var hours = parseInt(second_split[0]);
+        var minutes = parseInt(second_split[1]);
+        var seconds = parseInt(second_split[2]);
+        seconds += 3600 * hours + 60 * minutes;
+
+        runners_data[i][0] = seconds;
+        runners_data[i][1] = Math.random() * stdX;
+        runners_data[i][2] = Math.random() * stdY;
+        if (data[i].Sex == "F") runners_data[i][3] = 0;
+        if (data[i].Sex == "M") runners_data[i][3] = 1;
+        runners_data[i][4] = data[i].RaceYear - data[i].Year;
+        runners_data[i][5] = data[i].Count;
+    }
+    return runners_data;
+};
+
+var drawRunners = function drawRunners(data) {
+    var subsampled_runners_data = [];
+    var runners_fraction = 1;
+    for (var i = 0; i < data.length; i++) {
+        var fraction = runners_fraction / 100;
+        var r = Math.random();
+        if (r < fraction) subsampled_runners_data.push(data[i]);
+    }
+    var runnersCircles = annotations.createRunnersCircles(subsampled_runners_data);
+    return runnersCircles;
+};
 
 /***/ }),
 /* 177 */

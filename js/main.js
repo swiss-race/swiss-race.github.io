@@ -138,21 +138,44 @@ for (let i=0;i<gpxList.length;i++) {
         d3.selectAll('#leftSideBarContainer')
             .attr('data-colorchange',1)
             .style('background','rgba(255,255,255,0.01')
-        // leftSideBarContainer.style('background','rgba(0,0,255,0.6)')
         leftSideBarContainer.style('background','rgba(255,0,0,0.8)')
         leftSideBarContainer.attr('data-colorchange',0)
         d3.selectAll('.leftSideBarInfo').style('color','red')
         infoRace.style('color','white')
         
+        // Add track 
         let mainMapPromise=new Promise((resolve,reject) => {
             trackUtils.addTrack(gpxList[i],map,[400,0],resolve)
         })
-        mainMapPromise.then((object) => {
-            let line=object[1]
-            let currentTrack=mapUtils.addPoint(line,map,0)
-            mainStatus.view=1
-            mainStatus.currentTrack=currentTrack
+        // mainMapPromise.then((object) => {
+        //     let line=object[1]
+        //     let currentTrack=mapUtils.addPoint(line,map,0)
+        //     mainStatus.view=1
+        //     mainStatus.currentTrack=currentTrack
+        // })
+        
+        // Add new moving points
+        let sliderPromise=new Promise((resolve,reject) => {
+            d3.csv('dataset/df_20kmLausanne_count.csv',(data) => {
+                resolve(data)
+            })
         })
+        sliderPromise.then((object) => {
+            let runnersData=parseRunners(object)
+            let runnersCircles=drawRunners(runnersData)
+            mainMapPromise.then((object) => {
+                let track=object[1]._latlngs
+                let positionsArray=[]
+                for (let i=0;i<runnersCircles.length;i++) {
+                    positionsArray.push([track[0].lat,track[0].lng])
+                }
+                annotations.setCirclesInPositions(runnersCircles,positionsArray)
+                annotations.addCirclesToMap(runnersCircles,map)
+                console.log(runnersCircles)
+                
+            })
+        })
+
     })
     leftSideBarContainer.on('mouseover',() => {
         if (leftSideBarContainer.attr('data-colorchange')==1) {
@@ -197,6 +220,53 @@ for (let i=0;i<gpxList.length;i++) {
     })
 }
 
+let parseRunners= (data) => {
+
+    // std = track_width/2
+    let stdX=0.01 // standard deviation in terms of latitude and longitude
+    let stdY=0.015 // standard deviation in terms of latitude and longitude
+    let runners_data = new Array(data.length);
+    for (var i = 0; i < data.length; i++) {
+    runners_data[i] = new Array(5);
+    }
+    let distances_all_runners = new Array(data.length).fill(0);
+    let time_all_runners = new Array(data.length).fill(0);
+
+    let max_count = 0
+    for (i = 0; i < data.length; i++) {
+        let fist_split = data[i].Time.split(' ')[2]
+        let second_split = fist_split.split(':');
+        let hours = parseInt(second_split[0])
+        let minutes = parseInt(second_split[1])
+        let seconds = parseInt(second_split[2])
+        seconds += 3600 * hours + 60 * minutes
+
+        runners_data[i][0] = seconds
+        runners_data[i][1] = Math.random() * stdX
+        runners_data[i][2] = Math.random() * stdY
+        if (data[i].Sex == "F") runners_data[i][3] = 0
+        if (data[i].Sex == "M") runners_data[i][3] = 1
+        runners_data[i][4] = data[i].RaceYear - data[i].Year
+        runners_data[i][5] = data[i].Count
+    }
+    return runners_data
+}
+
+let drawRunners = (data) => {
+    let subsampled_runners_data = [];
+    let runners_fraction=1
+    for (let i = 0; i < data.length; i++) {
+        let fraction = runners_fraction / 100
+        let r = Math.random();
+        if (r < fraction)
+            subsampled_runners_data.push(data[i])
+    }
+    let runnersCircles=annotations.createRunnersCircles(subsampled_runners_data)
+    return runnersCircles
+
+
+
+}
 
 
 

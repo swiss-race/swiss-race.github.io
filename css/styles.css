@@ -140,8 +140,24 @@ div.tooltip {
 #plot {
     opacity:1;
 }
+#info{
+    background-color:white;
+    margin-top:40px;
+    margin-right:20%;
+    margin-bottom:50px;
+    height:auto;
+    width:55%;
+    float:right;
+    font-size:17px;
+}
+.infoTitle {
+    text-align:left;
+    color:black;
+    font-size:34px;
+    padding:5px;
+}
 #footer{
     height:10000px;
-    width:80%;
+    width:70%;
     float:right;
 }

@@ -58,4 +58,48 @@ let mouseoutOpacity = className => {
         .style('opacity',0)
 }
 
-export {lineStyle,div,circle,setCircleInPosition,mouseoverOpacity,mouseoutOpacity}
+
+///////////////
+/// Runners ///
+let runnersStyle = { color: 'red',
+    fillColor:'red',
+    fillOpacity:1,
+    radius: 2,
+    seconds:0,
+    devX:0,
+    devY:0,
+    male:0,
+    birth:0,
+    count:0,
+}
+
+let createRunnersCircles = (runnersData) => {
+    let runnersCircles=[]
+    for (let i=0;i<runnersData.length;i++) {
+        let circle=L.circleMarker([46.5,6.8],runnersStyle)
+        circle.seconds=runnersData[i][0]
+        circle.devX=runnersData[i][1]
+        circle.devY=runnersData[i][2]
+        circle.male=runnersData[i][3]
+        circle.birth=runnersData[i][4]
+        circle.count=runnersData[i][5]
+        runnersCircles.push(circle)
+
+    }
+    return runnersCircles
+}
+
+let setCirclesInPositions = (circles,positions) => {
+    for (let i=0;i<circles.length;i++) {
+        circles[i].setLatLng([positions[i][0]+circles[i].devX,positions[i][1]+circles[i].devY])
+    }
+}
+
+let addCirclesToMap = (circles,map) => {
+    for (let i=0;i<circles.length;i++) {
+        circles[i].addTo(map)
+    }
+}
+
+
+export {lineStyle,div,circle,setCircleInPosition,mouseoverOpacity,mouseoutOpacity,createRunnersCircles,setCirclesInPositions,addCirclesToMap}

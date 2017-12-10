@@ -23217,8 +23217,40 @@ var transformToGeoJSON = function transformToGeoJSON(vector) {
     return race;
 };
 
+var transformToTrackVector = function transformToTrackVector(vector) {
+    var race = [];
+
+    for (var i = 0; i < vector.length - 1; i++) {
+        var coordinates = [];
+        var distances = 0;
+        var cumulativeDistance = 0;
+
+        // coordinates
+        coordinates.push([vector[i].lng, vector[i].lat]);
+        coordinates.push([vector[i + 1].lng, vector[i + 1].lat]);
+
+        // distance
+        var distance = distanceInKmBetweenEarthCoordinates(vector[i + 1].lat, vector[i + 1].lng, vector[i].lat, vector[i].lng);
+        distances = distance;
+        if (i == 0) {
+            cumulativeDistance = distance;
+        } else {
+            cumulativeDistance = distance + race[i - 1].cumulativeDistance;
+        }
+
+        // new element
+        var raceElement = {};
+        raceElement.coordinates = coordinates;
+        raceElement.distances = distances;
+        raceElement.cumulativeDistance = cumulativeDistance;
+        raceElement.i = i;
+        race.push(raceElement);
+    }
+    return race;
+};
 exports.distanceInKmBetweenEarthCoordinates = distanceInKmBetweenEarthCoordinates;
 exports.transformToGeoJSON = transformToGeoJSON;
+exports.transformToTrackVector = transformToTrackVector;
 
 /***/ }),
 /* 175 */
@@ -23549,6 +23581,9 @@ var _loop = function _loop(i) {
             var runnersCircles = drawRunners(runnersData);
             mainMapPromise.then(function (object) {
                 var track = object[1]._latlngs;
+                var trackVector = utilities.transformToTrackVector(track);
+                var totalLength = trackVector[trackVector.length - 1].cumulativeDistance;
+                console.log(trackVector);
                 var positionsArray = [];
                 for (var _i = 0; _i < runnersCircles.length; _i++) {
                     positionsArray.push([track[0].lat, track[0].lng]);
@@ -23556,6 +23591,44 @@ var _loop = function _loop(i) {
                 annotations.setCirclesInPositions(runnersCircles, positionsArray);
                 annotations.addCirclesToMap(runnersCircles, map);
                 console.log(runnersCircles);
+                var raceDuration = 5000;
+
+                // for (let i=0;i<positionsArray.length;i++) {
+                //     positionsArray[i]=[track[100].lat,track[100].lng]
+                // }
+                // annotations.setCirclesInPositions(runnersCircles,positionsArray)
+                // annotations.addCirclesToMap(runnersCircles,map)
+
+
+                var t = d3.interval(function (elapsed) {
+
+                    console.log(elapsed);
+                    // 10 min = 1s
+                    var increaseFactor = 600;
+                    for (var _i2 = 0; _i2 < runnersCircles.length; _i2++) {
+                        var totalTimeRunner = runnersCircles[_i2].seconds / increaseFactor;
+                        var fractionRace = elapsed / totalTimeRunner * trackVector[trackVector.length - 1].cumulativeDistance / 1000;
+
+                        for (var j = 1; j < trackVector.length; j++) {
+                            if (trackVector[j].cumulativeDistance > fractionRace) {
+                                var difference = fractionRace - trackVector[j - 1].cumulativeDistance;
+                                var fraction = difference / (trackVector[j].cumulativeDistance - trackVector[j - 1].cumulativeDistance);
+
+                                var newLat = trackVector[j - 1].coordinates[0][1] + fraction * (trackVector[j].coordinates[0][1] - trackVector[j - 1].coordinates[0][1]);
+                                var newLng = trackVector[j - 1].coordinates[0][0] + fraction * (trackVector[j].coordinates[0][0] - trackVector[j - 1].coordinates[0][0]);
+                                positionsArray[_i2] = [newLat, newLng];
+                                break;
+                            }
+                        }
+                    }
+                    annotations.setCirclesInPositions(runnersCircles, positionsArray);
+                    annotations.addCirclesToMap(runnersCircles, map);
+                    if (elapsed > 20000) t.stop();
+                }, 30);
+                console.log(positionsArray);
+                console.log(runnersCircles);
+                annotations.setCirclesInPositions(runnersCircles, positionsArray);
+                annotations.addCirclesToMap(runnersCircles, map);
             });
         });
     });
@@ -23607,8 +23680,8 @@ for (var i = 0; i < gpxList.length; i++) {
 var parseRunners = function parseRunners(data) {
 
     // std = track_width/2
-    var stdX = 0.01; // standard deviation in terms of latitude and longitude
-    var stdY = 0.015; // standard deviation in terms of latitude and longitude
+    var stdX = 0.002; // standard deviation in terms of latitude and longitude
+    var stdY = 0.003; // standard deviation in terms of latitude and longitude
     var runners_data = new Array(data.length);
     for (var i = 0; i < data.length; i++) {
         runners_data[i] = new Array(5);
@@ -23628,6 +23701,8 @@ var parseRunners = function parseRunners(data) {
         runners_data[i][0] = seconds;
         runners_data[i][1] = Math.random() * stdX;
         runners_data[i][2] = Math.random() * stdY;
+        // runners_data[i][1] = 0
+        // runners_data[i][2] = 0
         if (data[i].Sex == "F") runners_data[i][3] = 0;
         if (data[i].Sex == "M") runners_data[i][3] = 1;
         runners_data[i][4] = data[i].RaceYear - data[i].Year;
@@ -23647,6 +23722,8 @@ var drawRunners = function drawRunners(data) {
     var runnersCircles = annotations.createRunnersCircles(subsampled_runners_data);
     return runnersCircles;
 };
+
+var animateMap = function animateMap(elapsed) {};
 
 /***/ }),
 /* 177 */

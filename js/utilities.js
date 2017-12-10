@@ -59,5 +59,37 @@ let transformToGeoJSON = vector => {
     return race
 }
 
-export {distanceInKmBetweenEarthCoordinates,transformToGeoJSON}
+let transformToTrackVector = vector => {
+    let race=[]
+
+    for (let i=0;i<vector.length-1;i++) {
+        let coordinates=[]
+        let distances=0
+        let cumulativeDistance=0
+
+        // coordinates
+        coordinates.push([vector[i].lng,vector[i].lat])
+        coordinates.push([vector[i+1].lng,vector[i+1].lat])
+
+        // distance
+        const distance=distanceInKmBetweenEarthCoordinates(vector[i+1].lat,vector[i+1].lng,
+                vector[i].lat,vector[i].lng)
+        distances=distance
+        if (i==0) {
+            cumulativeDistance=distance
+        } else {
+            cumulativeDistance=distance+race[i-1].cumulativeDistance
+        }
+
+        // new element
+        let raceElement={}
+        raceElement.coordinates=coordinates
+        raceElement.distances=distances
+        raceElement.cumulativeDistance=cumulativeDistance
+        raceElement.i=i
+        race.push(raceElement)
+    }
+    return race
+}
+export {distanceInKmBetweenEarthCoordinates,transformToGeoJSON,transformToTrackVector}
 

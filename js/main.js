@@ -165,6 +165,9 @@ for (let i=0;i<gpxList.length;i++) {
             let runnersCircles=drawRunners(runnersData)
             mainMapPromise.then((object) => {
                 let track=object[1]._latlngs
+                let trackVector=utilities.transformToTrackVector(track)
+                const totalLength=trackVector[trackVector.length-1].cumulativeDistance
+                console.log(trackVector)
                 let positionsArray=[]
                 for (let i=0;i<runnersCircles.length;i++) {
                     positionsArray.push([track[0].lat,track[0].lng])
@@ -172,6 +175,41 @@ for (let i=0;i<gpxList.length;i++) {
                 annotations.setCirclesInPositions(runnersCircles,positionsArray)
                 annotations.addCirclesToMap(runnersCircles,map)
                 console.log(runnersCircles)
+                let raceDuration=5000
+
+
+
+                let t=d3.interval(elapsed => {
+
+                    console.log(elapsed)
+                    // 10 min = 1s
+                    let increaseFactor=600
+                    for (let i=0;i<runnersCircles.length;i++) {
+                        let totalTimeRunner=runnersCircles[i].seconds/increaseFactor
+                        let fractionRace=elapsed/totalTimeRunner*trackVector[trackVector.length-1].cumulativeDistance/1000
+
+                        for (let j=1;j<trackVector.length;j++) {
+                            if (trackVector[j].cumulativeDistance>fractionRace) {
+                                let difference=fractionRace-trackVector[j-1].cumulativeDistance
+                                let fraction=difference/(trackVector[j].cumulativeDistance-trackVector[j-1].cumulativeDistance)
+
+
+                                let newLat=trackVector[j-1].coordinates[0][1]+fraction*(trackVector[j].coordinates[0][1]-trackVector[j-1].coordinates[0][1])
+                                let newLng=trackVector[j-1].coordinates[0][0]+fraction*(trackVector[j].coordinates[0][0]-trackVector[j-1].coordinates[0][0])
+                                positionsArray[i]=[newLat,newLng]
+                                break
+                            }
+                        }
+                    }
+                    annotations.setCirclesInPositions(runnersCircles,positionsArray)
+                    annotations.addCirclesToMap(runnersCircles,map)
+                    if (elapsed>20000) t.stop()
+
+                },30)
+                console.log(positionsArray)
+                console.log(runnersCircles)
+                annotations.setCirclesInPositions(runnersCircles,positionsArray)
+                annotations.addCirclesToMap(runnersCircles,map)
                 
             })
         })
@@ -223,8 +261,8 @@ for (let i=0;i<gpxList.length;i++) {
 let parseRunners= (data) => {
 
     // std = track_width/2
-    let stdX=0.01 // standard deviation in terms of latitude and longitude
-    let stdY=0.015 // standard deviation in terms of latitude and longitude
+    let stdX=0.002 // standard deviation in terms of latitude and longitude
+    let stdY=0.003 // standard deviation in terms of latitude and longitude
     let runners_data = new Array(data.length);
     for (var i = 0; i < data.length; i++) {
     runners_data[i] = new Array(5);
@@ -244,6 +282,8 @@ let parseRunners= (data) => {
         runners_data[i][0] = seconds
         runners_data[i][1] = Math.random() * stdX
         runners_data[i][2] = Math.random() * stdY
+        // runners_data[i][1] = 0
+        // runners_data[i][2] = 0
         if (data[i].Sex == "F") runners_data[i][3] = 0
         if (data[i].Sex == "M") runners_data[i][3] = 1
         runners_data[i][4] = data[i].RaceYear - data[i].Year
@@ -263,11 +303,13 @@ let drawRunners = (data) => {
     }
     let runnersCircles=annotations.createRunnersCircles(subsampled_runners_data)
     return runnersCircles
+}
 
+let animateMap = (elapsed) => {
+    
 
 
 }
-
 
 
 

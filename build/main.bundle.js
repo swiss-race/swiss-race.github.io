@@ -5522,7 +5522,7 @@ var mouseoutOpacity = function mouseoutOpacity(className) {
 /// Runners ///
 var runnersStyle = { color: 'red',
     fillColor: 'red',
-    fillOpacity: 1,
+    opacity: 1,
     radius: 2,
     seconds: 0,
     devX: 0,
@@ -5532,7 +5532,18 @@ var runnersStyle = { color: 'red',
     count: 0
 };
 
+var applyFilterToRunner = function applyFilterToRunner(runner) {
+    if (runner.male) {
+        runner.options.color = "#49A8B1";
+    } else {
+        runner.options.color = "#CA6FA8";
+    }
+};
+
 var createRunnersCircles = function createRunnersCircles(runnersData) {
+
+    var gender = d3.select('#genderFilters');
+
     var runnersCircles = [];
     for (var i = 0; i < runnersData.length; i++) {
         var _circle = L.circleMarker([46.5, 6.8], runnersStyle);
@@ -5542,6 +5553,7 @@ var createRunnersCircles = function createRunnersCircles(runnersData) {
         _circle.male = runnersData[i][3];
         _circle.birth = runnersData[i][4];
         _circle.count = runnersData[i][5];
+        applyFilterToRunner(_circle);
         runnersCircles.push(_circle);
     }
     return runnersCircles;
@@ -5550,6 +5562,12 @@ var createRunnersCircles = function createRunnersCircles(runnersData) {
 var setCirclesInPositions = function setCirclesInPositions(circles, positions) {
     for (var i = 0; i < circles.length; i++) {
         circles[i].setLatLng([positions[i][0] + circles[i].devX, positions[i][1] + circles[i].devY]);
+        applyFilterToRunner(circles[i]);
+        // if (circles[i].male) {
+        //     circles[i].options.color="#49A8B1"
+        // } else {
+        //     circles[i].options.color="#CA6FA8"
+        // }
     }
 };
 
@@ -23574,11 +23592,14 @@ var _loop = function _loop(i) {
             mainStatus.currentTrack = 0;
             mainStatus.view = 0;
             for (var _i = 0; _i < mainStatus.currentPoints.length; _i++) {
-                console.log(mainStatus.currentPoints[_i]);
                 map.removeLayer(mainStatus.currentPoints[_i]);
             }
             mainStatus.currentPoints.length = 0;
         }
+        leftBar.style('opacity', 0);
+        leftBar.style('pointer-events', 'none');
+        mainStatus.leftBar = 0;
+
         d3.select('#elevationPlotSVG').remove();
         d3.select('#backgroundPlot').style('opacity', 0);
         d3.selectAll('#leftSideBarContainer').attr('data-colorchange', 1).style('background', 'rgba(255,255,255,0.01');
@@ -23586,6 +23607,11 @@ var _loop = function _loop(i) {
         leftSideBarContainer.attr('data-colorchange', 0);
         d3.selectAll('.leftSideBarInfo').style('color', 'red');
         infoRace.style('color', 'white');
+
+        // Gender filters
+        var genderFilters = d3.select('#genderFilters');
+        genderFilters.style('opacity', 1);
+        genderFilters.style('pointer-events', 'all');
 
         // Add track 
         var mainMapPromise = new Promise(function (resolve, reject) {
@@ -23620,14 +23646,12 @@ var _loop = function _loop(i) {
 
                 var trackVector = utilities.transformToTrackVector(track);
                 var totalLength = trackVector[trackVector.length - 1].cumulativeDistance;
-                console.log(trackVector);
                 var positionsArray = [];
                 for (var _i2 = 0; _i2 < runnersCircles.length; _i2++) {
                     positionsArray.push([track[0].lat, track[0].lng]);
                 }
                 annotations.setCirclesInPositions(runnersCircles, positionsArray);
                 annotations.addCirclesToMap(runnersCircles, map);
-                console.log(runnersCircles);
                 var raceDuration = 5000;
 
                 var t = d3.interval(function (elapsed) {
@@ -23654,8 +23678,6 @@ var _loop = function _loop(i) {
                     annotations.addCirclesToMap(runnersCircles, map);
                     if (elapsed > 20000) t.stop();
                 }, 30);
-                console.log(positionsArray);
-                console.log(runnersCircles);
                 annotations.setCirclesInPositions(runnersCircles, positionsArray);
                 annotations.addCirclesToMap(runnersCircles, map);
             });

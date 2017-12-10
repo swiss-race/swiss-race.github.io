@@ -151,11 +151,14 @@ for (let i=0;i<gpxList.length;i++) {
             mainStatus.currentTrack=0
             mainStatus.view=0
             for (let i=0;i<mainStatus.currentPoints.length;i++) {
-                console.log(mainStatus.currentPoints[i])
                 map.removeLayer(mainStatus.currentPoints[i])
             }
             mainStatus.currentPoints.length=0
         }
+        leftBar.style('opacity',0)
+        leftBar.style('pointer-events','none')
+        mainStatus.leftBar=0
+
         d3.select('#elevationPlotSVG').remove()
         d3.select('#backgroundPlot').style('opacity',0)
         d3.selectAll('#leftSideBarContainer')
@@ -166,6 +169,12 @@ for (let i=0;i<gpxList.length;i++) {
         d3.selectAll('.leftSideBarInfo').style('color','red')
         infoRace.style('color','white')
         
+        // Gender filters
+        let genderFilters=d3.select('#genderFilters')
+        genderFilters.style('opacity',1)
+        genderFilters.style('pointer-events','all')
+
+
         // Add track 
         let mainMapPromise=new Promise((resolve,reject) => {
             trackUtils.addTrack(gpxList[i],map,[400,0],resolve)
@@ -200,14 +209,12 @@ for (let i=0;i<gpxList.length;i++) {
 
                 let trackVector=utilities.transformToTrackVector(track)
                 const totalLength=trackVector[trackVector.length-1].cumulativeDistance
-                console.log(trackVector)
                 let positionsArray=[]
                 for (let i=0;i<runnersCircles.length;i++) {
                     positionsArray.push([track[0].lat,track[0].lng])
                 }
                 annotations.setCirclesInPositions(runnersCircles,positionsArray)
                 annotations.addCirclesToMap(runnersCircles,map)
-                console.log(runnersCircles)
                 let raceDuration=5000
 
 
@@ -238,8 +245,6 @@ for (let i=0;i<gpxList.length;i++) {
                     if (elapsed>20000) t.stop()
 
                 },30)
-                console.log(positionsArray)
-                console.log(runnersCircles)
                 annotations.setCirclesInPositions(runnersCircles,positionsArray)
                 annotations.addCirclesToMap(runnersCircles,map)
                 

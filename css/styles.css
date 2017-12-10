@@ -1,10 +1,15 @@
+html,body {
+    margin:0;
+    padding:0;
+}
+
+ /* TOP BAR */
+
 #header {
     width:100%;
     height:40px;
     font-size:24px;
     line-height:40px;
-    /* overflow: hidden; */
-    /* background-color: red; */
     background:rgba(255,0,0,0.8);
     position: fixed; 
     top: 00px; /* Position the navbar at the top of the page */
@@ -44,13 +49,10 @@
 }
 
 
-html,body {
-    margin:0;
-    padding:0;
-}
 
 
-/* For the elevation plot */
+/* Elevation plot  */
+
 .line {
   fill: none;
   stroke: steelblue;
@@ -81,6 +83,96 @@ div.tooltip {
     position:relative;
 }
 
+#backgroundPlot {
+    width: 500px;
+    height: 200px;
+    position:absolute;
+    top:25px;
+    right:25px;
+    margin-left:00px;
+    margin-top:00px;
+    /* outline:1px solid green; */
+    pointer-events:none;
+    color:black;
+    background-color:white;
+    opacity:0;
+}
+#plot {
+    opacity:1;
+}
+
+/* Filters */
+#genderFilters {
+    width: 300px;
+    /* height:100px; */
+    top:25px;
+    left:75px;
+    background-color: #CBE3E8;
+    position: absolute;
+    pointer-events:none;
+    opacity:0;
+}
+
+.filterContainer {
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    left: 2px;
+    top: 2px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    font-size: 1.3vmin;
+}
+
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 25px;
+    width: 25px;
+    background-color: #eee;
+    /*border-radius: 50%;*/
+}
+
+.filterContainer input {
+    position: absolute;
+    opacity: 0;
+}
+
+.container:hover input ~ .checkmark {
+    background-color: #ccc;
+}
+.container input:checked ~ .checkmark {
+    background-color: #C0C0C0;
+}
+
+/* Create the indicator (the dot/circle - hidden when not checked) */
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+/* Show the indicator (dot/circle) when checked */
+.filterContainer input:checked ~ .checkmark:after {
+    display: block;
+}
+
+/* Style the indicator (dot/circle) */
+.filterContainer .checkmark:after {
+ 	top: 8px;
+	left: 8px;
+	width: 8px;
+	height: 8px;
+	/*border-radius: 50%;*/
+	background: white;
+}
+
+/* Left bar */
 #leftBar {width:20%;
     height:95%;
     overflow-y: scroll;
@@ -93,6 +185,7 @@ div.tooltip {
     margin-left:70px;
     margin-top:40px;
     padding-bottom:40px;
+    z-index:2;
 }
 
 #leftSideBarContainer { 
@@ -116,6 +209,9 @@ div.tooltip {
     margin:0;
 }
 
+
+
+/* Bar */
 #map { height: 700px; 
     width:100%;
     z-index:0;
@@ -123,23 +219,7 @@ div.tooltip {
     padding:0;
 }
 
-#backgroundPlot {
-    width: 500px;
-    height: 200px;
-    position:absolute;
-    top:25px;
-    right:25px;
-    margin-left:00px;
-    margin-top:00px;
-    /* outline:1px solid green; */
-    pointer-events:none;
-    color:black;
-    background-color:white;
-    opacity:0;
-}
-#plot {
-    opacity:1;
-}
+/* Footer  */
 #info{
     background-color:white;
     margin-top:40px;

@@ -63,7 +63,7 @@ let mouseoutOpacity = className => {
 /// Runners ///
 let runnersStyle = { color: 'red',
     fillColor:'red',
-    fillOpacity:1,
+    opacity:1,
     radius: 2,
     seconds:0,
     devX:0,
@@ -73,7 +73,18 @@ let runnersStyle = { color: 'red',
     count:0,
 }
 
+let applyFilterToRunner = runner => {
+        if (runner.male) {
+            runner.options.color="#49A8B1"
+        } else {
+            runner.options.color="#CA6FA8"
+        }
+}
+
 let createRunnersCircles = (runnersData) => {
+
+    let gender=d3.select('#genderFilters')
+
     let runnersCircles=[]
     for (let i=0;i<runnersData.length;i++) {
         let circle=L.circleMarker([46.5,6.8],runnersStyle)
@@ -83,7 +94,9 @@ let createRunnersCircles = (runnersData) => {
         circle.male=runnersData[i][3]
         circle.birth=runnersData[i][4]
         circle.count=runnersData[i][5]
+        applyFilterToRunner(circle)
         runnersCircles.push(circle)
+
 
     }
     return runnersCircles
@@ -92,6 +105,12 @@ let createRunnersCircles = (runnersData) => {
 let setCirclesInPositions = (circles,positions) => {
     for (let i=0;i<circles.length;i++) {
         circles[i].setLatLng([positions[i][0]+circles[i].devX,positions[i][1]+circles[i].devY])
+        applyFilterToRunner(circles[i])
+        // if (circles[i].male) {
+        //     circles[i].options.color="#49A8B1"
+        // } else {
+        //     circles[i].options.color="#CA6FA8"
+        // }
     }
 }
 

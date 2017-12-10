@@ -99,7 +99,9 @@ let getFiltersStatus = () => {
     let count_2_5=d3.select('#count_2_5').node().checked
     let count_6=d3.select('#count_6').node().checked
 
-
+    let gender=d3.select('#gender').node().checked
+    let age=d3.select('#age').node().checked
+    let experience=d3.select('#experience').node().checked
 }
 
 let createRunnersCircles = (runnersData) => {

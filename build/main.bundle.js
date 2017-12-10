@@ -5557,6 +5557,10 @@ var getFiltersStatus = function getFiltersStatus() {
     var count_1 = d3.select('#count_1').node().checked;
     var count_2_5 = d3.select('#count_2_5').node().checked;
     var count_6 = d3.select('#count_6').node().checked;
+
+    var gender = d3.select('#gender').node().checked;
+    var age = d3.select('#age').node().checked;
+    var experience = d3.select('#experience').node().checked;
 };
 
 var createRunnersCircles = function createRunnersCircles(runnersData) {
@@ -23641,6 +23645,10 @@ var _loop = function _loop(i) {
         var experienceFilters = d3.select('#experienceFilters');
         experienceFilters.style('opacity', 1);
         experienceFilters.style('pointer-events', 'all');
+
+        var classifiers = d3.select('#classifiers');
+        classifiers.style('opacity', 1);
+        classifiers.style('pointer-events', 'all');
 
         // Add track 
         var mainMapPromise = new Promise(function (resolve, reject) {

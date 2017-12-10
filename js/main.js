@@ -182,6 +182,10 @@ for (let i=0;i<gpxList.length;i++) {
         experienceFilters.style('opacity',1)
         experienceFilters.style('pointer-events','all')
 
+        let classifiers=d3.select('#classifiers')
+        classifiers.style('opacity',1)
+        classifiers.style('pointer-events','all')
+
         // Add track 
         let mainMapPromise=new Promise((resolve,reject) => {
             trackUtils.addTrack(gpxList[i],map,[400,0],resolve)

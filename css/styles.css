@@ -113,6 +113,28 @@ div.tooltip {
     opacity:0;
 }
 
+#ageFilters {
+    width: 300px;
+    /* height:100px; */
+    top:125px;
+    left:75px;
+    background-color: #CBE3E8;
+    position: absolute;
+    pointer-events:none;
+    opacity:0;
+}
+
+#experienceFilters {
+    width: 300px;
+    /* height:100px; */
+    top:325px;
+    left:75px;
+    background-color: #CBE3E8;
+    position: absolute;
+    pointer-events:none;
+    opacity:0;
+}
+
 .filterContainer {
     display: block;
     position: relative;

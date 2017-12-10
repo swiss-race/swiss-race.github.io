@@ -169,11 +169,18 @@ for (let i=0;i<gpxList.length;i++) {
         d3.selectAll('.leftSideBarInfo').style('color','red')
         infoRace.style('color','white')
         
-        // Gender filters
+        // Filters
         let genderFilters=d3.select('#genderFilters')
         genderFilters.style('opacity',1)
         genderFilters.style('pointer-events','all')
 
+        let ageFilters=d3.select('#ageFilters')
+        ageFilters.style('opacity',1)
+        ageFilters.style('pointer-events','all')
+
+        let experienceFilters=d3.select('#experienceFilters')
+        experienceFilters.style('opacity',1)
+        experienceFilters.style('pointer-events','all')
 
         // Add track 
         let mainMapPromise=new Promise((resolve,reject) => {

@@ -80,12 +80,34 @@ let applyFilterToRunner = runner => {
             runner.options.color="#CA6FA8"
         }
 }
+ 
+let getFiltersStatus = () => {
+
+    let females_and_males=d3.select('#females_and_males').node().checked
+    let males_only=d3.select('#males_only').node().checked
+    let females_only=d3.select('#females_only').node().checked
+
+    let ages_all=d3.select('#ages_all').node().checked
+    let ages_7_20=d3.select('#ages_7_20').node().checked
+    let ages_20_33=d3.select('#ages_20_33').node().checked
+    let ages_33_47=d3.select('#ages_33_47').node().checked
+    let ages_47_60=d3.select('#ages_47_60').node().checked
+    let ages_60_=d3.select('#ages_60_').node().checked
+
+    let count_all=d3.select('#count_all').node().checked
+    let count_1=d3.select('#count_1').node().checked
+    let count_2_5=d3.select('#count_2_5').node().checked
+    let count_6=d3.select('#count_6').node().checked
+
+
+}
 
 let createRunnersCircles = (runnersData) => {
 
-    let gender=d3.select('#genderFilters')
+    // let gender=document.getElementById('females_and_males')
 
     let runnersCircles=[]
+    getFiltersStatus()
     for (let i=0;i<runnersData.length;i++) {
         let circle=L.circleMarker([46.5,6.8],runnersStyle)
         circle.seconds=runnersData[i][0]
@@ -103,6 +125,7 @@ let createRunnersCircles = (runnersData) => {
 }
 
 let setCirclesInPositions = (circles,positions) => {
+    getFiltersStatus()
     for (let i=0;i<circles.length;i++) {
         circles[i].setLatLng([positions[i][0]+circles[i].devX,positions[i][1]+circles[i].devY])
         applyFilterToRunner(circles[i])

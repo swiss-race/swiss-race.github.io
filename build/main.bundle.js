@@ -5540,11 +5540,31 @@ var applyFilterToRunner = function applyFilterToRunner(runner) {
     }
 };
 
+var getFiltersStatus = function getFiltersStatus() {
+
+    var females_and_males = d3.select('#females_and_males').node().checked;
+    var males_only = d3.select('#males_only').node().checked;
+    var females_only = d3.select('#females_only').node().checked;
+
+    var ages_all = d3.select('#ages_all').node().checked;
+    var ages_7_20 = d3.select('#ages_7_20').node().checked;
+    var ages_20_33 = d3.select('#ages_20_33').node().checked;
+    var ages_33_47 = d3.select('#ages_33_47').node().checked;
+    var ages_47_60 = d3.select('#ages_47_60').node().checked;
+    var ages_60_ = d3.select('#ages_60_').node().checked;
+
+    var count_all = d3.select('#count_all').node().checked;
+    var count_1 = d3.select('#count_1').node().checked;
+    var count_2_5 = d3.select('#count_2_5').node().checked;
+    var count_6 = d3.select('#count_6').node().checked;
+};
+
 var createRunnersCircles = function createRunnersCircles(runnersData) {
 
-    var gender = d3.select('#genderFilters');
+    // let gender=document.getElementById('females_and_males')
 
     var runnersCircles = [];
+    getFiltersStatus();
     for (var i = 0; i < runnersData.length; i++) {
         var _circle = L.circleMarker([46.5, 6.8], runnersStyle);
         _circle.seconds = runnersData[i][0];
@@ -5560,6 +5580,7 @@ var createRunnersCircles = function createRunnersCircles(runnersData) {
 };
 
 var setCirclesInPositions = function setCirclesInPositions(circles, positions) {
+    getFiltersStatus();
     for (var i = 0; i < circles.length; i++) {
         circles[i].setLatLng([positions[i][0] + circles[i].devX, positions[i][1] + circles[i].devY]);
         applyFilterToRunner(circles[i]);
@@ -23608,10 +23629,18 @@ var _loop = function _loop(i) {
         d3.selectAll('.leftSideBarInfo').style('color', 'red');
         infoRace.style('color', 'white');
 
-        // Gender filters
+        // Filters
         var genderFilters = d3.select('#genderFilters');
         genderFilters.style('opacity', 1);
         genderFilters.style('pointer-events', 'all');
+
+        var ageFilters = d3.select('#ageFilters');
+        ageFilters.style('opacity', 1);
+        ageFilters.style('pointer-events', 'all');
+
+        var experienceFilters = d3.select('#experienceFilters');
+        experienceFilters.style('opacity', 1);
+        experienceFilters.style('pointer-events', 'all');
 
         // Add track 
         var mainMapPromise = new Promise(function (resolve, reject) {

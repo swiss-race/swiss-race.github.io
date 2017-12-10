@@ -23452,12 +23452,14 @@ window.onscroll = function () {
 var MainStatus = function () {
     function MainStatus(view, leftBar) {
         var currentTrack = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+        var currentPoints = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
 
         _classCallCheck(this, MainStatus);
 
         this._view = view;
         this._leftBar = leftBar;
         this._currentTrack = currentTrack;
+        this._currentPoints = currentPoints;
     }
 
     _createClass(MainStatus, [{
@@ -23475,6 +23477,22 @@ var MainStatus = function () {
         },
         set: function set(newLeftBar) {
             this._leftBar = newLeftBar;
+        }
+    }, {
+        key: 'currentTrack',
+        get: function get() {
+            return this._currentTrack;
+        },
+        set: function set(newCurrentTrack) {
+            this._currentTrack = newCurrentTrack;
+        }
+    }, {
+        key: 'currentPoints',
+        get: function get() {
+            return this._currentPoints;
+        },
+        set: function set(newCurrentPoints) {
+            this._currentPoints = newCurrentPoints;
         }
     }]);
 
@@ -23551,6 +23569,16 @@ var _loop = function _loop(i) {
             mainStatus.currentTrack = 0;
             mainStatus.view = 0;
         }
+        if (mainStatus.view == 2) {
+            map.removeLayer(mainStatus.currentTrack);
+            mainStatus.currentTrack = 0;
+            mainStatus.view = 0;
+            for (var _i = 0; _i < mainStatus.currentPoints.length; _i++) {
+                console.log(mainStatus.currentPoints[_i]);
+                map.removeLayer(mainStatus.currentPoints[_i]);
+            }
+            mainStatus.currentPoints.length = 0;
+        }
         d3.select('#elevationPlotSVG').remove();
         d3.select('#backgroundPlot').style('opacity', 0);
         d3.selectAll('#leftSideBarContainer').attr('data-colorchange', 1).style('background', 'rgba(255,255,255,0.01');
@@ -23581,11 +23609,20 @@ var _loop = function _loop(i) {
             var runnersCircles = drawRunners(runnersData);
             mainMapPromise.then(function (object) {
                 var track = object[1]._latlngs;
+
+                var trackJSON = utilities.transformToGeoJSON(track);
+                var trackMap = _leaflet2.default.geoJSON(trackJSON, {
+                    style: annotations.lineStyle
+                }).addTo(map);
+                mainStatus.currentTrack = trackMap;
+                mainStatus.view = 2;
+                mainStatus.currentPoints = runnersCircles;
+
                 var trackVector = utilities.transformToTrackVector(track);
                 var totalLength = trackVector[trackVector.length - 1].cumulativeDistance;
                 console.log(trackVector);
                 var positionsArray = [];
-                for (var _i = 0; _i < runnersCircles.length; _i++) {
+                for (var _i2 = 0; _i2 < runnersCircles.length; _i2++) {
                     positionsArray.push([track[0].lat, track[0].lng]);
                 }
                 annotations.setCirclesInPositions(runnersCircles, positionsArray);
@@ -23593,20 +23630,12 @@ var _loop = function _loop(i) {
                 console.log(runnersCircles);
                 var raceDuration = 5000;
 
-                // for (let i=0;i<positionsArray.length;i++) {
-                //     positionsArray[i]=[track[100].lat,track[100].lng]
-                // }
-                // annotations.setCirclesInPositions(runnersCircles,positionsArray)
-                // annotations.addCirclesToMap(runnersCircles,map)
-
-
                 var t = d3.interval(function (elapsed) {
 
-                    console.log(elapsed);
                     // 10 min = 1s
                     var increaseFactor = 600;
-                    for (var _i2 = 0; _i2 < runnersCircles.length; _i2++) {
-                        var totalTimeRunner = runnersCircles[_i2].seconds / increaseFactor;
+                    for (var _i3 = 0; _i3 < runnersCircles.length; _i3++) {
+                        var totalTimeRunner = runnersCircles[_i3].seconds / increaseFactor;
                         var fractionRace = elapsed / totalTimeRunner * trackVector[trackVector.length - 1].cumulativeDistance / 1000;
 
                         for (var j = 1; j < trackVector.length; j++) {
@@ -23616,7 +23645,7 @@ var _loop = function _loop(i) {
 
                                 var newLat = trackVector[j - 1].coordinates[0][1] + fraction * (trackVector[j].coordinates[0][1] - trackVector[j - 1].coordinates[0][1]);
                                 var newLng = trackVector[j - 1].coordinates[0][0] + fraction * (trackVector[j].coordinates[0][0] - trackVector[j - 1].coordinates[0][0]);
-                                positionsArray[_i2] = [newLat, newLng];
+                                positionsArray[_i3] = [newLat, newLng];
                                 break;
                             }
                         }
@@ -23699,8 +23728,8 @@ var parseRunners = function parseRunners(data) {
         seconds += 3600 * hours + 60 * minutes;
 
         runners_data[i][0] = seconds;
-        runners_data[i][1] = Math.random() * stdX;
-        runners_data[i][2] = Math.random() * stdY;
+        runners_data[i][1] = (0.5 - Math.random()) * stdX;
+        runners_data[i][2] = (0.5 - Math.random()) * stdY;
         // runners_data[i][1] = 0
         // runners_data[i][2] = 0
         if (data[i].Sex == "F") runners_data[i][3] = 0;

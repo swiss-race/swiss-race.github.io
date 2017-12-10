@@ -37,10 +37,11 @@ window.onscroll = () => {
 }
 
 class MainStatus {
-    constructor(view,leftBar,currentTrack=0) {
+    constructor(view,leftBar,currentTrack=0,currentPoints=0) {
         this._view = view;
         this._leftBar = leftBar;
         this._currentTrack = currentTrack;
+        this._currentPoints = currentPoints;
     }
     get view() {
         return this._view
@@ -53,6 +54,18 @@ class MainStatus {
     }
     set leftBar(newLeftBar) {
         this._leftBar=newLeftBar
+    }
+    get currentTrack() {
+        return this._currentTrack
+    }
+    set currentTrack(newCurrentTrack) {
+        this._currentTrack=newCurrentTrack
+    }
+    get currentPoints() {
+        return this._currentPoints
+    }
+    set currentPoints(newCurrentPoints) {
+        this._currentPoints=newCurrentPoints
     }
 }
 
@@ -133,6 +146,16 @@ for (let i=0;i<gpxList.length;i++) {
             mainStatus.currentTrack=0
             mainStatus.view=0
         }
+        if (mainStatus.view==2) {
+            map.removeLayer(mainStatus.currentTrack)
+            mainStatus.currentTrack=0
+            mainStatus.view=0
+            for (let i=0;i<mainStatus.currentPoints.length;i++) {
+                console.log(mainStatus.currentPoints[i])
+                map.removeLayer(mainStatus.currentPoints[i])
+            }
+            mainStatus.currentPoints.length=0
+        }
         d3.select('#elevationPlotSVG').remove()
         d3.select('#backgroundPlot').style('opacity',0)
         d3.selectAll('#leftSideBarContainer')
@@ -165,6 +188,16 @@ for (let i=0;i<gpxList.length;i++) {
             let runnersCircles=drawRunners(runnersData)
             mainMapPromise.then((object) => {
                 let track=object[1]._latlngs
+                
+                let trackJSON=utilities.transformToGeoJSON(track)
+                let trackMap=L.geoJSON(trackJSON, {
+                    style: annotations.lineStyle,
+                }).addTo(map)
+                mainStatus.currentTrack=trackMap
+                mainStatus.view=2
+                mainStatus.currentPoints=runnersCircles
+
+
                 let trackVector=utilities.transformToTrackVector(track)
                 const totalLength=trackVector[trackVector.length-1].cumulativeDistance
                 console.log(trackVector)
@@ -181,7 +214,6 @@ for (let i=0;i<gpxList.length;i++) {
 
                 let t=d3.interval(elapsed => {
 
-                    console.log(elapsed)
                     // 10 min = 1s
                     let increaseFactor=600
                     for (let i=0;i<runnersCircles.length;i++) {
@@ -280,8 +312,8 @@ let parseRunners= (data) => {
         seconds += 3600 * hours + 60 * minutes
 
         runners_data[i][0] = seconds
-        runners_data[i][1] = Math.random() * stdX
-        runners_data[i][2] = Math.random() * stdY
+        runners_data[i][1] =(0.5 - Math.random()) * stdX
+        runners_data[i][2] = (0.5 - Math.random()) * stdY
         // runners_data[i][1] = 0
         // runners_data[i][2] = 0
         if (data[i].Sex == "F") runners_data[i][3] = 0

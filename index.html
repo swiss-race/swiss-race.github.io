@@ -39,12 +39,12 @@
 <div id="genderFilters">
 <label class="filterContainer">
 	<font face="verdana" color="black">Females & Males</font>
-  <input id="females_and_males" type="radio" name="gender_filter" value="females_and_males" checked="checked" >
+  <input id="females_and_males" type="radio" name="gender_filter" value="females_and_males"  >
   <span class="checkmark"></span>
 </label>
 <label class="filterContainer">
 	<font face="verdana" color="black">Females Only</font>
-  <input id="females_only" type="radio" name="gender_filter" value="females_only">
+  <input id="females_only" type="radio" name="gender_filter" value="females_only" checked="checked">
   <span class="checkmark"></span>
 </label>
 <label class="filterContainer">
@@ -113,7 +113,7 @@
 <div id="classifiers">
 <label class="filterContainer">
 	<font face="verdana" color="black">Gender</font>
-  <input id="gender" type="radio" name="classifier" value="gender">
+  <input id="gender" type="radio" name="classifier" value="gender" checked="checked">
   <span class="checkmark"></span>
 </label>
 <label class="filterContainer">
@@ -123,9 +123,18 @@
 </label>
 <label class="filterContainer">
 	<font face="verdana" color="black">Experience</font>
-  <input id="experience" type="radio" name="classifier" value="experience"  checked="checked">
+  <input id="experience" type="radio" name="classifier" value="experience"  >
   <span class="checkmark"></span>
 </label>
+</div>
+
+<div id="slidecontainer">
+	<font face="verdana" color="black">Speed</font>
+    <input type="range" min="0" max="20" value="5" class="slider" id="speed_slider" >
+  <font face="verdana" color="black">Time</font>
+	<input type="range" min="0" max="70" value="0" class="slider" id="time_slider" onchange="time_slider_change(this.value)">
+	<font face="verdana" color="black">Fraction</font>
+	<input type="range" min="0" max="100" value="5" class="slider" id="fraction_slider" onchange="fraction_slider_change(this.value)">
 </div>
 
 <div id="info">

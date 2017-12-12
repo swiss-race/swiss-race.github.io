@@ -117,6 +117,7 @@ raceButton.on('click',() => {
     }
 })
 
+
 ////// ADD SIDE BAR //////
 let gpxList=gpx_files.gpxList
 let leftBar=d3.select('#leftBar')
@@ -186,6 +187,15 @@ for (let i=0;i<gpxList.length;i++) {
         classifiers.style('opacity',1)
         classifiers.style('pointer-events','all')
 
+        let slideContainer=d3.select('#slidecontainer')
+        slideContainer.style('opacity',1)
+        slideContainer.style('pointer-events','all')
+
+        let speedSlider=d3.select('#speed_slider').node()
+        speedSlider.onchange = param => {
+            console.log(speedSlider.value)
+        }
+
         // Add track 
         let mainMapPromise=new Promise((resolve,reject) => {
             trackUtils.addTrack(gpxList[i],map,[400,0],resolve)
@@ -226,17 +236,18 @@ for (let i=0;i<gpxList.length;i++) {
                 }
                 annotations.setCirclesInPositions(runnersCircles,positionsArray)
                 annotations.addCirclesToMap(runnersCircles,map)
-                let raceDuration=5000
 
 
-
+                let startFractionRace=[...new Array(runnersCircles.length)].map(x => 0)
+                let timeStep=30
                 let t=d3.interval(elapsed => {
 
                     // 10 min = 1s
-                    let increaseFactor=600
+                    let increaseFactor=speedSlider.value*50
                     for (let i=0;i<runnersCircles.length;i++) {
                         let totalTimeRunner=runnersCircles[i].seconds/increaseFactor
-                        let fractionRace=elapsed/totalTimeRunner*trackVector[trackVector.length-1].cumulativeDistance/1000
+                        let fractionRace=startFractionRace[i] + timeStep/totalTimeRunner*trackVector[trackVector.length-1].cumulativeDistance/1000
+                        startFractionRace[i]=fractionRace
 
                         for (let j=1;j<trackVector.length;j++) {
                             if (trackVector[j].cumulativeDistance>fractionRace) {
@@ -253,11 +264,11 @@ for (let i=0;i<gpxList.length;i++) {
                     }
                     annotations.setCirclesInPositions(runnersCircles,positionsArray)
                     annotations.addCirclesToMap(runnersCircles,map)
-                    if (elapsed>20000) t.stop()
+                    // if (elapsed>20000) t.stop()
 
-                },30)
-                annotations.setCirclesInPositions(runnersCircles,positionsArray)
-                annotations.addCirclesToMap(runnersCircles,map)
+                },timeStep)
+                // annotations.setCirclesInPositions(runnersCircles,positionsArray)
+                // annotations.addCirclesToMap(runnersCircles,map)
                 
             })
         })

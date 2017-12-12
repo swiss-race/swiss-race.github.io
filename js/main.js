@@ -33,11 +33,12 @@ window.onscroll = () => {
 }
 
 class MainStatus {
-    constructor(view,leftBar,currentTrack=0,currentPoints=0) {
+    constructor(view,leftBar,currentTrack=0,currentPoints=0,gpxFile=0) {
         this._view = view;
         this._leftBar = leftBar;
         this._currentTrack = currentTrack;
         this._currentPoints = currentPoints;
+        this._gpxFile = gpxFile;
     }
     get view() {
         return this._view
@@ -62,6 +63,12 @@ class MainStatus {
     }
     set currentPoints(newCurrentPoints) {
         this._currentPoints=newCurrentPoints
+    }
+    get gpxFile() {
+        return this._gpxFile
+    }
+    set gpxFile(newGpxFile) {
+        this._gpxFile=newGpxFile
     }
 }
 
@@ -97,14 +104,86 @@ raceButton.on('mouseout',() => {
 raceButton.on('click',() => {
     let leftBar=d3.select('#leftBar')
     if (mainStatus.leftBar==0) {
-        menu.showLeftBar()
-        mainStatus.leftBar=1
+        menu.showLeftBar(mainStatus)
     } else {
-        menu.hideLeftBar()
-        mainStatus.leftBar=0
+        menu.hideLeftBar(mainStatus)
     }
 })
 
+let changeView=d3.select('#changeView')
+changeView.on('click', () => {
+    if (mainStatus.view==1) {
+        setUpView2(mainStatus.gpxFile,map,mainStatus)
+
+    } else if (mainStatus.view==2) {
+        setUpView1(mainStatus.gpxFile,map,mainStatus)
+        // menu.removeAllTrackView()
+    }
+})
+
+let setUpView1 = (gpxFile,map,mainStatus) => {
+    menu.removeAllTrackView(mainStatus,map)
+    menu.showChangeViewButton()
+    mainStatus.gpxFile=gpxFile
+
+    let mainMapPromise=new Promise((resolve,reject) => {
+        trackUtils.addTrack(gpxFile,map,[400,0],resolve)
+    })
+    mainMapPromise.then((object) => {
+        let line=object[1]
+        let currentTrack=mapUtils.addPoint(line,map,0)
+        mainStatus.view=1
+        mainStatus.currentTrack=currentTrack
+    })
+}
+
+let setUpView2 = (gpxFile,map,mainStatus) => {
+    menu.removeAllTrackView(mainStatus,map)
+    menu.showChangeViewButton()
+    mainStatus.gpxFile=gpxFile
+
+    let mainMapPromise=new Promise((resolve,reject) => {
+        trackUtils.addTrack(gpxFile,map,[400,0],resolve)
+    })
+    
+    // Add new moving points
+    let sliderPromise=new Promise((resolve,reject) => {
+        d3.csv('dataset/df_20kmLausanne_count.csv',(data) => {
+            resolve(data)
+        })
+    })
+    sliderPromise.then((object) => {
+        let timeContainer=filters.showTimeContainer()
+        filters.showFilters()
+
+        let runnersData=parseRunners(object)
+        let runnersCircles=drawRunners(runnersData)
+        mainMapPromise.then((object) => {
+            let track=object[1]._latlngs
+            
+            let trackJSON=utilities.transformToGeoJSON(track)
+            let trackMap=L.geoJSON(trackJSON, {
+                style: annotations.lineStyle,
+            }).addTo(map)
+            mainStatus.currentTrack=trackMap
+            mainStatus.view=2
+            mainStatus.currentPoints=runnersCircles
+
+
+            let trackVector=utilities.transformToTrackVector(track)
+            const totalLength=trackVector[trackVector.length-1].cumulativeDistance
+            let positionsArray=[]
+            for (let i=0;i<runnersCircles.length;i++) {
+                positionsArray.push([track[0].lat,track[0].lng])
+            }
+            annotations.setCirclesInPositions(runnersCircles,positionsArray)
+            annotations.addCirclesToMap(runnersCircles,map)
+
+
+            filters.runSimulation(trackVector,runnersCircles,positionsArray,map)
+        })
+    })
+}
 
 ////// ADD SIDE BAR //////
 let gpxList=gpx_files.gpxList
@@ -139,15 +218,15 @@ for (let i=0;i<gpxList.length;i++) {
         leftSideBarContainer.attr('data-colorchange',0)
         d3.selectAll('.leftSideBarInfo').style('color','red')
         infoRace.style('color','white')
+
+        setUpView1(gpxList[i],map,mainStatus)
         
 
-        filters.showFilters()
-        let timeContainer=filters.showTimeContainer()
 
         // Add track 
-        let mainMapPromise=new Promise((resolve,reject) => {
-            trackUtils.addTrack(gpxList[i],map,[400,0],resolve)
-        })
+        // let mainMapPromise=new Promise((resolve,reject) => {
+        //     trackUtils.addTrack(gpxList[i],map,[400,0],resolve)
+        // })
         // mainMapPromise.then((object) => {
         //     let line=object[1]
         //     let currentTrack=mapUtils.addPoint(line,map,0)
@@ -155,89 +234,43 @@ for (let i=0;i<gpxList.length;i++) {
         //     mainStatus.currentTrack=currentTrack
         // })
         
-        // Add new moving points
-        let sliderPromise=new Promise((resolve,reject) => {
-            d3.csv('dataset/df_20kmLausanne_count.csv',(data) => {
-                resolve(data)
-            })
-        })
-        sliderPromise.then((object) => {
-            let runnersData=parseRunners(object)
-            let runnersCircles=drawRunners(runnersData)
-            mainMapPromise.then((object) => {
-                let track=object[1]._latlngs
-                
-                let trackJSON=utilities.transformToGeoJSON(track)
-                let trackMap=L.geoJSON(trackJSON, {
-                    style: annotations.lineStyle,
-                }).addTo(map)
-                mainStatus.currentTrack=trackMap
-                mainStatus.view=2
-                mainStatus.currentPoints=runnersCircles
-
-
-                let trackVector=utilities.transformToTrackVector(track)
-                const totalLength=trackVector[trackVector.length-1].cumulativeDistance
-                let positionsArray=[]
-                for (let i=0;i<runnersCircles.length;i++) {
-                    positionsArray.push([track[0].lat,track[0].lng])
-                }
-                annotations.setCirclesInPositions(runnersCircles,positionsArray)
-                annotations.addCirclesToMap(runnersCircles,map)
-
-
-                let startFractionRace=[...new Array(runnersCircles.length)].map(x => 0)
-                let timeStep=30
-                let timeStart=new Date(0)
-                let t=d3.interval(elapsed => {
-
-                    // 10 min = 1s
-                    let speedSlider=d3.select('#speed_slider').node()
-                    let increaseFactor=speedSlider.value*50
-                    let addTimer=increaseFactor*timeStep+timeStart.getTime()
-                    timeStart.setTime(addTimer)
-                    let seconds=timeStart.getSeconds()
-                    if (seconds<10)
-                        seconds='0'+seconds
-
-                    let timeString=(timeStart.getHours()-1+ 'h '+ timeStart.getMinutes()+':'+seconds)
-                    // console.log(timeString)
-                    timeContainer.node().innerHTML=timeString
-
-
-                    let stopSimulation=true
-                    for (let i=0;i<runnersCircles.length;i++) {
-                        let totalTimeRunner=runnersCircles[i].seconds/increaseFactor
-                        let fractionRace=startFractionRace[i] + timeStep/totalTimeRunner*trackVector[trackVector.length-1].cumulativeDistance/1000
-                        startFractionRace[i]=fractionRace
-
-                        if (fractionRace<trackVector[trackVector.length-1].cumulativeDistance) {
-                            stopSimulation=false
-                        }
-
-                        for (let j=1;j<trackVector.length;j++) {
-                            if (trackVector[j].cumulativeDistance>fractionRace) {
-                                let difference=fractionRace-trackVector[j-1].cumulativeDistance
-                                let fraction=difference/(trackVector[j].cumulativeDistance-trackVector[j-1].cumulativeDistance)
-
-
-                                let newLat=trackVector[j-1].coordinates[0][1]+fraction*(trackVector[j].coordinates[0][1]-trackVector[j-1].coordinates[0][1])
-                                let newLng=trackVector[j-1].coordinates[0][0]+fraction*(trackVector[j].coordinates[0][0]-trackVector[j-1].coordinates[0][0])
-                                positionsArray[i]=[newLat,newLng]
-                                break
-                            }
-                        }
-                    }
-                    annotations.setCirclesInPositions(runnersCircles,positionsArray)
-                    annotations.addCirclesToMap(runnersCircles,map)
-
-                    if (stopSimulation) t.stop()
-                },timeStep)
-                // annotations.setCirclesInPositions(runnersCircles,positionsArray)
-                // annotations.addCirclesToMap(runnersCircles,map)
-                
-            })
-        })
+        // // Add new moving points
+        // let sliderPromise=new Promise((resolve,reject) => {
+        //     d3.csv('dataset/df_20kmLausanne_count.csv',(data) => {
+        //         resolve(data)
+        //     })
+        // })
+        // sliderPromise.then((object) => {
+        //     let timeContainer=filters.showTimeContainer()
+        //     filters.showFilters()
+        //
+        //     let runnersData=parseRunners(object)
+        //     let runnersCircles=drawRunners(runnersData)
+        //     mainMapPromise.then((object) => {
+        //         let track=object[1]._latlngs
+        //
+        //         let trackJSON=utilities.transformToGeoJSON(track)
+        //         let trackMap=L.geoJSON(trackJSON, {
+        //             style: annotations.lineStyle,
+        //         }).addTo(map)
+        //         mainStatus.currentTrack=trackMap
+        //         mainStatus.view=2
+        //         mainStatus.currentPoints=runnersCircles
+        //
+        //
+        //         let trackVector=utilities.transformToTrackVector(track)
+        //         const totalLength=trackVector[trackVector.length-1].cumulativeDistance
+        //         let positionsArray=[]
+        //         for (let i=0;i<runnersCircles.length;i++) {
+        //             positionsArray.push([track[0].lat,track[0].lng])
+        //         }
+        //         annotations.setCirclesInPositions(runnersCircles,positionsArray)
+        //         annotations.addCirclesToMap(runnersCircles,map)
+        //
+        //
+        //         filters.runSimulation(trackVector,runnersCircles,positionsArray,map)
+        //     })
+        // })
 
     })
     leftSideBarContainer.on('mouseover',() => {

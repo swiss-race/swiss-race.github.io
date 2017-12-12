@@ -1,4 +1,5 @@
 import * as d3 from 'd3'
+import * as annotations from './annotations.js'
 
 
 let showFilters = () => {
@@ -56,5 +57,54 @@ let hideFilters = () => {
 }
 
 
+let runSimulation = (trackVector,runnersCircles,positionsArray,map) => {
+    let timeContainer=d3.select('#time')
+    let startFractionRace=[...new Array(runnersCircles.length)].map(x => 0)
+    let timeStep=30
+    let timeStart=new Date(0)
+    let t=d3.interval(elapsed => {
 
-export {showFilters,showTimeContainer,hideFilters}
+        // 10 min = 1s
+        let speedSlider=d3.select('#speed_slider').node()
+        let increaseFactor=speedSlider.value*50
+        let addTimer=increaseFactor*timeStep+timeStart.getTime()
+        timeStart.setTime(addTimer)
+        let seconds=timeStart.getSeconds()
+        if (seconds<10)
+            seconds='0'+seconds
+
+        let timeString=(timeStart.getHours()-1+ 'h '+ timeStart.getMinutes()+':'+seconds)
+        timeContainer.node().innerHTML=timeString
+
+
+        let stopSimulation=true
+        for (let i=0;i<runnersCircles.length;i++) {
+            let totalTimeRunner=runnersCircles[i].seconds/increaseFactor
+            let fractionRace=startFractionRace[i] + timeStep/totalTimeRunner*trackVector[trackVector.length-1].cumulativeDistance/1000
+            startFractionRace[i]=fractionRace
+
+            if (fractionRace<trackVector[trackVector.length-1].cumulativeDistance) {
+                stopSimulation=false
+            }
+
+            for (let j=1;j<trackVector.length;j++) {
+                if (trackVector[j].cumulativeDistance>fractionRace) {
+                    let difference=fractionRace-trackVector[j-1].cumulativeDistance
+                    let fraction=difference/(trackVector[j].cumulativeDistance-trackVector[j-1].cumulativeDistance)
+
+
+                    let newLat=trackVector[j-1].coordinates[0][1]+fraction*(trackVector[j].coordinates[0][1]-trackVector[j-1].coordinates[0][1])
+                    let newLng=trackVector[j-1].coordinates[0][0]+fraction*(trackVector[j].coordinates[0][0]-trackVector[j-1].coordinates[0][0])
+                    positionsArray[i]=[newLat,newLng]
+                    break
+                }
+            }
+        }
+        annotations.setCirclesInPositions(runnersCircles,positionsArray)
+        annotations.addCirclesToMap(runnersCircles,map)
+
+        if (stopSimulation) t.stop()
+    },timeStep)
+}
+
+export {showFilters,showTimeContainer,hideFilters,runSimulation}

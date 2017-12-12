@@ -8,15 +8,11 @@ import * as utilities from './utilities.js'
 import * as elevationUtils from './elevation.js'
 import * as annotations from './annotations.js'
 import * as gpx_files from './gpx_files.js'
-// import $ from 'jquery'
-// window.$ = $;
-// window.jQuery = jQuery;
-
-// console.log(window.jQuery)
-// console.log($)
+import * as filters from './filters.js'
+import * as menu from './menu.js'
 
 
-// var top1 = $('#header').offset()
+
 let lastPosition=0
 window.onscroll = () => {
     let position=window.pageYOffset
@@ -82,13 +78,7 @@ homeButton.on('mouseover',() => {
 homeButton.on('mouseout',() => {
 })
 homeButton.on('click',() => {
-    if (mainStatus.view==1) {
-        map.removeLayer(mainStatus.currentTrack)
-        mainStatus.currentTrack=0
-        mainStatus.view=0
-    }
-    d3.select('#elevationPlotSVG').remove()
-    d3.select('#backgroundPlot').style('opacity',0)
+    menu.removeAllTrackView(mainStatus,map)
     d3.selectAll('#leftSideBarContainer')
         .attr('data-colorchange',1)
         .style('background','rgba(255,255,255,0.01')
@@ -107,12 +97,10 @@ raceButton.on('mouseout',() => {
 raceButton.on('click',() => {
     let leftBar=d3.select('#leftBar')
     if (mainStatus.leftBar==0) {
-        leftBar.style('opacity',1)
-        leftBar.style('pointer-events','all')
+        menu.showLeftBar()
         mainStatus.leftBar=1
     } else {
-        leftBar.style('opacity',0)
-        leftBar.style('pointer-events','none')
+        menu.hideLeftBar()
         mainStatus.leftBar=0
     }
 })
@@ -142,26 +130,8 @@ for (let i=0;i<gpxList.length;i++) {
     infoRace.html('')
 
     leftSideBarContainer.on('click',() => {
-        if (mainStatus.view==1) {
-            map.removeLayer(mainStatus.currentTrack)
-            mainStatus.currentTrack=0
-            mainStatus.view=0
-        }
-        if (mainStatus.view==2) {
-            map.removeLayer(mainStatus.currentTrack)
-            mainStatus.currentTrack=0
-            mainStatus.view=0
-            for (let i=0;i<mainStatus.currentPoints.length;i++) {
-                map.removeLayer(mainStatus.currentPoints[i])
-            }
-            mainStatus.currentPoints.length=0
-        }
-        leftBar.style('opacity',0)
-        leftBar.style('pointer-events','none')
-        mainStatus.leftBar=0
 
-        d3.select('#elevationPlotSVG').remove()
-        d3.select('#backgroundPlot').style('opacity',0)
+        menu.removeAllTrackView(mainStatus,map)
         d3.selectAll('#leftSideBarContainer')
             .attr('data-colorchange',1)
             .style('background','rgba(255,255,255,0.01')
@@ -170,31 +140,9 @@ for (let i=0;i<gpxList.length;i++) {
         d3.selectAll('.leftSideBarInfo').style('color','red')
         infoRace.style('color','white')
         
-        // Filters
-        let genderFilters=d3.select('#genderFilters')
-        genderFilters.style('opacity',1)
-        genderFilters.style('pointer-events','all')
 
-        let ageFilters=d3.select('#ageFilters')
-        ageFilters.style('opacity',1)
-        ageFilters.style('pointer-events','all')
-
-        let experienceFilters=d3.select('#experienceFilters')
-        experienceFilters.style('opacity',1)
-        experienceFilters.style('pointer-events','all')
-
-        let classifiers=d3.select('#classifiers')
-        classifiers.style('opacity',1)
-        classifiers.style('pointer-events','all')
-
-        let slideContainer=d3.select('#slidecontainer')
-        slideContainer.style('opacity',1)
-        slideContainer.style('pointer-events','all')
-
-        let speedSlider=d3.select('#speed_slider').node()
-
-        let timeContainer=d3.select('#time')
-        timeContainer.style('background','rgba(255,255,255,0.6')
+        filters.showFilters()
+        let timeContainer=filters.showTimeContainer()
 
         // Add track 
         let mainMapPromise=new Promise((resolve,reject) => {
@@ -244,6 +192,7 @@ for (let i=0;i<gpxList.length;i++) {
                 let t=d3.interval(elapsed => {
 
                     // 10 min = 1s
+                    let speedSlider=d3.select('#speed_slider').node()
                     let increaseFactor=speedSlider.value*50
                     let addTimer=increaseFactor*timeStep+timeStart.getTime()
                     timeStart.setTime(addTimer)
@@ -370,14 +319,17 @@ let parseRunners= (data) => {
 
 let drawRunners = (data) => {
     let subsampled_runners_data = [];
-    let runners_fraction=1
+    // let runners_fraction=1
+    let fractionRunners=d3.select('#fraction_slider').node().value
+    console.log(fractionRunners)
     for (let i = 0; i < data.length; i++) {
-        let fraction = runners_fraction / 100
+        let fraction = fractionRunners / 100
         let r = Math.random();
         if (r < fraction)
             subsampled_runners_data.push(data[i])
     }
     let runnersCircles=annotations.createRunnersCircles(subsampled_runners_data)
+    console.log(runnersCircles.length)
     return runnersCircles
 }
 

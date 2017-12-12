@@ -39,8 +39,10 @@ let addPoint = (line,map,isLeftBar) => {
     let output=utilities.transformToGeoJSON(pointArray)
 
     if (isLeftBar) {
+        let lineStyle=annotations.lineStyle
+        lineStyle['pointer-events']='none'
         L.geoJSON(output, {
-            style: annotations.lineStyle,
+            style: lineStyle,
         }).addTo(map)
     }
     else {

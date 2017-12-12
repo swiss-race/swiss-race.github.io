@@ -192,9 +192,9 @@ for (let i=0;i<gpxList.length;i++) {
         slideContainer.style('pointer-events','all')
 
         let speedSlider=d3.select('#speed_slider').node()
-        speedSlider.onchange = param => {
-            console.log(speedSlider.value)
-        }
+
+        let timeContainer=d3.select('#time')
+        timeContainer.style('background','rgba(255,255,255,0.6')
 
         // Add track 
         let mainMapPromise=new Promise((resolve,reject) => {
@@ -240,14 +240,31 @@ for (let i=0;i<gpxList.length;i++) {
 
                 let startFractionRace=[...new Array(runnersCircles.length)].map(x => 0)
                 let timeStep=30
+                let timeStart=new Date(0)
                 let t=d3.interval(elapsed => {
 
                     // 10 min = 1s
                     let increaseFactor=speedSlider.value*50
+                    let addTimer=increaseFactor*timeStep+timeStart.getTime()
+                    timeStart.setTime(addTimer)
+                    let seconds=timeStart.getSeconds()
+                    if (seconds<10)
+                        seconds='0'+seconds
+
+                    let timeString=(timeStart.getHours()-1+ 'h '+ timeStart.getMinutes()+':'+seconds)
+                    // console.log(timeString)
+                    timeContainer.node().innerHTML=timeString
+
+
+                    let stopSimulation=true
                     for (let i=0;i<runnersCircles.length;i++) {
                         let totalTimeRunner=runnersCircles[i].seconds/increaseFactor
                         let fractionRace=startFractionRace[i] + timeStep/totalTimeRunner*trackVector[trackVector.length-1].cumulativeDistance/1000
                         startFractionRace[i]=fractionRace
+
+                        if (fractionRace<trackVector[trackVector.length-1].cumulativeDistance) {
+                            stopSimulation=false
+                        }
 
                         for (let j=1;j<trackVector.length;j++) {
                             if (trackVector[j].cumulativeDistance>fractionRace) {
@@ -264,8 +281,8 @@ for (let i=0;i<gpxList.length;i++) {
                     }
                     annotations.setCirclesInPositions(runnersCircles,positionsArray)
                     annotations.addCirclesToMap(runnersCircles,map)
-                    // if (elapsed>20000) t.stop()
 
+                    if (stopSimulation) t.stop()
                 },timeStep)
                 // annotations.setCirclesInPositions(runnersCircles,positionsArray)
                 // annotations.addCirclesToMap(runnersCircles,map)

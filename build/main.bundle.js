@@ -23679,9 +23679,9 @@ var _loop = function _loop(i) {
         slideContainer.style('pointer-events', 'all');
 
         var speedSlider = d3.select('#speed_slider').node();
-        speedSlider.onchange = function (param) {
-            console.log(speedSlider.value);
-        };
+
+        var timeContainer = d3.select('#time');
+        timeContainer.style('background', 'rgba(255,255,255,0.6');
 
         // Add track 
         var mainMapPromise = new Promise(function (resolve, reject) {
@@ -23727,14 +23727,29 @@ var _loop = function _loop(i) {
                     return 0;
                 });
                 var timeStep = 30;
+                var timeStart = new Date(0);
                 var t = d3.interval(function (elapsed) {
 
                     // 10 min = 1s
                     var increaseFactor = speedSlider.value * 50;
+                    var addTimer = increaseFactor * timeStep + timeStart.getTime();
+                    timeStart.setTime(addTimer);
+                    var seconds = timeStart.getSeconds();
+                    if (seconds < 10) seconds = '0' + seconds;
+
+                    var timeString = timeStart.getHours() - 1 + 'h ' + timeStart.getMinutes() + ':' + seconds;
+                    // console.log(timeString)
+                    timeContainer.node().innerHTML = timeString;
+
+                    var stopSimulation = true;
                     for (var _i3 = 0; _i3 < runnersCircles.length; _i3++) {
                         var totalTimeRunner = runnersCircles[_i3].seconds / increaseFactor;
                         var fractionRace = startFractionRace[_i3] + timeStep / totalTimeRunner * trackVector[trackVector.length - 1].cumulativeDistance / 1000;
                         startFractionRace[_i3] = fractionRace;
+
+                        if (fractionRace < trackVector[trackVector.length - 1].cumulativeDistance) {
+                            stopSimulation = false;
+                        }
 
                         for (var j = 1; j < trackVector.length; j++) {
                             if (trackVector[j].cumulativeDistance > fractionRace) {
@@ -23750,7 +23765,8 @@ var _loop = function _loop(i) {
                     }
                     annotations.setCirclesInPositions(runnersCircles, positionsArray);
                     annotations.addCirclesToMap(runnersCircles, map);
-                    // if (elapsed>20000) t.stop()
+
+                    if (stopSimulation) t.stop();
                 }, timeStep);
                 // annotations.setCirclesInPositions(runnersCircles,positionsArray)
                 // annotations.addCirclesToMap(runnersCircles,map)
@@ -38220,8 +38236,10 @@ var addPoint = function addPoint(line, map, isLeftBar) {
     var output = utilities.transformToGeoJSON(pointArray);
 
     if (isLeftBar) {
+        var lineStyle = annotations.lineStyle;
+        lineStyle['pointer-events'] = 'none';
         L.geoJSON(output, {
-            style: annotations.lineStyle
+            style: lineStyle
         }).addTo(map);
     } else {
         var track = L.geoJSON(output, {

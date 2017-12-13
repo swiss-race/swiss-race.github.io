@@ -21,7 +21,7 @@ let div = d3.select("body").append("div")
     .attr("data-number",10)
     .style("opacity", 0);
 
-let circle = L.circleMarker([46.5, 6.8], circleStyle)
+let circle = L.circleMarker([-46.5, 6.8], circleStyle)
 
 circle.on('mouseover', ()=> {
     mouseoverOpacity('circle'+circle.class.toString())
@@ -31,7 +31,19 @@ circle.on('mouseout', ()=> {
     mouseoutOpacity('circle'+circle.class.toString())
     circle.closePopup()
 })
+
 circle.bindPopup('Runner information');
+
+let hideCircle = () => {
+    circle.setStyle({'opacity':0,
+        'fillOpacity':0,
+        'pointer-events':'none'})
+}
+let showCircle = () => {
+    circle.setStyle({'opacity':1,
+        'fillOpacity':1,
+        'pointer-events':'all'})
+}
 
 let setCircleInPosition = (circle,index,elevation,latitude,longitude,map=0) => {
     circle.bringToFront()
@@ -177,4 +189,4 @@ let addCirclesToMap = (circles,map) => {
 }
 
 
-export {lineStyle,div,circle,setCircleInPosition,mouseoverOpacity,mouseoutOpacity,createRunnersCircles,setCirclesInPositions,addCirclesToMap}
+export {lineStyle,div,circle,setCircleInPosition,mouseoverOpacity,mouseoutOpacity,createRunnersCircles,setCirclesInPositions,addCirclesToMap,showCircle,hideCircle}

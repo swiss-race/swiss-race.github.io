@@ -10,6 +10,7 @@ import * as annotations from './annotations.js'
 import * as gpx_files from './gpx_files.js'
 import * as filters from './filters.js'
 import * as menu from './menu.js'
+import * as histogram from './histogram.js'
 
 
 
@@ -117,14 +118,16 @@ changeView.on('click', () => {
 
     } else if (mainStatus.view==2) {
         setUpView1(mainStatus.gpxFile,map,mainStatus)
-        // menu.removeAllTrackView()
     }
 })
 
 let setUpView1 = (gpxFile,map,mainStatus) => {
     menu.removeAllTrackView(mainStatus,map)
-    menu.showChangeViewButton()
+    menu.showChangeViewButton(0)
     mainStatus.gpxFile=gpxFile
+    annotations.circle.addTo(map)
+    annotations.circle.setLatLng([-46.5, 6.8])
+    annotations.showCircle()
 
     let mainMapPromise=new Promise((resolve,reject) => {
         trackUtils.addTrack(gpxFile,map,[400,0],resolve)
@@ -139,8 +142,28 @@ let setUpView1 = (gpxFile,map,mainStatus) => {
 
 let setUpView2 = (gpxFile,map,mainStatus) => {
     menu.removeAllTrackView(mainStatus,map)
-    menu.showChangeViewButton()
+    menu.showChangeViewButton(1)
     mainStatus.gpxFile=gpxFile
+
+
+    // x_axis.domain(histogram_data.map(function(d) { return d[0]; }));
+    // let y_limit = d3.max(histogram_data, function(d) { return d[1]; })
+    // y_axis.domain([0, y_limit]);
+    //
+    // bars = g.selectAll(".bar")
+    //     .data(histogram_data)
+    //     .enter().append("rect")
+    //         .attr("class", "bar")
+    //         .attr("x", d => x_axis(d[0]))
+    //         .attr("y", d => histogram_height * d[1])
+    //         .attr("bin_index", d => d[0])
+    //         .attr("bin_count", d => d[1])
+    //         .attr("width", x_axis.bandwidth())
+    //         .attr("height", d => histogram_height * (1 - d[1]))
+    //         .attr("fill", "#49ABD1")
+    //         .attr("opacity", "1.0")
+    //         .attr("hist_index", d => d[2]);
+    //
 
     let mainMapPromise=new Promise((resolve,reject) => {
         trackUtils.addTrack(gpxFile,map,[400,0],resolve)
@@ -178,6 +201,8 @@ let setUpView2 = (gpxFile,map,mainStatus) => {
             }
             annotations.setCirclesInPositions(runnersCircles,positionsArray)
             annotations.addCirclesToMap(runnersCircles,map)
+
+            // histogram.setUpHistogram()
 
 
             filters.runSimulation(trackVector,runnersCircles,positionsArray,map)

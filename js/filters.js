@@ -79,8 +79,10 @@ let runSimulation = (trackVector,runnersCircles,positionsArray,map) => {
 
         let stopSimulation=true
         for (let i=0;i<runnersCircles.length;i++) {
+
             let totalTimeRunner=runnersCircles[i].seconds/increaseFactor
-            let fractionRace=startFractionRace[i] + timeStep/totalTimeRunner*trackVector[trackVector.length-1].cumulativeDistance/1000
+            let addTerm=timeStep/totalTimeRunner*trackVector[trackVector.length-1].cumulativeDistance/1000
+            let fractionRace=startFractionRace[i] + addTerm
             startFractionRace[i]=fractionRace
 
             if (fractionRace<trackVector[trackVector.length-1].cumulativeDistance) {
@@ -93,8 +95,8 @@ let runSimulation = (trackVector,runnersCircles,positionsArray,map) => {
                     let fraction=difference/(trackVector[j].cumulativeDistance-trackVector[j-1].cumulativeDistance)
 
 
-                    let newLat=trackVector[j-1].coordinates[0][1]+fraction*(trackVector[j].coordinates[0][1]-trackVector[j-1].coordinates[0][1])
-                    let newLng=trackVector[j-1].coordinates[0][0]+fraction*(trackVector[j].coordinates[0][0]-trackVector[j-1].coordinates[0][0])
+                    let newLat=trackVector[j].coordinates[0][1]+fraction*(trackVector[j].coordinates[1][1]-trackVector[j].coordinates[0][1])
+                    let newLng=trackVector[j].coordinates[0][0]+fraction*(trackVector[j].coordinates[1][0]-trackVector[j].coordinates[0][0])
                     positionsArray[i]=[newLat,newLng]
                     break
                 }

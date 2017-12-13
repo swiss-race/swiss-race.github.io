@@ -194,6 +194,7 @@ let setUpView2 = (gpxFile,map,mainStatus) => {
 
 
             let trackVector=utilities.transformToTrackVector(track)
+
             const totalLength=trackVector[trackVector.length-1].cumulativeDistance
             let positionsArray=[]
             for (let i=0;i<runnersCircles.length;i++) {

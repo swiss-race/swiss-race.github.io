@@ -23553,8 +23553,10 @@ var runSimulation = function runSimulation(trackVector, runnersCircles, position
 
         var stopSimulation = true;
         for (var i = 0; i < runnersCircles.length; i++) {
+
             var totalTimeRunner = runnersCircles[i].seconds / increaseFactor;
-            var fractionRace = startFractionRace[i] + timeStep / totalTimeRunner * trackVector[trackVector.length - 1].cumulativeDistance / 1000;
+            var addTerm = timeStep / totalTimeRunner * trackVector[trackVector.length - 1].cumulativeDistance / 1000;
+            var fractionRace = startFractionRace[i] + addTerm;
             startFractionRace[i] = fractionRace;
 
             if (fractionRace < trackVector[trackVector.length - 1].cumulativeDistance) {
@@ -23566,8 +23568,8 @@ var runSimulation = function runSimulation(trackVector, runnersCircles, position
                     var difference = fractionRace - trackVector[j - 1].cumulativeDistance;
                     var fraction = difference / (trackVector[j].cumulativeDistance - trackVector[j - 1].cumulativeDistance);
 
-                    var newLat = trackVector[j - 1].coordinates[0][1] + fraction * (trackVector[j].coordinates[0][1] - trackVector[j - 1].coordinates[0][1]);
-                    var newLng = trackVector[j - 1].coordinates[0][0] + fraction * (trackVector[j].coordinates[0][0] - trackVector[j - 1].coordinates[0][0]);
+                    var newLat = trackVector[j].coordinates[0][1] + fraction * (trackVector[j].coordinates[1][1] - trackVector[j].coordinates[0][1]);
+                    var newLng = trackVector[j].coordinates[0][0] + fraction * (trackVector[j].coordinates[1][0] - trackVector[j].coordinates[0][0]);
                     positionsArray[i] = [newLat, newLng];
                     break;
                 }
@@ -23836,6 +23838,7 @@ var setUpView2 = function setUpView2(gpxFile, map, mainStatus) {
             mainStatus.currentPoints = runnersCircles;
 
             var trackVector = utilities.transformToTrackVector(track);
+
             var totalLength = trackVector[trackVector.length - 1].cumulativeDistance;
             var positionsArray = [];
             for (var i = 0; i < runnersCircles.length; i++) {

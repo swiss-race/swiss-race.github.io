@@ -276,6 +276,21 @@ div.tooltip {
     border-radius:10px;
 }
 
+#startButton {
+    top: 550px;
+    right:800px;
+    /* background: rgba(255,255,255,0.8); */
+    /* opacity:0; */
+    position:absolute;
+    width:150px;
+    font-size:24px;
+    color:red;
+    text-align:center;
+    pointer-events:none;
+    padding:10px;
+    border-radius:10px;
+}
+
 /* Left bar */
 #leftBar {width:20%;
     height:95%;

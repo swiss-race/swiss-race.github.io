@@ -23820,12 +23820,12 @@ var setUpView2 = function setUpView2(gpxFile, map, mainStatus) {
             resolve(data);
         });
     });
+
     sliderPromise.then(function (object) {
         var timeContainer = filters.showTimeContainer();
         filters.showFilters();
 
         var runnersData = parseRunners(object);
-        var runnersCircles = drawRunners(runnersData);
         mainMapPromise.then(function (object) {
             var track = object[1]._latlngs;
 
@@ -23835,22 +23835,29 @@ var setUpView2 = function setUpView2(gpxFile, map, mainStatus) {
             }).addTo(map);
             mainStatus.currentTrack = trackMap;
             mainStatus.view = 2;
-            mainStatus.currentPoints = runnersCircles;
 
             var trackVector = utilities.transformToTrackVector(track);
 
             var totalLength = trackVector[trackVector.length - 1].cumulativeDistance;
-            var positionsArray = [];
-            for (var i = 0; i < runnersCircles.length; i++) {
-                positionsArray.push([track[0].lat, track[0].lng]);
-            }
-            annotations.setCirclesInPositions(runnersCircles, positionsArray);
-            annotations.addCirclesToMap(runnersCircles, map);
 
             // histogram.setUpHistogram()
+            var startButton = d3.select('#startButton');
+            startButton.style('pointer-events', 'all');
+            startButton.node().innerHTML = '<img src="images/start.png" alt="Mountain View" style="width:130px;height:130px;">';
+            startButton.on('click', function () {
 
+                var runnersCircles = drawRunners(runnersData);
+                mainStatus.currentPoints = runnersCircles;
 
-            filters.runSimulation(trackVector, runnersCircles, positionsArray, map);
+                var positionsArray = [];
+                for (var i = 0; i < runnersCircles.length; i++) {
+                    positionsArray.push([track[0].lat, track[0].lng]);
+                }
+                annotations.setCirclesInPositions(runnersCircles, positionsArray);
+                annotations.addCirclesToMap(runnersCircles, map);
+
+                filters.runSimulation(trackVector, runnersCircles, positionsArray, map);
+            });
         });
     });
 };

@@ -175,12 +175,12 @@ let setUpView2 = (gpxFile,map,mainStatus) => {
             resolve(data)
         })
     })
+
     sliderPromise.then((object) => {
         let timeContainer=filters.showTimeContainer()
         filters.showFilters()
 
         let runnersData=parseRunners(object)
-        let runnersCircles=drawRunners(runnersData)
         mainMapPromise.then((object) => {
             let track=object[1]._latlngs
             
@@ -190,23 +190,32 @@ let setUpView2 = (gpxFile,map,mainStatus) => {
             }).addTo(map)
             mainStatus.currentTrack=trackMap
             mainStatus.view=2
-            mainStatus.currentPoints=runnersCircles
 
 
             let trackVector=utilities.transformToTrackVector(track)
 
             const totalLength=trackVector[trackVector.length-1].cumulativeDistance
-            let positionsArray=[]
-            for (let i=0;i<runnersCircles.length;i++) {
-                positionsArray.push([track[0].lat,track[0].lng])
-            }
-            annotations.setCirclesInPositions(runnersCircles,positionsArray)
-            annotations.addCirclesToMap(runnersCircles,map)
 
             // histogram.setUpHistogram()
+            let startButton=d3.select('#startButton')
+            startButton.style('pointer-events','all')
+            startButton.node().innerHTML='<img src="images/start.png" alt="Mountain View" style="width:130px;height:130px;">'
+            startButton.on('click',() => {
+
+                let runnersCircles=drawRunners(runnersData)
+                mainStatus.currentPoints=runnersCircles
+
+                let positionsArray=[]
+                for (let i=0;i<runnersCircles.length;i++) {
+                    positionsArray.push([track[0].lat,track[0].lng])
+                }
+                annotations.setCirclesInPositions(runnersCircles,positionsArray)
+                annotations.addCirclesToMap(runnersCircles,map)
+
+                filters.runSimulation(trackVector,runnersCircles,positionsArray,map)
+            })
 
 
-            filters.runSimulation(trackVector,runnersCircles,positionsArray,map)
         })
     })
 }

@@ -57,13 +57,19 @@ let removeAllTrackView = (mainStatus,map) => {
         map.removeLayer(mainStatus.currentTrack)
         mainStatus.currentTrack=0
         mainStatus.view=0
-        for (let i=0;i<mainStatus.currentPoints.length;i++) {
-            map.removeLayer(mainStatus.currentPoints[i])
+        if (mainStatus.currentPoints.length>0) {
+            for (let i=0;i<mainStatus.currentPoints.length;i++) {
+                map.removeLayer(mainStatus.currentPoints[i])
+            }
+            mainStatus.currentPoints.length=0
         }
-        mainStatus.currentPoints.length=0
     }
     annotations.hideCircle()
     d3.select('#elevationPlotSVG').remove()
+    d3.select('#startButton').style('opacity',0)
+        .style('pointer-events','none')
+    d3.select('#stopButton').style('opacity',0)
+        .style('pointer-events','none')
     d3.select('#backgroundPlot').style('opacity',0)
 
     hideLeftBar(mainStatus)

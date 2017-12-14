@@ -23776,7 +23776,7 @@ var setUpView1 = function setUpView1(gpxFile, map, mainStatus) {
     annotations.showCircle();
 
     var mainMapPromise = new Promise(function (resolve, reject) {
-        trackUtils.addTrack(gpxFile, map, [400, 0], resolve);
+        trackUtils.addTrack(gpxFile[0], map, [400, 0], resolve);
     });
     mainMapPromise.then(function (object) {
         var line = object[1];
@@ -23811,12 +23811,12 @@ var setUpView2 = function setUpView2(gpxFile, map, mainStatus) {
     //
 
     var mainMapPromise = new Promise(function (resolve, reject) {
-        trackUtils.addTrack(gpxFile, map, [400, 0], resolve);
+        trackUtils.addTrack(gpxFile[0], map, [400, 0], resolve);
     });
 
     // Add new moving points
     var sliderPromise = new Promise(function (resolve, reject) {
-        d3.csv('dataset/df_20kmLausanne_count.csv', function (data) {
+        d3.csv(gpxFile[1], function (data) {
             resolve(data);
         });
     });
@@ -23843,14 +23843,28 @@ var setUpView2 = function setUpView2(gpxFile, map, mainStatus) {
             // histogram.setUpHistogram()
             var startButton = d3.select('#startButton');
             startButton.style('pointer-events', 'all');
-            startButton.node().innerHTML = '<img src="images/start.png" alt="Mountain View" style="width:130px;height:130px;">';
+            startButton.style('opacity', 1);
+            startButton.node().innerHTML = 'Start!';
+            // let stopButton=d3.select('#stopButton')
+            // stopButton.style('pointer-events','all')
+            // stopButton.style('opacity',1)
+            // stopButton.node().innerHTML='Stop!'
+
             startButton.on('click', function () {
+
+                if (mainStatus.currentPoints.length > 0) {
+                    for (var i = 0; i < mainStatus.currentPoints.length; i++) {
+                        console.log('here');
+                        map.removeLayer(mainStatus.currentPoints[i]);
+                    }
+                    mainStatus.currentPoints.length = 0;
+                }
 
                 var runnersCircles = drawRunners(runnersData);
                 mainStatus.currentPoints = runnersCircles;
 
                 var positionsArray = [];
-                for (var i = 0; i < runnersCircles.length; i++) {
+                for (var _i = 0; _i < runnersCircles.length; _i++) {
                     positionsArray.push([track[0].lat, track[0].lng]);
                 }
                 annotations.setCirclesInPositions(runnersCircles, positionsArray);
@@ -23858,6 +23872,35 @@ var setUpView2 = function setUpView2(gpxFile, map, mainStatus) {
 
                 filters.runSimulation(trackVector, runnersCircles, positionsArray, map);
             });
+            startButton.on('mouseover', function () {
+                startButton.style('background', 'rgba(255,0,0,0.8)');
+                startButton.style('color', 'white');
+                startButton.style('cursor', 'pointer');
+            });
+            startButton.on('mouseout', function () {
+                startButton.style('background', 'rgba(255,255,255,0.8)');
+                startButton.style('color', 'red');
+            });
+            // stopButton.on('click', () => {
+            //     let speedSlider=d3.select('#speed_slider')
+            //     if (speedSlider.node().value!=0) {
+            //         speedSlider.attr('value',0)
+            //         console.log(speedSlider.node())
+            //         // speedSlider.setValue(0)
+            //     } else {
+            //         speedSlider.attr('value',5)
+            //     }
+            // })
+            // stopButton.on('mouseover', () => {
+            //     stopButton.style('background','rgba(255,0,0,0.8)')
+            //     stopButton.style('color','white')
+            //     stopButton.style('cursor','pointer')
+            // })
+            // stopButton.on('mouseout', () => {
+            //     stopButton.style('background','rgba(255,255,255,0.8)')
+            //     stopButton.style('color','red')
+            // })
+
         });
     });
 };
@@ -23971,7 +24014,7 @@ var _loop = function _loop(i) {
     mapUtils.disableMapInteractions(leftSideBarMap);
 
     var sideBarPromise = new Promise(function (resolve, reject) {
-        trackUtils.addTrack(gpxList[i], leftSideBarMap, [0, 0], resolve);
+        trackUtils.addTrack(gpxList[i][0], leftSideBarMap, [0, 0], resolve);
     });
     sideBarPromise.then(function (object) {
         var track = object[0];
@@ -24025,14 +24068,12 @@ var drawRunners = function drawRunners(data) {
     var subsampled_runners_data = [];
     // let runners_fraction=1
     var fractionRunners = d3.select('#fraction_slider').node().value;
-    console.log(fractionRunners);
     for (var i = 0; i < data.length; i++) {
         var fraction = fractionRunners / 100;
         var r = Math.random();
         if (r < fraction) subsampled_runners_data.push(data[i]);
     }
     var runnersCircles = annotations.createRunnersCircles(subsampled_runners_data);
-    console.log(runnersCircles.length);
     return runnersCircles;
 };
 
@@ -38490,13 +38531,27 @@ exports.addTrack = addTrack;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+var n20kmdeLausanne10 = ['gps_data/20kmdeLausanne10.gpx', 'gps_data/20kmdeLausanne10.csv'];
+var n20kmdeLausanne20 = ['gps_data/20kmdeLausanne20.gpx', 'gps_data/20kmdeLausanne20.csv'];
+var AletschHalbmarathonBettmeralp21 = ['gps_data/Aletsch-Halbmarathon,Bettmeralp21.gpx', 'gps_data/Aletsch-Halbmarathon,Bettmeralp21.csv'];
+var Frauenfelder21 = ['gps_data/Frauenfelder21.gpx', 'gps_data/Frauenfelder21.csv'];
+var Frauenfelder42 = ['gps_data/Frauenfelder42.gpx', 'gps_data/Frauenfelder42.csv'];
+var HallwilerseelaufBeinwilamSee10 = ['gps_data/Hallwilerseelauf,BeinwilamSee10.gpx', 'gps_data/Hallwilerseelauf,BeinwilamSee10.csv'];
+var HallwilerseelaufBeinwilamSee21 = ['gps_data/Hallwilerseelauf,BeinwilamSee21.gpx', 'gps_data/Hallwilerseelauf,BeinwilamSee21.csv'];
+var IntGreifenseelaufUster10 = ['gps_data/IntGreifenseelauf,Uster10.gpx', 'gps_data/IntGreifenseelauf,Uster10.csv'];
+var IntGreifenseelaufUster21 = ['gps_data/IntGreifenseelauf,Uster21.gpx', 'gps_data/IntGreifenseelauf,Uster21.csv'];
+var JungfrauMarathonInterlaken42 = ['gps_data/Jungfrau-Marathon,Interlaken42.gpx', 'gps_data/Jungfrau-Marathon,Interlaken42.csv'];
+var LausanneMarathon10 = ['gps_data/LausanneMarathon10.gpx', 'gps_data/LausanneMarathon10.csv'];
+var LausanneMarathon21 = ['gps_data/LausanneMarathon21.gpx', 'gps_data/LausanneMarathon21.csv'];
+var LausanneMarathon42 = ['gps_data/LausanneMarathon42.gpx', 'gps_data/LausanneMarathon42.csv'];
+var LucerneMarathonLuzern21 = ['gps_data/LucerneMarathon,Luzern21.gpx', 'gps_data/LucerneMarathon,Luzern21.csv'];
+var LucerneMarathonLuzern42 = ['gps_data/LucerneMarathon,Luzern42.gpx', 'gps_data/LucerneMarathon,Luzern42.csv'];
+var WinterthurMarathon10 = ['gps_data/WinterthurMarathon10.gpx', 'gps_data/WinterthurMarathon10.csv'];
+var WinterthurMarathon21 = ['gps_data/WinterthurMarathon21.gpx', 'gps_data/WinterthurMarathon21.csv'];
+var ZermattMarathonZermatt42 = ['gps_data/ZermattMarathon,Zermatt42.gpx', 'gps_data/ZermattMarathon,Zermatt42.csv'];
+var ZurichMarathonTeamrunundCityrun42 = ['gps_data/ZurichMarathon,TeamrunundCityrun42.gpx', 'gps_data/ZurichMarathon,TeamrunundCityrun42.csv'];
 
-var gpxLausanne = 'gps_data/Demi-marathonLausanne.gpx'; // URL to your GPX file or the GPX itself
-var gpxLausanne10 = 'gps_data/10km-Lausanne.gpx'; // URL to your GPX file or the GPX itself
-var gpxLausanne20 = 'gps_data/20km-Lausanne.gpx'; // URL to your GPX file or the GPX itself
-var gpxZurich = 'gps_data/Zurich-marathon.gpx'; // URL to your GPX file or the GPX itself
-var gpxLuzern = 'gps_data/marathon-Luzern.gpx'; // URL to your GPX file or the GPX itself
-var gpxList = [gpxLausanne, gpxLausanne20, gpxLausanne10, gpxZurich, gpxLuzern];
+var gpxList = [n20kmdeLausanne10, n20kmdeLausanne20, AletschHalbmarathonBettmeralp21, Frauenfelder21, Frauenfelder42, HallwilerseelaufBeinwilamSee10, HallwilerseelaufBeinwilamSee21, IntGreifenseelaufUster10, IntGreifenseelaufUster21, JungfrauMarathonInterlaken42, LausanneMarathon10, LausanneMarathon21, LausanneMarathon42, LucerneMarathonLuzern21, LucerneMarathonLuzern42, WinterthurMarathon10, WinterthurMarathon21, ZermattMarathonZermatt42, ZurichMarathonTeamrunundCityrun42];
 
 exports.gpxList = gpxList;
 
@@ -38580,13 +38635,17 @@ var removeAllTrackView = function removeAllTrackView(mainStatus, map) {
         map.removeLayer(mainStatus.currentTrack);
         mainStatus.currentTrack = 0;
         mainStatus.view = 0;
-        for (var i = 0; i < mainStatus.currentPoints.length; i++) {
-            map.removeLayer(mainStatus.currentPoints[i]);
+        if (mainStatus.currentPoints.length > 0) {
+            for (var i = 0; i < mainStatus.currentPoints.length; i++) {
+                map.removeLayer(mainStatus.currentPoints[i]);
+            }
+            mainStatus.currentPoints.length = 0;
         }
-        mainStatus.currentPoints.length = 0;
     }
     annotations.hideCircle();
     d3.select('#elevationPlotSVG').remove();
+    d3.select('#startButton').style('opacity', 0).style('pointer-events', 'none');
+    d3.select('#stopButton').style('opacity', 0).style('pointer-events', 'none');
     d3.select('#backgroundPlot').style('opacity', 0);
 
     hideLeftBar(mainStatus);

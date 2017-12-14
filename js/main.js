@@ -130,7 +130,7 @@ let setUpView1 = (gpxFile,map,mainStatus) => {
     annotations.showCircle()
 
     let mainMapPromise=new Promise((resolve,reject) => {
-        trackUtils.addTrack(gpxFile,map,[400,0],resolve)
+        trackUtils.addTrack(gpxFile[0],map,[400,0],resolve)
     })
     mainMapPromise.then((object) => {
         let line=object[1]
@@ -166,12 +166,12 @@ let setUpView2 = (gpxFile,map,mainStatus) => {
     //
 
     let mainMapPromise=new Promise((resolve,reject) => {
-        trackUtils.addTrack(gpxFile,map,[400,0],resolve)
+        trackUtils.addTrack(gpxFile[0],map,[400,0],resolve)
     })
     
     // Add new moving points
     let sliderPromise=new Promise((resolve,reject) => {
-        d3.csv('dataset/df_20kmLausanne_count.csv',(data) => {
+        d3.csv(gpxFile[1],(data) => {
             resolve(data)
         })
     })
@@ -199,8 +199,22 @@ let setUpView2 = (gpxFile,map,mainStatus) => {
             // histogram.setUpHistogram()
             let startButton=d3.select('#startButton')
             startButton.style('pointer-events','all')
-            startButton.node().innerHTML='<img src="images/start.png" alt="Mountain View" style="width:130px;height:130px;">'
+            startButton.style('opacity',1)
+            startButton.node().innerHTML='Start!'
+            // let stopButton=d3.select('#stopButton')
+            // stopButton.style('pointer-events','all')
+            // stopButton.style('opacity',1)
+            // stopButton.node().innerHTML='Stop!'
+
             startButton.on('click',() => {
+
+                if (mainStatus.currentPoints.length>0) {
+                    for (let i=0;i<mainStatus.currentPoints.length;i++) {
+                        console.log('here')
+                        map.removeLayer(mainStatus.currentPoints[i])
+                    }
+                    mainStatus.currentPoints.length=0
+                }
 
                 let runnersCircles=drawRunners(runnersData)
                 mainStatus.currentPoints=runnersCircles
@@ -214,6 +228,34 @@ let setUpView2 = (gpxFile,map,mainStatus) => {
 
                 filters.runSimulation(trackVector,runnersCircles,positionsArray,map)
             })
+            startButton.on('mouseover', () => {
+                startButton.style('background','rgba(255,0,0,0.8)')
+                startButton.style('color','white')
+                startButton.style('cursor','pointer')
+            })
+            startButton.on('mouseout', () => {
+                startButton.style('background','rgba(255,255,255,0.8)')
+                startButton.style('color','red')
+            })
+            // stopButton.on('click', () => {
+            //     let speedSlider=d3.select('#speed_slider')
+            //     if (speedSlider.node().value!=0) {
+            //         speedSlider.attr('value',0)
+            //         console.log(speedSlider.node())
+            //         // speedSlider.setValue(0)
+            //     } else {
+            //         speedSlider.attr('value',5)
+            //     }
+            // })
+            // stopButton.on('mouseover', () => {
+            //     stopButton.style('background','rgba(255,0,0,0.8)')
+            //     stopButton.style('color','white')
+            //     stopButton.style('cursor','pointer')
+            // })
+            // stopButton.on('mouseout', () => {
+            //     stopButton.style('background','rgba(255,255,255,0.8)')
+            //     stopButton.style('color','red')
+            // })
 
 
         })
@@ -339,7 +381,7 @@ for (let i=0;i<gpxList.length;i++) {
     mapUtils.disableMapInteractions(leftSideBarMap)
 
     let sideBarPromise=new Promise((resolve,reject) => {
-        trackUtils.addTrack(gpxList[i],leftSideBarMap,[0,0],resolve)
+        trackUtils.addTrack(gpxList[i][0],leftSideBarMap,[0,0],resolve)
     })
     sideBarPromise.then((object) => {
         let track=object[0]
@@ -389,7 +431,6 @@ let drawRunners = (data) => {
     let subsampled_runners_data = [];
     // let runners_fraction=1
     let fractionRunners=d3.select('#fraction_slider').node().value
-    console.log(fractionRunners)
     for (let i = 0; i < data.length; i++) {
         let fraction = fractionRunners / 100
         let r = Math.random();
@@ -397,7 +438,6 @@ let drawRunners = (data) => {
             subsampled_runners_data.push(data[i])
     }
     let runnersCircles=annotations.createRunnersCircles(subsampled_runners_data)
-    console.log(runnersCircles.length)
     return runnersCircles
 }
 

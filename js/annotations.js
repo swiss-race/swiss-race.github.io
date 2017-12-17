@@ -189,4 +189,4 @@ let addCirclesToMap = (circles,map) => {
 }
 
 
-export {lineStyle,div,circle,setCircleInPosition,mouseoverOpacity,mouseoutOpacity,createRunnersCircles,setCirclesInPositions,addCirclesToMap,showCircle,hideCircle}
+export {lineStyle,div,circle,setCircleInPosition,mouseoverOpacity,mouseoutOpacity,createRunnersCircles,setCirclesInPositions,addCirclesToMap,showCircle,hideCircle,getFiltersStatus}

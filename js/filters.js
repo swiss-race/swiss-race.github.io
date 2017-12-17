@@ -1,5 +1,6 @@
 import * as d3 from 'd3'
 import * as annotations from './annotations.js'
+import * as histogram from './histogram.js'
 
 
 let showFilters = () => {
@@ -97,11 +98,12 @@ let runSimulation = (trackVector,runnersCircles,positionsArray,map) => {
 
                     let newLat=trackVector[j].coordinates[0][1]+fraction*(trackVector[j].coordinates[1][1]-trackVector[j].coordinates[0][1])
                     let newLng=trackVector[j].coordinates[0][0]+fraction*(trackVector[j].coordinates[1][0]-trackVector[j].coordinates[0][0])
-                    positionsArray[i]=[newLat,newLng]
+                    positionsArray[i]=[newLat,newLng,fractionRace]
                     break
                 }
             }
         }
+        histogram.computeHistogramData(trackVector,runnersCircles,positionsArray)
         annotations.setCirclesInPositions(runnersCircles,positionsArray)
         annotations.addCirclesToMap(runnersCircles,map)
 

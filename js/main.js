@@ -146,9 +146,6 @@ let setUpView2 = (gpxFile,map,mainStatus) => {
     mainStatus.gpxFile=gpxFile
 
 
-    // x_axis.domain(histogram_data.map(function(d) { return d[0]; }));
-    // let y_limit = d3.max(histogram_data, function(d) { return d[1]; })
-    // y_axis.domain([0, y_limit]);
     //
     // bars = g.selectAll(".bar")
     //     .data(histogram_data)
@@ -196,7 +193,7 @@ let setUpView2 = (gpxFile,map,mainStatus) => {
 
             const totalLength=trackVector[trackVector.length-1].cumulativeDistance
 
-            // histogram.setUpHistogram()
+
             let startButton=d3.select('#startButton')
             startButton.style('pointer-events','all')
             startButton.style('opacity',1)
@@ -221,10 +218,13 @@ let setUpView2 = (gpxFile,map,mainStatus) => {
 
                 let positionsArray=[]
                 for (let i=0;i<runnersCircles.length;i++) {
-                    positionsArray.push([track[0].lat,track[0].lng])
+                    positionsArray.push([track[0].lat,track[0].lng,0])
                 }
                 annotations.setCirclesInPositions(runnersCircles,positionsArray)
                 annotations.addCirclesToMap(runnersCircles,map)
+
+                let histogramData=histogram.computeHistogramData(trackVector,runnersCircles,positionsArray)
+                histogram.setUpHistogram(histogramData)
 
                 filters.runSimulation(trackVector,runnersCircles,positionsArray,map)
             })
@@ -237,26 +237,6 @@ let setUpView2 = (gpxFile,map,mainStatus) => {
                 startButton.style('background','rgba(255,255,255,0.8)')
                 startButton.style('color','red')
             })
-            // stopButton.on('click', () => {
-            //     let speedSlider=d3.select('#speed_slider')
-            //     if (speedSlider.node().value!=0) {
-            //         speedSlider.attr('value',0)
-            //         console.log(speedSlider.node())
-            //         // speedSlider.setValue(0)
-            //     } else {
-            //         speedSlider.attr('value',5)
-            //     }
-            // })
-            // stopButton.on('mouseover', () => {
-            //     stopButton.style('background','rgba(255,0,0,0.8)')
-            //     stopButton.style('color','white')
-            //     stopButton.style('cursor','pointer')
-            // })
-            // stopButton.on('mouseout', () => {
-            //     stopButton.style('background','rgba(255,255,255,0.8)')
-            //     stopButton.style('color','red')
-            // })
-
 
         })
     })

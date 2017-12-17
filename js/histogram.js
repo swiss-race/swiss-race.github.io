@@ -1,6 +1,7 @@
 import * as d3 from 'd3'
+import * as annotations from './annotations.js'
 
-let setUpHistogram = () => {
+let setUpHistogram = (histogramData) => {
     // Set backgroundPlot 
     d3.select('#backgroundPlot').style('opacity',1)
 
@@ -30,13 +31,22 @@ let setUpHistogram = () => {
     var g = svg.append("g")
         .attr("transform", "translate(" + histogram_margin.left + "," + histogram_margin.top + ")");
 
+    x_axis.domain([0,75])
+    y_axis.domain([0,1])
+    // x_axis.domain(histogramData.map(function(d) { return d[0]; }));
+    // let y_limit = d3.max(histogramData, function(d) { return d[1]; })
+    // y_axis.domain([0, y_limit]);
+
+
+    console.log(histogramData.map(d => {return d[0]}))
+
     g.append("g")
         .attr("class", "axis_x")
         .attr("transform", "translate(0," + histogram_height + ")")
         .attr("stroke-width", "3px")
         .attr("stroke", "#B8B8B8")
         .attr("stroke-opacity", "0.45")
-        .call(d3.axisBottom(x_axis).ticks());
+        .call(d3.axisBottom(x_axis));
 
     g.append("g")
         .attr("class", "axis_y")
@@ -45,54 +55,57 @@ let setUpHistogram = () => {
         .call(d3.axisLeft(y_axis).ticks(10, ""))
 }
 
-let computeHistogramData = (trackVector,runnersCircles) =>  {
-    let numBins=75
+let computeHistogramData = (trackVector,runnersCircles,positionsArray) =>  {
+    let num_bins=75
     let bin_width = 1.0/num_bins
+    let num_histograms=5 //Maximum number of filters
     let bin_counts = new Array(num_bins);
+    let filterStatus=annotations.getFiltersStatus()
+    let trackLength=trackVector[trackVector.length-1].cumulativeDistance
 
     for (i = 0; i < num_bins; i++) {
       bin_counts[i] = new Array(num_histograms).fill(0);
     }
-    max_distance = marathon_distance / 60.0
+    // max_distance = marathon_distance / 60.0
 
-    for (i = 0; i < runners_data.length; i++) {
-      var t = runners_data[i][0]
-      if (change_speed == true) {
-        var shift = speedup * marathon_distance/(t + 1)
-        distances_all_runners[i] = distances_all_runners[i] + shift
-      }
-      if (change_time == true) {
-        distances_all_runners[i] =  runners_datastep * speedup * marathon_distance/(t + 1)
-      }
-      let distance = distances_all_runners[i] / 10
+    for (i = 0; i < positionsArray.length; i++) {
+      // var t = runners_data[i][0]
+      // if (change_speed == true) {
+      //   var shift = speedup * marathon_distance/(t + 1)
+      //   distances_all_runners[i] = distances_all_runners[i] + shift
+      // }
+      // if (change_time == true) {
+      //   distances_all_runners[i] =  runners_datastep * speedup * marathon_distance/(t + 1)
+      // }
+      // let distance = distances_all_runners[i] / 10
 
       let histogram_index = 0;
-      if (gender_classifier) {
-        if (runners_data[i][2] == 0)
+      if (filterStatus.gender) {
+        if (runnersCircles[i].male == 0)
           histogram_index = 1
       }
-      if (age_classifier) {
-        var age = runners_data[i][3]
+      if (filterStatus.age) {
+        var age = runnersCircles[i].age
         if (age < 20) histogram_index = 4
         if (age >= 20 && age < 33) histogram_index = 1
         if (age >= 33 && age < 47) histogram_index = 0
         if (age >= 47 && age < 60) histogram_index = 2
         if (age >= 60) histogram_index = 3
       }
-      if (experience_classifier) {
-        var experience = runners_data[i][4]
+      if (filterStatus.experience) {
+        var experience = runnersCircles[i].count
         if (experience == 1) histogram_index = 0
         if (experience >= 2 && experience <= 3) histogram_index = 1
         if (experience >= 4) histogram_index = 2
       }
 
-      let normalized_distance = distance / max_distance
-      let bin_index = Math.floor(normalized_distance / bin_width);
+      let normalized_distance = positionsArray[i][2]/trackLength*num_bins
+      let bin_index = Math.floor(normalized_distance);
       if (bin_index > num_bins - 1) bin_index = num_bins - 1;
       bin_counts[bin_index][histogram_index] = bin_counts[bin_index][histogram_index] + 1.0;
     }
 
-    histogram_data = new Array(num_bins * num_histograms);
+    let histogram_data = new Array(num_bins * num_histograms);
     let max_value = 0;
     for (var j = 0; j < num_histograms; j++) {
       for (var i = 0; i < num_bins; i++) {
@@ -109,9 +122,11 @@ let computeHistogramData = (trackVector,runnersCircles) =>  {
       histogram_data[i][1] = histogram_data[i][1] / max_value
     }
 
+    // console.log(histogram_data)
 
+    return histogram_data
 
 }
 
 
-export {setUpHistogram}
+export {setUpHistogram,computeHistogramData}

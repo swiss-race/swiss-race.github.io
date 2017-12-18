@@ -24145,6 +24145,7 @@ for (var i = 0; i < gpxList.length; i++) {
     _loop2(i);
 }
 setUpView0(gpxList, map, mainStatus);
+menu.activateCallbackFilters();
 
 var parseRunners = function parseRunners(data) {
 
@@ -38701,7 +38702,7 @@ exports.gpxList = gpxList;
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.showChangeViewButton = exports.removeAllTrackView = exports.hideLeftBar = exports.showLeftBar = undefined;
+exports.activateCallbackFilters = exports.showChangeViewButton = exports.removeAllTrackView = exports.hideLeftBar = exports.showLeftBar = undefined;
 
 var _d = __webpack_require__(17);
 
@@ -38729,6 +38730,75 @@ var hideLeftBar = function hideLeftBar(mainStatus) {
     leftBar.style('opacity', 0);
     leftBar.style('pointer-events', 'none');
     mainStatus.leftBar = 0;
+};
+
+var selectGender = function selectGender() {
+    d3.select('#gender').node().checked = true;
+};
+
+var selectAge = function selectAge() {
+    d3.select('#age').node().checked = true;
+};
+
+var selectCount = function selectCount() {
+    d3.select('#experience').node().checked = true;
+};
+
+var activateCallbackFilters = function activateCallbackFilters() {
+    var females_and_males = d3.select('#females_and_males');
+    var males_only = d3.select('#males_only');
+    var females_only = d3.select('#females_only');
+    males_only.on('click', function () {
+        selectGender();
+    });
+    females_only.on('click', function () {
+        selectGender();
+    });
+    females_and_males.on('click', function () {
+        selectGender();
+    });
+
+    var ages_all = d3.select('#ages_all');
+    var ages_7_20 = d3.select('#ages_7_20');
+    var ages_20_33 = d3.select('#ages_20_33');
+    var ages_33_47 = d3.select('#ages_33_47');
+    var ages_47_60 = d3.select('#ages_47_60');
+    var ages_60_ = d3.select('#ages_60_');
+    ages_all.on('click', function () {
+        selectAge();
+    });
+    ages_60_.on('click', function () {
+        selectAge();
+    });
+    ages_7_20.on('click', function () {
+        selectAge();
+    });
+    ages_47_60.on('click', function () {
+        selectAge();
+    });
+    ages_20_33.on('click', function () {
+        selectAge();
+    });
+    ages_33_47.on('click', function () {
+        selectAge();
+    });
+
+    var count_all = d3.select('#count_all');
+    var count_1 = d3.select('#count_1');
+    var count_2_5 = d3.select('#count_2_5');
+    var count_6 = d3.select('#count_6');
+    count_1.on('click', function () {
+        selectCount();
+    });
+    count_all.on('click', function () {
+        selectCount();
+    });
+    count_2_5.on('click', function () {
+        selectCount();
+    });
+    count_6.on('click', function () {
+        selectCount();
+    });
 };
 
 var showChangeViewButton = function showChangeViewButton() {
@@ -38801,6 +38871,7 @@ exports.showLeftBar = showLeftBar;
 exports.hideLeftBar = hideLeftBar;
 exports.removeAllTrackView = removeAllTrackView;
 exports.showChangeViewButton = showChangeViewButton;
+exports.activateCallbackFilters = activateCallbackFilters;
 
 /***/ })
 /******/ ]);

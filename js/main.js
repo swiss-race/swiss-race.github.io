@@ -348,6 +348,7 @@ for (let i=0;i<gpxList.length;i++) {
     })
 }
 setUpView0(gpxList,map,mainStatus)
+menu.activateCallbackFilters()
 
 let parseRunners= (data) => {
 

@@ -212,10 +212,10 @@ div.tooltip {
     opacity: 0;
 }
 
-.container:hover input ~ .checkmark {
+.filterContainer:hover input ~ .checkmark {
     background-color: #ccc;
 }
-.container input:checked ~ .checkmark {
+.filterContainer input:checked ~ .checkmark {
     background-color: #C0C0C0;
 }
 

@@ -48,6 +48,13 @@ let hideChangeViewButton = () => {
 }
 
 let removeAllTrackView = (mainStatus,map) => {
+    if (mainStatus.view==0) {
+        for (let i=0;i<mainStatus.currentTracks.length;i++) {
+            map.removeLayer(mainStatus.currentTracks[i])
+        }
+        mainStatus.currentTracks=0
+        mainStatus.view=0
+    }
     if (mainStatus.view==1) {
         map.removeLayer(mainStatus.currentTrack)
         mainStatus.currentTrack=0

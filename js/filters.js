@@ -103,7 +103,7 @@ let runSimulation = (trackVector,runnersCircles,positionsArray,map) => {
                 }
             }
         }
-        histogram.computeHistogramData(trackVector,runnersCircles,positionsArray)
+        // histogram.computeHistogramData(trackVector,runnersCircles,positionsArray)
         annotations.setCirclesInPositions(runnersCircles,positionsArray)
         annotations.addCirclesToMap(runnersCircles,map)
 

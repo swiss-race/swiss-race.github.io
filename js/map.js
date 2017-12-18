@@ -77,9 +77,25 @@ let addPoint = (line,map,isLeftBar) => {
 
 }
 
+let showTrackOnMap = (line,map,callback,gpxFile,mainStatus) => {
+    let pointArray=line._latlngs
+    let output=utilities.transformToGeoJSON(pointArray)
+
+    let lineStyle=annotations.lineStyle
+    // lineStyle['pointer-events']='none'
+    let track=L.geoJSON(output, {
+        style: lineStyle,
+    })
+    track.on('click',() => {
+        callback(gpxFile,map,mainStatus)
+    })
+    track.addTo(map)
+
+    return track
+}
 
 
 
 
 
-export {disableMapInteractions,getMap,addPoint}
+export {disableMapInteractions,getMap,addPoint,showTrackOnMap}

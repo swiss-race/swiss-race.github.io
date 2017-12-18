@@ -34,9 +34,10 @@ window.onscroll = () => {
 }
 
 class MainStatus {
-    constructor(view,leftBar,currentTrack=0,currentPoints=0,gpxFile=0) {
+    constructor(view,leftBar,currentTracks=0,currentTrack=0,currentPoints=0,gpxFile=0) {
         this._view = view;
         this._leftBar = leftBar;
+        this._currentTracks = currentTracks;
         this._currentTrack = currentTrack;
         this._currentPoints = currentPoints;
         this._gpxFile = gpxFile;
@@ -52,6 +53,12 @@ class MainStatus {
     }
     set leftBar(newLeftBar) {
         this._leftBar=newLeftBar
+    }
+    get currentTracks() {
+        return this._currentTracks
+    }
+    set currentTracks(newCurrentTracks) {
+        this._currentTracks=newCurrentTracks
     }
     get currentTrack() {
         return this._currentTrack
@@ -77,6 +84,7 @@ let mainStatus=new MainStatus(0,0)
 //
 //////    ADD MAIN MAP   ////////
 let map=mapUtils.getMap('map',{scrollWheelZoom:true})
+let gpxList=gpx_files.gpxList
 
 
 let homeButton=d3.select('#homeButton')
@@ -91,6 +99,7 @@ homeButton.on('click',() => {
         .attr('data-colorchange',1)
         .style('background','rgba(255,255,255,0.01')
     d3.selectAll('.leftSideBarInfo').style('color','red')
+    setUpView0(gpxList,map,mainStatus)
 })
 
 let raceButton=d3.select('#raceButton')
@@ -120,6 +129,25 @@ changeView.on('click', () => {
         setUpView1(mainStatus.gpxFile,map,mainStatus)
     }
 })
+
+
+let setUpView0 = (gpxList,map,mainStatus) => {
+    menu.removeAllTrackView(mainStatus,map)
+
+    let currentTracks=[]
+    for (let i=0;i<gpxList.length;i++) {
+        let mainMapPromise=new Promise((resolve,reject) => {
+            trackUtils.addTrack(gpxList[i][0],map,[400,0],resolve,0)
+        })
+        mainMapPromise.then((object) => {
+            let line=object[1]
+            let currentTrack=mapUtils.showTrackOnMap(line,map,setUpView1,gpxList[i],mainStatus)
+            currentTracks.push(currentTrack)
+            mainStatus.currentTracks=currentTracks
+        })
+    }
+    map.setView([46.905, 7.93], 8);
+}
 
 let setUpView1 = (gpxFile,map,mainStatus) => {
     menu.removeAllTrackView(mainStatus,map)
@@ -223,8 +251,8 @@ let setUpView2 = (gpxFile,map,mainStatus) => {
                 annotations.setCirclesInPositions(runnersCircles,positionsArray)
                 annotations.addCirclesToMap(runnersCircles,map)
 
-                let histogramData=histogram.computeHistogramData(trackVector,runnersCircles,positionsArray)
-                histogram.setUpHistogram(histogramData)
+                // let histogramData=histogram.computeHistogramData(trackVector,runnersCircles,positionsArray)
+                // histogram.setUpHistogram(histogramData)
 
                 filters.runSimulation(trackVector,runnersCircles,positionsArray,map)
             })
@@ -243,7 +271,6 @@ let setUpView2 = (gpxFile,map,mainStatus) => {
 }
 
 ////// ADD SIDE BAR //////
-let gpxList=gpx_files.gpxList
 let leftBar=d3.select('#leftBar')
 const sheet=window.document.styleSheets[0]
 
@@ -277,58 +304,6 @@ for (let i=0;i<gpxList.length;i++) {
         infoRace.style('color','white')
 
         setUpView1(gpxList[i],map,mainStatus)
-        
-
-
-        // Add track 
-        // let mainMapPromise=new Promise((resolve,reject) => {
-        //     trackUtils.addTrack(gpxList[i],map,[400,0],resolve)
-        // })
-        // mainMapPromise.then((object) => {
-        //     let line=object[1]
-        //     let currentTrack=mapUtils.addPoint(line,map,0)
-        //     mainStatus.view=1
-        //     mainStatus.currentTrack=currentTrack
-        // })
-        
-        // // Add new moving points
-        // let sliderPromise=new Promise((resolve,reject) => {
-        //     d3.csv('dataset/df_20kmLausanne_count.csv',(data) => {
-        //         resolve(data)
-        //     })
-        // })
-        // sliderPromise.then((object) => {
-        //     let timeContainer=filters.showTimeContainer()
-        //     filters.showFilters()
-        //
-        //     let runnersData=parseRunners(object)
-        //     let runnersCircles=drawRunners(runnersData)
-        //     mainMapPromise.then((object) => {
-        //         let track=object[1]._latlngs
-        //
-        //         let trackJSON=utilities.transformToGeoJSON(track)
-        //         let trackMap=L.geoJSON(trackJSON, {
-        //             style: annotations.lineStyle,
-        //         }).addTo(map)
-        //         mainStatus.currentTrack=trackMap
-        //         mainStatus.view=2
-        //         mainStatus.currentPoints=runnersCircles
-        //
-        //
-        //         let trackVector=utilities.transformToTrackVector(track)
-        //         const totalLength=trackVector[trackVector.length-1].cumulativeDistance
-        //         let positionsArray=[]
-        //         for (let i=0;i<runnersCircles.length;i++) {
-        //             positionsArray.push([track[0].lat,track[0].lng])
-        //         }
-        //         annotations.setCirclesInPositions(runnersCircles,positionsArray)
-        //         annotations.addCirclesToMap(runnersCircles,map)
-        //
-        //
-        //         filters.runSimulation(trackVector,runnersCircles,positionsArray,map)
-        //     })
-        // })
-
     })
     leftSideBarContainer.on('mouseover',() => {
         if (leftSideBarContainer.attr('data-colorchange')==1) {
@@ -372,6 +347,7 @@ for (let i=0;i<gpxList.length;i++) {
         mapUtils.addPoint(object[1],leftSideBarMap,1)
     })
 }
+setUpView0(gpxList,map,mainStatus)
 
 let parseRunners= (data) => {
 

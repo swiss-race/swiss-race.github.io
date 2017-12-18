@@ -1,5 +1,6 @@
 import * as d3 from 'd3'
 import * as annotations from './annotations.js'
+import * as utilities from './utilities.js'
 
 let setUpHistogram = (histogramData) => {
     // Set backgroundPlot 
@@ -31,8 +32,9 @@ let setUpHistogram = (histogramData) => {
     var g = svg.append("g")
         .attr("transform", "translate(" + histogram_margin.left + "," + histogram_margin.top + ")");
 
-    x_axis.domain([0,75])
+    x_axis.domain(utilities.numberRange(0,75))
     y_axis.domain([0,1])
+    console.log(x_axis.domain())
     // x_axis.domain(histogramData.map(function(d) { return d[0]; }));
     // let y_limit = d3.max(histogramData, function(d) { return d[1]; })
     // y_axis.domain([0, y_limit]);
@@ -46,7 +48,7 @@ let setUpHistogram = (histogramData) => {
         .attr("stroke-width", "3px")
         .attr("stroke", "#B8B8B8")
         .attr("stroke-opacity", "0.45")
-        .call(d3.axisBottom(x_axis));
+        // .call(d3.axisBottom(x_axis));
 
     g.append("g")
         .attr("class", "axis_y")

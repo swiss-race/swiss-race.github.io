@@ -91,5 +91,10 @@ let transformToTrackVector = vector => {
     }
     return race
 }
-export {distanceInKmBetweenEarthCoordinates,transformToGeoJSON,transformToTrackVector}
+
+let numberRange = (start, end) => {
+  return new Array(end - start).fill().map((d, i) => i + start);
+}
+
+export {distanceInKmBetweenEarthCoordinates,transformToGeoJSON,transformToTrackVector,numberRange}
 

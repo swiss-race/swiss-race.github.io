@@ -24149,9 +24149,12 @@ menu.activateCallbackFilters();
 
 var parseRunners = function parseRunners(data) {
 
-    // std = track_width/2
-    var stdX = 0.002; // standard deviation in terms of latitude and longitude
-    var stdY = 0.003; // standard deviation in terms of latitude and longitude
+    // Rescale runners point distances based on zoom level
+    var mapZoom = map.getZoom();
+    mapZoom = mapZoom - 11;
+
+    var stdX = 0.002 / mapZoom; // standard deviation in terms of latitude and longitude
+    var stdY = 0.003 / mapZoom; // standard deviation in terms of latitude and longitude
     var runners_data = new Array(data.length);
     for (var i = 0; i < data.length; i++) {
         runners_data[i] = new Array(5);

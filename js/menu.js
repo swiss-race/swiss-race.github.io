@@ -96,7 +96,7 @@ let showChangeViewButton = (content=0) => {
     })
     changeView.on('mouseout', () => {
         changeView.style('background','rgba(255,255,255,0.8)')
-        changeView.style('color','red')
+        changeView.style('color','black')
     })
     if (content==0) {
         // Runners view

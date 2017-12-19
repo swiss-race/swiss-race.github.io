@@ -319,7 +319,7 @@ for (let i=0;i<gpxList.length;i++) {
     leftSideBarContainer.on('mouseout',() => {
         if (leftSideBarContainer.attr('data-colorchange')==1) {
             leftSideBarContainer.style('background','rgba(255,255,255,0.01)')
-            infoRace.style('color','red')
+            infoRace.style('color','black')
         }
         else {
             infoRace.style('color','white')

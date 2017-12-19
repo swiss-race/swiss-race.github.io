@@ -32,12 +32,11 @@ quotesButton.on('click',() => {
     quotesCounter = quotesCounter + 1
     if (quotesCounter == quoresArray.length) quotesCounter = 0;
 })
-quotesButton.on('mouseover', () => {
-    startButton.style('background','rgba(255,0,0,0.8)')
-    startButton.style('color','white')
-    startButton.style('cursor','pointer')
+quotesButton.on('mouseover',() => {
+    let color=d3.select('#header').style('color')
+    quotesButton.style('border-bottom','2px solid '+color)
+    quotesButton.style('cursor','pointer')
 })
-quotesButton.on('mouseout', () => {
-    startButton.style('background','rgba(255,255,255,0.8)')
-    startButton.style('color','red')
+quotesButton.on('mouseout',() => {
+    quotesButton.style('border-bottom','0px')
 })

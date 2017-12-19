@@ -24135,7 +24135,7 @@ var _loop2 = function _loop2(i) {
     leftSideBarContainer.on('mouseout', function () {
         if (leftSideBarContainer.attr('data-colorchange') == 1) {
             leftSideBarContainer.style('background', 'rgba(255,255,255,0.01)');
-            infoRace.style('color', 'red');
+            infoRace.style('color', 'black');
         } else {
             infoRace.style('color', 'white');
         }
@@ -38846,7 +38846,7 @@ var showChangeViewButton = function showChangeViewButton() {
     });
     changeView.on('mouseout', function () {
         changeView.style('background', 'rgba(255,255,255,0.8)');
-        changeView.style('color', 'red');
+        changeView.style('color', 'black');
     });
     if (content == 0) {
         // Runners view
@@ -38932,13 +38932,12 @@ quotesButton.on('click', function () {
     if (quotesCounter == quoresArray.length) quotesCounter = 0;
 });
 quotesButton.on('mouseover', function () {
-    startButton.style('background', 'rgba(255,0,0,0.8)');
-    startButton.style('color', 'white');
-    startButton.style('cursor', 'pointer');
+    var color = d3.select('#header').style('color');
+    quotesButton.style('border-bottom', '2px solid ' + color);
+    quotesButton.style('cursor', 'pointer');
 });
 quotesButton.on('mouseout', function () {
-    startButton.style('background', 'rgba(255,255,255,0.8)');
-    startButton.style('color', 'red');
+    quotesButton.style('border-bottom', '0px');
 });
 
 /***/ })

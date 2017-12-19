@@ -127,17 +127,17 @@
 <div id="classifiers">
 <label class="filterContainer">
 	<font face="verdana" color="black">Gender</font>
-  <input id="gender" type="radio" name="classifier" value="gender" checked="checked">
+  <input id="genderClassifier" type="radio" name="classifier" value="gender" checked="checked">
   <span class="checkmark"></span>
 </label>
 <label class="filterContainer">
 	<font face="verdana" color="black">Age</font>
-  <input id="age" type="radio" name="classifier" value="age">
+  <input id="ageClassifier" type="radio" name="classifier" value="age">
   <span class="checkmark"></span>
 </label>
 <label class="filterContainer">
 	<font face="verdana" color="black">Experience</font>
-  <input id="experience" type="radio" name="classifier" value="experience"  >
+  <input id="experienceClassifier" type="radio" name="classifier" value="experience"  >
   <span class="checkmark"></span>
 </label>
 </div>
@@ -151,6 +151,19 @@
     <input type="range" min="0" max="15" value="2" class="slider" id="fraction_slider" >
 </div>
 
+<video id="introVideo" autoplay="true">
+  <source src="zoom.mp4" type="video/mp4">
+</video>
+<script>
+var vid = document.getElementById("introVideo");
+vid.addEventListener('ended', function(){
+    vid.remove();
+}, false);
+</script>
+
+<button id="quotesButton">Next Marathon Quote</button>
+<div id="marathonQuote"></div>
+
 <div id="info">
     <div class='infoTitle'>
         About the project
@@ -158,7 +171,7 @@
     This project is part of the course <a href="http://www.kirellbenzi.com/teaching/">Data Visualization</a>
     at <a href="http://www.epfl.ch">EPFL</a>.
     We want to create a visualization tool for the most important Swiss running races.
-    We build on top of 
+    We build on top of
 
 </div>
 <div id="footer">

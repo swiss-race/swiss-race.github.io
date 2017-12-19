@@ -544,7 +544,7 @@ Selection.prototype = selection.prototype = {
 /* harmony export (immutable) */ __webpack_exports__["g"] = init;
 /* harmony export (immutable) */ __webpack_exports__["h"] = set;
 /* harmony export (immutable) */ __webpack_exports__["f"] = get;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_d3_dispatch__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_d3_dispatch__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_d3_timer__ = __webpack_require__(36);
 
 
@@ -987,127 +987,6 @@ function noop() {}
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__src_dispatch__ = __webpack_require__(202);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_0__src_dispatch__["a"]; });
-
-
-
-/***/ }),
-/* 13 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__src_path__ = __webpack_require__(291);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_0__src_path__["a"]; });
-
-
-
-/***/ }),
-/* 14 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-function streamGeometry(geometry, stream) {
-  if (geometry && streamGeometryType.hasOwnProperty(geometry.type)) {
-    streamGeometryType[geometry.type](geometry, stream);
-  }
-}
-
-var streamObjectType = {
-  Feature: function(object, stream) {
-    streamGeometry(object.geometry, stream);
-  },
-  FeatureCollection: function(object, stream) {
-    var features = object.features, i = -1, n = features.length;
-    while (++i < n) streamGeometry(features[i].geometry, stream);
-  }
-};
-
-var streamGeometryType = {
-  Sphere: function(object, stream) {
-    stream.sphere();
-  },
-  Point: function(object, stream) {
-    object = object.coordinates;
-    stream.point(object[0], object[1], object[2]);
-  },
-  MultiPoint: function(object, stream) {
-    var coordinates = object.coordinates, i = -1, n = coordinates.length;
-    while (++i < n) object = coordinates[i], stream.point(object[0], object[1], object[2]);
-  },
-  LineString: function(object, stream) {
-    streamLine(object.coordinates, stream, 0);
-  },
-  MultiLineString: function(object, stream) {
-    var coordinates = object.coordinates, i = -1, n = coordinates.length;
-    while (++i < n) streamLine(coordinates[i], stream, 0);
-  },
-  Polygon: function(object, stream) {
-    streamPolygon(object.coordinates, stream);
-  },
-  MultiPolygon: function(object, stream) {
-    var coordinates = object.coordinates, i = -1, n = coordinates.length;
-    while (++i < n) streamPolygon(coordinates[i], stream);
-  },
-  GeometryCollection: function(object, stream) {
-    var geometries = object.geometries, i = -1, n = geometries.length;
-    while (++i < n) streamGeometry(geometries[i], stream);
-  }
-};
-
-function streamLine(coordinates, stream, closed) {
-  var i = -1, n = coordinates.length - closed, coordinate;
-  stream.lineStart();
-  while (++i < n) coordinate = coordinates[i], stream.point(coordinate[0], coordinate[1], coordinate[2]);
-  stream.lineEnd();
-}
-
-function streamPolygon(coordinates, stream) {
-  var i = -1, n = coordinates.length;
-  stream.polygonStart();
-  while (++i < n) streamLine(coordinates[i], stream, 1);
-  stream.polygonEnd();
-}
-
-/* harmony default export */ __webpack_exports__["a"] = (function(object, stream) {
-  if (object && streamObjectType.hasOwnProperty(object.type)) {
-    streamObjectType[object.type](object, stream);
-  } else {
-    streamGeometry(object, stream);
-  }
-});
-
-
-/***/ }),
-/* 15 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return map; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return slice; });
-var array = Array.prototype;
-
-var map = array.map;
-var slice = array.slice;
-
-
-/***/ }),
-/* 16 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony default export */ __webpack_exports__["a"] = (function(x) {
-  return function constant() {
-    return x;
-  };
-});
-
-
-/***/ }),
-/* 17 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__build_package__ = __webpack_require__(179);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "version", function() { return __WEBPACK_IMPORTED_MODULE_0__build_package__["a"]; });
@@ -1170,7 +1049,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "lab", function() { return __WEBPACK_IMPORTED_MODULE_6_d3_color__["e"]; });
 /* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "hcl", function() { return __WEBPACK_IMPORTED_MODULE_6_d3_color__["c"]; });
 /* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "cubehelix", function() { return __WEBPACK_IMPORTED_MODULE_6_d3_color__["b"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_d3_dispatch__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_d3_dispatch__ = __webpack_require__(13);
 /* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "dispatch", function() { return __WEBPACK_IMPORTED_MODULE_7_d3_dispatch__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_d3_drag__ = __webpack_require__(51);
 /* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "drag", function() { return __WEBPACK_IMPORTED_MODULE_8_d3_drag__["a"]; });
@@ -1330,7 +1209,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "interpolateCubehelix", function() { return __WEBPACK_IMPORTED_MODULE_15_d3_interpolate__["e"]; });
 /* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "interpolateCubehelixLong", function() { return __WEBPACK_IMPORTED_MODULE_15_d3_interpolate__["f"]; });
 /* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "quantize", function() { return __WEBPACK_IMPORTED_MODULE_15_d3_interpolate__["w"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16_d3_path__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16_d3_path__ = __webpack_require__(14);
 /* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "path", function() { return __WEBPACK_IMPORTED_MODULE_16_d3_path__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_17_d3_polygon__ = __webpack_require__(379);
 /* harmony namespace reexport (by provided) */ __webpack_require__.d(__webpack_exports__, "polygonArea", function() { return __WEBPACK_IMPORTED_MODULE_17_d3_polygon__["a"]; });
@@ -1575,6 +1454,127 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /***/ }),
+/* 13 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__src_dispatch__ = __webpack_require__(202);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_0__src_dispatch__["a"]; });
+
+
+
+/***/ }),
+/* 14 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__src_path__ = __webpack_require__(291);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_0__src_path__["a"]; });
+
+
+
+/***/ }),
+/* 15 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+function streamGeometry(geometry, stream) {
+  if (geometry && streamGeometryType.hasOwnProperty(geometry.type)) {
+    streamGeometryType[geometry.type](geometry, stream);
+  }
+}
+
+var streamObjectType = {
+  Feature: function(object, stream) {
+    streamGeometry(object.geometry, stream);
+  },
+  FeatureCollection: function(object, stream) {
+    var features = object.features, i = -1, n = features.length;
+    while (++i < n) streamGeometry(features[i].geometry, stream);
+  }
+};
+
+var streamGeometryType = {
+  Sphere: function(object, stream) {
+    stream.sphere();
+  },
+  Point: function(object, stream) {
+    object = object.coordinates;
+    stream.point(object[0], object[1], object[2]);
+  },
+  MultiPoint: function(object, stream) {
+    var coordinates = object.coordinates, i = -1, n = coordinates.length;
+    while (++i < n) object = coordinates[i], stream.point(object[0], object[1], object[2]);
+  },
+  LineString: function(object, stream) {
+    streamLine(object.coordinates, stream, 0);
+  },
+  MultiLineString: function(object, stream) {
+    var coordinates = object.coordinates, i = -1, n = coordinates.length;
+    while (++i < n) streamLine(coordinates[i], stream, 0);
+  },
+  Polygon: function(object, stream) {
+    streamPolygon(object.coordinates, stream);
+  },
+  MultiPolygon: function(object, stream) {
+    var coordinates = object.coordinates, i = -1, n = coordinates.length;
+    while (++i < n) streamPolygon(coordinates[i], stream);
+  },
+  GeometryCollection: function(object, stream) {
+    var geometries = object.geometries, i = -1, n = geometries.length;
+    while (++i < n) streamGeometry(geometries[i], stream);
+  }
+};
+
+function streamLine(coordinates, stream, closed) {
+  var i = -1, n = coordinates.length - closed, coordinate;
+  stream.lineStart();
+  while (++i < n) coordinate = coordinates[i], stream.point(coordinate[0], coordinate[1], coordinate[2]);
+  stream.lineEnd();
+}
+
+function streamPolygon(coordinates, stream) {
+  var i = -1, n = coordinates.length;
+  stream.polygonStart();
+  while (++i < n) streamLine(coordinates[i], stream, 1);
+  stream.polygonEnd();
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (function(object, stream) {
+  if (object && streamObjectType.hasOwnProperty(object.type)) {
+    streamObjectType[object.type](object, stream);
+  } else {
+    streamGeometry(object, stream);
+  }
+});
+
+
+/***/ }),
+/* 16 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return map; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return slice; });
+var array = Array.prototype;
+
+var map = array.map;
+var slice = array.slice;
+
+
+/***/ }),
+/* 17 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony default export */ __webpack_exports__["a"] = (function(x) {
+  return function constant() {
+    return x;
+  };
+});
+
+
+/***/ }),
 /* 18 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1665,7 +1665,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getFiltersStatus = exports.hideCircle = exports.showCircle = exports.addCirclesToMap = exports.setCirclesInPositions = exports.createRunnersCircles = exports.mouseoutOpacity = exports.mouseoverOpacity = exports.setCircleInPosition = exports.circle = exports.div = exports.lineStyle = undefined;
 
-var _d = __webpack_require__(17);
+var _d = __webpack_require__(12);
 
 var d3 = _interopRequireWildcard(_d);
 
@@ -1674,13 +1674,12 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 /////  MAP ANNOTATIONS PROPERTIES   /////
 
 var lineStyle = {
-    "color": 'blue',
-    "weight": 7,
-    "opacity": 0.65
+    "color": '#FF4F4F',
+    "weight": 6,
+    "opacity": 1.0
 };
 
 var circleStyle = { color: 'red',
-    fillColor: 'red',
     fillOpacity: 1,
     radius: 5,
     class: 1
@@ -1738,7 +1737,6 @@ var mouseoutOpacity = function mouseoutOpacity(className) {
 ///////////////
 /// Runners ///
 var runnersStyle = { color: 'red',
-    fillColor: 'red',
     opacity: 1,
     fillOpacity: 1,
     radius: 2,
@@ -1751,31 +1749,46 @@ var runnersStyle = { color: 'red',
 };
 
 var applyFilterToRunners = function applyFilterToRunners(runners, filterStatus) {
-
     for (var i = 0; i < runners.length; i++) {
         var runner = runners[i];
-        if (filterStatus.gender) {
-            runner.setStyle({ opacity: 1, fillOpacity: 1 });
-            if (runner.male && (filterStatus.females_and_males || filterStatus.males_only)) {
-                runner.setStyle({ color: '#49A8B1' });
-            } else if (runner.male == 0 && (filterStatus.females_and_males || filterStatus.females_only)) {
-                runner.setStyle({ color: '#CA6FA8' });
-            } else {
-                runner.setStyle({ opacity: 0, fillOpacity: 0 });
-            }
+        var final_opacity = 0.65;
+        var final_color = 'red';
+
+        if (runner.male && (filterStatus.females_and_males || filterStatus.males_only)) {
+            if (filterStatus.gender) final_color = '#49A8B1';
+        } else if (runner.male == 0 && (filterStatus.females_and_males || filterStatus.females_only)) {
+            if (filterStatus.gender) final_color = '#CA6FA8';
+        } else {
+            final_opacity = 0;
         }
 
-        if (filterStatus.age) {
-            runner.setStyle({ opacity: 1, fillOpacity: 1 });
-            var age = runner.age;
-            if (age < 20 && (filterStatus.ages_all || filterStatus.ages_7_20)) runner.setStyle({ color: "#89D863" });else if (age >= 20 && age < 33 && (filterStatus.ages_all || filterStatus.ages_20_33)) runner.setStyle({ color: "#3CC46C" });else if (age >= 33 && age < 47 && (filterStatus.ages_all || filterStatus.ages_33_47)) runner.setStyle({ color: "#49ABD1" });else if (age >= 47 && age < 60 && (filterStatus.ages_all || filterStatus.ages_47_60)) runner.setStyle({ color: "#9267C4" });else if (age >= 60 && filterStatus.ages_all && filterStatus.ages_60_) runner.setStyle({ color: "#CA6FA8" });else runner.setStyle({ opacity: 0, fillOpacity: 0 });
+        var age = runner.age;
+        if (age < 20 && (filterStatus.ages_all || filterStatus.ages_7_20)) {
+            if (filterStatus.age) final_color = "#89D863";
+        } else if (age >= 20 && age < 33 && (filterStatus.ages_all || filterStatus.ages_20_33)) {
+            if (filterStatus.age) final_color = "#3CC46C";
+        } else if (age >= 33 && age < 47 && (filterStatus.ages_all || filterStatus.ages_33_47)) {
+            if (filterStatus.age) final_color = "#49ABD1";
+        } else if (age >= 47 && age < 60 && (filterStatus.ages_all || filterStatus.ages_47_60)) {
+            if (filterStatus.age) final_color = "#9267C4";
+        } else if (age >= 60 && filterStatus.ages_all && filterStatus.ages_60_) {
+            if (filterStatus.age) final_color = "#CA6FA8";
+        } else {
+            final_opacity = 0;
         }
 
-        if (filterStatus.experience) {
-            runner.setStyle({ opacity: 1, fillOpacity: 1 });
-            var experience = runner.count;
-            if (experience == 1 && (filterStatus.count_all || filterStatus.count_1)) runner.setStyle({ color: "#79DA4A" });else if (experience >= 2 && experience <= 3 && (filterStatus.count_all || filterStatus.count_2_5)) runner.setStyle({ color: "#00B9A6" });else if (experience >= 4 && (filterStatus.count_all || filterStatus.count_6)) runner.setStyle({ color: "#CA6FA8" });else runner.setStyle({ opacity: 0, fillOpacity: 0 });
+        var experience = runner.count;
+        if (experience == 1 && (filterStatus.count_all || filterStatus.count_1)) {
+            if (filterStatus.experience) final_color = "#79DA4A";
+        } else if (experience >= 2 && experience <= 3 && (filterStatus.count_all || filterStatus.count_2_5)) {
+            if (filterStatus.experience) final_color = "#00B9A6";
+        } else if (experience >= 4 && (filterStatus.count_all || filterStatus.count_6)) {
+            if (filterStatus.experience) final_color = "#CA6FA8";
+        } else {
+            final_opacity = 0;
         }
+
+        runner.setStyle({ color: final_color, opacity: final_opacity, fillOpacity: final_opacity });
     }
 };
 
@@ -1797,9 +1810,9 @@ var getFiltersStatus = function getFiltersStatus() {
     var count_2_5 = d3.select('#count_2_5').node().checked;
     var count_6 = d3.select('#count_6').node().checked;
 
-    var gender = d3.select('#gender').node().checked;
-    var age = d3.select('#age').node().checked;
-    var experience = d3.select('#experience').node().checked;
+    var gender = d3.select('#genderClassifier').node().checked;
+    var age = d3.select('#ageClassifier').node().checked;
+    var experience = d3.select('#experienceClassifier').node().checked;
 
     return { gender: gender, age: age, experience: experience, females_and_males: females_and_males,
         males_only: males_only, females_only: females_only, ages_all: ages_all, ages_60_: ages_60_,
@@ -2840,7 +2853,7 @@ TransformStream.prototype = {
 /* harmony export (immutable) */ __webpack_exports__["b"] = continuous;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_d3_array__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_d3_interpolate__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__array__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__array__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__constant__ = __webpack_require__(83);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__number__ = __webpack_require__(152);
 
@@ -4495,7 +4508,7 @@ function conicProjection(projectAt) {
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = fitExtent;
 /* harmony export (immutable) */ __webpack_exports__["b"] = fitSize;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__stream__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__stream__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__path_bounds__ = __webpack_require__(141);
 
 
@@ -4794,7 +4807,7 @@ function squarifyRatio(ratio, parent, x0, y0, x1, y1) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_d3_collection__ = __webpack_require__(25);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_d3_dispatch__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_d3_dispatch__ = __webpack_require__(13);
 
 
 
@@ -5028,8 +5041,8 @@ function defaultLocale(definition) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_d3_path__ = __webpack_require__(13);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__constant__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_d3_path__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__constant__ = __webpack_require__(17);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__curve_linear__ = __webpack_require__(46);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__point__ = __webpack_require__(87);
 
@@ -6694,7 +6707,7 @@ var max = Math.max;
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["b"] = x;
 /* harmony export (immutable) */ __webpack_exports__["c"] = y;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_d3_dispatch__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_d3_dispatch__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_d3_collection__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_d3_timer__ = __webpack_require__(36);
 
@@ -7114,7 +7127,7 @@ var prefixExponent;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__adder__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__math__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__noop__ = __webpack_require__(11);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__stream__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__stream__ = __webpack_require__(15);
 
 
 
@@ -7990,7 +8003,7 @@ var coordinates = [null, null],
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__adder__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__math__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__noop__ = __webpack_require__(11);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__stream__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__stream__ = __webpack_require__(15);
 
 
 
@@ -8492,7 +8505,7 @@ function responseOf(parse, row) {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return implicit; });
 /* harmony export (immutable) */ __webpack_exports__["a"] = ordinal;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_d3_collection__ = __webpack_require__(25);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__array__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__array__ = __webpack_require__(16);
 
 
 
@@ -8586,7 +8599,7 @@ function ordinal(range) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_d3_interpolate__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_d3_time__ = __webpack_require__(45);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_d3_time_format__ = __webpack_require__(84);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__array__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__array__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__continuous__ = __webpack_require__(44);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__nice__ = __webpack_require__(153);
 
@@ -9291,8 +9304,8 @@ var formatIso = Date.prototype.toISOString
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_d3_path__ = __webpack_require__(13);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__constant__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_d3_path__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__constant__ = __webpack_require__(17);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__curve_linear__ = __webpack_require__(46);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__line__ = __webpack_require__(86);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__point__ = __webpack_require__(87);
@@ -23352,7 +23365,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.addElevationPlot = undefined;
 
-var _d = __webpack_require__(17);
+var _d = __webpack_require__(12);
 
 var d3 = _interopRequireWildcard(_d);
 
@@ -23475,7 +23488,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.runSimulation = exports.hideFilters = exports.showTimeContainer = exports.showFilters = undefined;
 
-var _d = __webpack_require__(17);
+var _d = __webpack_require__(12);
 
 var d3 = _interopRequireWildcard(_d);
 
@@ -23609,11 +23622,11 @@ exports.runSimulation = runSimulation;
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 exports.computeHistogramData = exports.setUpHistogram = undefined;
 
-var _d = __webpack_require__(17);
+var _d = __webpack_require__(12);
 
 var d3 = _interopRequireWildcard(_d);
 
@@ -23628,111 +23641,111 @@ var utilities = _interopRequireWildcard(_utilities);
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 var setUpHistogram = function setUpHistogram(histogramData) {
-  // Set backgroundPlot 
-  d3.select('#backgroundPlot').style('opacity', 1);
+    // Set backgroundPlot 
+    d3.select('#backgroundPlot').style('opacity', 1);
 
-  var svg = d3.select('#plot').append('svg');
-  // let svg=d3.select('svg')
-  svg.attr('position', 'absolute').attr('left', '0.5%').attr('top', '17%').attr('width', '99%').attr('bottom', '99%');
+    var svg = d3.select('#plot').append('svg');
+    // let svg=d3.select('svg')
+    svg.attr('position', 'absolute').attr('left', '0.5%').attr('top', '17%').attr('width', '99%').attr('bottom', '99%');
 
-  // let histogram_margin = {top:  window.innerWidth * image_ratio + 5, right: -17, bottom: 20, left: 12};
-  var histogram_margin = { top: 0, right: -17, bottom: 20, left: 12 };
-  var histogram_width = +svg.attr("width") - histogram_margin.left - histogram_margin.right;
-  var histogram_height = +svg.attr("height") - histogram_margin.top - histogram_margin.bottom;
+    // let histogram_margin = {top:  window.innerWidth * image_ratio + 5, right: -17, bottom: 20, left: 12};
+    var histogram_margin = { top: 0, right: -17, bottom: 20, left: 12 };
+    var histogram_width = +svg.attr("width") - histogram_margin.left - histogram_margin.right;
+    var histogram_height = +svg.attr("height") - histogram_margin.top - histogram_margin.bottom;
 
-  var x_axis = d3.scaleBand().rangeRound([0, histogram_width]).padding(0.1);
-  var y_axis = d3.scaleLinear().rangeRound([histogram_height, 0]);
+    var x_axis = d3.scaleBand().rangeRound([0, histogram_width]).padding(0.1);
+    var y_axis = d3.scaleLinear().rangeRound([histogram_height, 0]);
 
-  svg.append("rect").attr("width", "100%").attr("height", "100%").attr("transform", "translate(" + histogram_margin.left + "," + histogram_margin.top + ")").attr("fill", "#E7E5E6");
+    svg.append("rect").attr("width", "100%").attr("height", "100%").attr("transform", "translate(" + histogram_margin.left + "," + histogram_margin.top + ")").attr("fill", "#E7E5E6");
 
-  var g = svg.append("g").attr("transform", "translate(" + histogram_margin.left + "," + histogram_margin.top + ")");
+    var g = svg.append("g").attr("transform", "translate(" + histogram_margin.left + "," + histogram_margin.top + ")");
 
-  x_axis.domain(utilities.numberRange(0, 75));
-  y_axis.domain([0, 1]);
-  console.log(x_axis.domain());
-  // x_axis.domain(histogramData.map(function(d) { return d[0]; }));
-  // let y_limit = d3.max(histogramData, function(d) { return d[1]; })
-  // y_axis.domain([0, y_limit]);
+    x_axis.domain(utilities.numberRange(0, 75));
+    y_axis.domain([0, 1]);
+    console.log(x_axis.domain());
+    // x_axis.domain(histogramData.map(function(d) { return d[0]; }));
+    // let y_limit = d3.max(histogramData, function(d) { return d[1]; })
+    // y_axis.domain([0, y_limit]);
 
 
-  console.log(histogramData.map(function (d) {
-    return d[0];
-  }));
+    console.log(histogramData.map(function (d) {
+        return d[0];
+    }));
 
-  g.append("g").attr("class", "axis_x").attr("transform", "translate(0," + histogram_height + ")").attr("stroke-width", "3px").attr("stroke", "#B8B8B8").attr("stroke-opacity", "0.45");
-  // .call(d3.axisBottom(x_axis));
+    g.append("g").attr("class", "axis_x").attr("transform", "translate(0," + histogram_height + ")").attr("stroke-width", "3px").attr("stroke", "#B8B8B8").attr("stroke-opacity", "0.45");
+    // .call(d3.axisBottom(x_axis));
 
-  g.append("g").attr("class", "axis_y").attr("stroke-width", "3px").attr("stroke-opacity", "0.45").call(d3.axisLeft(y_axis).ticks(10, ""));
+    g.append("g").attr("class", "axis_y").attr("stroke-width", "3px").attr("stroke-opacity", "0.45").call(d3.axisLeft(y_axis).ticks(10, ""));
 };
 
 var computeHistogramData = function computeHistogramData(trackVector, runnersCircles, positionsArray) {
-  var num_bins = 75;
-  var bin_width = 1.0 / num_bins;
-  var num_histograms = 5; //Maximum number of filters
-  var bin_counts = new Array(num_bins);
-  var filterStatus = annotations.getFiltersStatus();
-  var trackLength = trackVector[trackVector.length - 1].cumulativeDistance;
+    var num_bins = 75;
+    var bin_width = 1.0 / num_bins;
+    var num_histograms = 5; //Maximum number of filters
+    var bin_counts = new Array(num_bins);
+    var filterStatus = annotations.getFiltersStatus();
+    var trackLength = trackVector[trackVector.length - 1].cumulativeDistance;
 
-  for (i = 0; i < num_bins; i++) {
-    bin_counts[i] = new Array(num_histograms).fill(0);
-  }
-  // max_distance = marathon_distance / 60.0
-
-  for (i = 0; i < positionsArray.length; i++) {
-    // var t = runners_data[i][0]
-    // if (change_speed == true) {
-    //   var shift = speedup * marathon_distance/(t + 1)
-    //   distances_all_runners[i] = distances_all_runners[i] + shift
-    // }
-    // if (change_time == true) {
-    //   distances_all_runners[i] =  runners_datastep * speedup * marathon_distance/(t + 1)
-    // }
-    // let distance = distances_all_runners[i] / 10
-
-    var histogram_index = 0;
-    if (filterStatus.gender) {
-      if (runnersCircles[i].male == 0) histogram_index = 1;
+    for (i = 0; i < num_bins; i++) {
+        bin_counts[i] = new Array(num_histograms).fill(0);
     }
-    if (filterStatus.age) {
-      var age = runnersCircles[i].age;
-      if (age < 20) histogram_index = 4;
-      if (age >= 20 && age < 33) histogram_index = 1;
-      if (age >= 33 && age < 47) histogram_index = 0;
-      if (age >= 47 && age < 60) histogram_index = 2;
-      if (age >= 60) histogram_index = 3;
+    // max_distance = marathon_distance / 60.0
+
+    for (i = 0; i < positionsArray.length; i++) {
+        // var t = runners_data[i][0]
+        // if (change_speed == true) {
+        //   var shift = speedup * marathon_distance/(t + 1)
+        //   distances_all_runners[i] = distances_all_runners[i] + shift
+        // }
+        // if (change_time == true) {
+        //   distances_all_runners[i] =  runners_datastep * speedup * marathon_distance/(t + 1)
+        // }
+        // let distance = distances_all_runners[i] / 10
+
+        var histogram_index = 0;
+        if (filterStatus.gender) {
+            if (runnersCircles[i].male == 0) histogram_index = 1;
+        }
+        if (filterStatus.age) {
+            var age = runnersCircles[i].age;
+            if (age < 20) histogram_index = 4;
+            if (age >= 20 && age < 33) histogram_index = 1;
+            if (age >= 33 && age < 47) histogram_index = 0;
+            if (age >= 47 && age < 60) histogram_index = 2;
+            if (age >= 60) histogram_index = 3;
+        }
+        if (filterStatus.experience) {
+            var experience = runnersCircles[i].count;
+            if (experience == 1) histogram_index = 0;
+            if (experience >= 2 && experience <= 3) histogram_index = 1;
+            if (experience >= 4) histogram_index = 2;
+        }
+
+        var normalized_distance = positionsArray[i][2] / trackLength * num_bins;
+        var bin_index = Math.floor(normalized_distance);
+        if (bin_index > num_bins - 1) bin_index = num_bins - 1;
+        bin_counts[bin_index][histogram_index] = bin_counts[bin_index][histogram_index] + 1.0;
     }
-    if (filterStatus.experience) {
-      var experience = runnersCircles[i].count;
-      if (experience == 1) histogram_index = 0;
-      if (experience >= 2 && experience <= 3) histogram_index = 1;
-      if (experience >= 4) histogram_index = 2;
+
+    var histogram_data = new Array(num_bins * num_histograms);
+    var max_value = 0;
+    for (var j = 0; j < num_histograms; j++) {
+        for (var i = 0; i < num_bins; i++) {
+            var k = i + j * num_bins;
+            histogram_data[k] = new Array(3);
+            histogram_data[k][0] = i;
+            histogram_data[k][1] = bin_counts[i][j];
+            histogram_data[k][2] = j;
+            if (histogram_data[k][1] > max_value) max_value = histogram_data[k][1];
+        }
+    }
+    for (var i = 0; i < num_bins * num_histograms; i++) {
+        histogram_data[i][1] = histogram_data[i][1] / max_value;
     }
 
-    var normalized_distance = positionsArray[i][2] / trackLength * num_bins;
-    var bin_index = Math.floor(normalized_distance);
-    if (bin_index > num_bins - 1) bin_index = num_bins - 1;
-    bin_counts[bin_index][histogram_index] = bin_counts[bin_index][histogram_index] + 1.0;
-  }
+    // console.log(histogram_data)
 
-  var histogram_data = new Array(num_bins * num_histograms);
-  var max_value = 0;
-  for (var j = 0; j < num_histograms; j++) {
-    for (var i = 0; i < num_bins; i++) {
-      var k = i + j * num_bins;
-      histogram_data[k] = new Array(3);
-      histogram_data[k][0] = i;
-      histogram_data[k][1] = bin_counts[i][j];
-      histogram_data[k][2] = j;
-      if (histogram_data[k][1] > max_value) max_value = histogram_data[k][1];
-    }
-  }
-  for (var i = 0; i < num_bins * num_histograms; i++) {
-    histogram_data[i][1] = histogram_data[i][1] / max_value;
-  }
-
-  // console.log(histogram_data)
-
-  return histogram_data;
+    return histogram_data;
 };
 
 exports.setUpHistogram = setUpHistogram;
@@ -23747,7 +23760,7 @@ exports.computeHistogramData = computeHistogramData;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _d = __webpack_require__(17);
+var _d = __webpack_require__(12);
 
 var d3 = _interopRequireWildcard(_d);
 
@@ -23795,6 +23808,10 @@ var _histogram = __webpack_require__(177);
 
 var histogram = _interopRequireWildcard(_histogram);
 
+var _quotes = __webpack_require__(483);
+
+var quotes = _interopRequireWildcard(_quotes);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
@@ -23819,8 +23836,9 @@ var MainStatus = function () {
     function MainStatus(view, leftBar) {
         var currentTracks = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
         var currentTrack = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
-        var currentPoints = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
-        var gpxFile = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 0;
+        var currentTrackOutline = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
+        var currentPoints = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 0;
+        var gpxFile = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : 0;
 
         _classCallCheck(this, MainStatus);
 
@@ -23828,6 +23846,7 @@ var MainStatus = function () {
         this._leftBar = leftBar;
         this._currentTracks = currentTracks;
         this._currentTrack = currentTrack;
+        this._currentTrackOutline = currentTrackOutline;
         this._currentPoints = currentPoints;
         this._gpxFile = gpxFile;
     }
@@ -23977,7 +23996,6 @@ var setUpView2 = function setUpView2(gpxFile, map, mainStatus) {
     menu.showChangeViewButton(1);
     mainStatus.gpxFile = gpxFile;
 
-    //
     // bars = g.selectAll(".bar")
     //     .data(histogram_data)
     //     .enter().append("rect")
@@ -23991,7 +24009,6 @@ var setUpView2 = function setUpView2(gpxFile, map, mainStatus) {
     //         .attr("fill", "#49ABD1")
     //         .attr("opacity", "1.0")
     //         .attr("hist_index", d => d[2]);
-    //
 
     var mainMapPromise = new Promise(function (resolve, reject) {
         trackUtils.addTrack(gpxFile[0], map, [400, 0], resolve);
@@ -24003,7 +24020,6 @@ var setUpView2 = function setUpView2(gpxFile, map, mainStatus) {
             resolve(data);
         });
     });
-
     sliderPromise.then(function (object) {
         var timeContainer = filters.showTimeContainer();
         filters.showFilters();
@@ -24013,9 +24029,18 @@ var setUpView2 = function setUpView2(gpxFile, map, mainStatus) {
             var track = object[1]._latlngs;
 
             var trackJSON = utilities.transformToGeoJSON(track);
-            var trackMap = _leaflet2.default.geoJSON(trackJSON, {
-                style: annotations.lineStyle
+            var trackMapOutline = _leaflet2.default.geoJSON(trackJSON, {
+                color: '#D1B8B4',
+                weight: 2.2 * (map.getZoom() - 7) + 4,
+                opacity: 1.0
             }).addTo(map);
+
+            var trackMap = _leaflet2.default.geoJSON(trackJSON, {
+                color: 'white',
+                weight: 2.2 * (map.getZoom() - 7),
+                opacity: 1.0
+            }).addTo(map);
+            mainStatus.currentTrackOutline = trackMapOutline;
             mainStatus.currentTrack = trackMap;
             mainStatus.view = 2;
 
@@ -24026,7 +24051,7 @@ var setUpView2 = function setUpView2(gpxFile, map, mainStatus) {
             var startButton = d3.select('#startButton');
             startButton.style('pointer-events', 'all');
             startButton.style('opacity', 1);
-            startButton.node().innerHTML = 'Start!';
+            startButton.node().innerHTML = 'START';
             // let stopButton=d3.select('#stopButton')
             // stopButton.style('pointer-events','all')
             // stopButton.style('opacity',1)
@@ -24098,7 +24123,7 @@ var _loop2 = function _loop2(i) {
         d3.selectAll('.leftSideBarInfo').style('color', 'red');
         infoRace.style('color', 'white');
 
-        setUpView1(gpxList[i], map, mainStatus);
+        setUpView2(gpxList[i], map, mainStatus);
     });
     leftSideBarContainer.on('mouseover', function () {
         if (leftSideBarContainer.attr('data-colorchange') == 1) {
@@ -24152,9 +24177,10 @@ var parseRunners = function parseRunners(data) {
     // Rescale runners point distances based on zoom level
     var mapZoom = map.getZoom();
     mapZoom = mapZoom - 11;
-
     var stdX = 0.002 / mapZoom; // standard deviation in terms of latitude and longitude
     var stdY = 0.003 / mapZoom; // standard deviation in terms of latitude and longitude
+    //let stdX=0.002 * (0.022 * (map.getZoom() - 11))
+    //let stdY=0.003 * (0.022 * (map.getZoom() - 11))
     var runners_data = new Array(data.length);
     for (var i = 0; i < data.length; i++) {
         runners_data[i] = new Array(5);
@@ -24197,7 +24223,9 @@ var drawRunners = function drawRunners(data) {
     return runnersCircles;
 };
 
-var animateMap = function animateMap(elapsed) {};
+var animateMap = function animateMap(elapsed) {
+    console.log(map.getZoom());
+};
 
 /***/ }),
 /* 179 */
@@ -24901,7 +24929,7 @@ var slice = Array.prototype.slice;
 /* harmony export (immutable) */ __webpack_exports__["a"] = brushSelection;
 /* harmony export (immutable) */ __webpack_exports__["b"] = brushX;
 /* harmony export (immutable) */ __webpack_exports__["c"] = brushY;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_d3_dispatch__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_d3_dispatch__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_d3_drag__ = __webpack_require__(51);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_d3_interpolate__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_d3_selection__ = __webpack_require__(1);
@@ -25546,7 +25574,7 @@ function set(type, name, callback) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_d3_dispatch__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_d3_dispatch__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_d3_selection__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__nodrag__ = __webpack_require__(110);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__noevent__ = __webpack_require__(111);
@@ -28424,7 +28452,7 @@ function compareValue(compare) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__array__ = __webpack_require__(289);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__constant__ = __webpack_require__(290);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__math__ = __webpack_require__(123);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_d3_path__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_d3_path__ = __webpack_require__(14);
 
 
 
@@ -30244,7 +30272,7 @@ function defaultLocale(definition) {
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "U", function() { return __WEBPACK_IMPORTED_MODULE_29__src_projection_transverseMercator__["b"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_30__src_rotation__ = __webpack_require__(39);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "O", function() { return __WEBPACK_IMPORTED_MODULE_30__src_rotation__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_31__src_stream__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_31__src_stream__ = __webpack_require__(15);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "R", function() { return __WEBPACK_IMPORTED_MODULE_31__src_stream__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_32__src_transform__ = __webpack_require__(41);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "S", function() { return __WEBPACK_IMPORTED_MODULE_32__src_transform__["a"]; });
@@ -30292,7 +30320,7 @@ function defaultLocale(definition) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__area__ = __webpack_require__(129);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__cartesian__ = __webpack_require__(26);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__math__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__stream__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__stream__ = __webpack_require__(15);
 
 
 
@@ -30478,7 +30506,7 @@ function rangeContains(range, x) {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__math__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__noop__ = __webpack_require__(11);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stream__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__stream__ = __webpack_require__(15);
 
 
 
@@ -30987,7 +31015,7 @@ function graticule10() {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__identity__ = __webpack_require__(74);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__stream__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__stream__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__area__ = __webpack_require__(339);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__bounds__ = __webpack_require__(141);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__centroid__ = __webpack_require__(340);
@@ -33864,7 +33892,7 @@ function point() {
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = identity;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__array__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__array__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__linear__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__number__ = __webpack_require__(152);
 
@@ -34130,7 +34158,7 @@ function sqrt() {
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = quantile;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_d3_array__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__array__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__array__ = __webpack_require__(16);
 
 
 
@@ -34191,7 +34219,7 @@ function quantile() {
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = quantize;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_d3_array__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__array__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__array__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__linear__ = __webpack_require__(29);
 
 
@@ -34248,7 +34276,7 @@ function quantize() {
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = threshold;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_d3_array__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__array__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__array__ = __webpack_require__(16);
 
 
 
@@ -35057,8 +35085,8 @@ function sequential(interpolator) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_d3_path__ = __webpack_require__(13);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__constant__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_d3_path__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__constant__ = __webpack_require__(17);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__math__ = __webpack_require__(31);
 
 
@@ -35326,7 +35354,7 @@ function cornerTangents(x0, y0, x1, y1, r1, rc, cw) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constant__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__constant__ = __webpack_require__(17);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__descending__ = __webpack_require__(437);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__identity__ = __webpack_require__(438);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__math__ = __webpack_require__(31);
@@ -35478,9 +35506,9 @@ function cornerTangents(x0, y0, x1, y1, r1, rc, cw) {
 /* harmony export (immutable) */ __webpack_exports__["a"] = linkHorizontal;
 /* harmony export (immutable) */ __webpack_exports__["c"] = linkVertical;
 /* harmony export (immutable) */ __webpack_exports__["b"] = linkRadial;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_d3_path__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_d3_path__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__array__ = __webpack_require__(161);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__constant__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__constant__ = __webpack_require__(17);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__point__ = __webpack_require__(87);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__pointRadial__ = __webpack_require__(160);
 
@@ -35575,7 +35603,7 @@ function linkRadial() {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return symbols; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_d3_path__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_d3_path__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__symbol_circle__ = __webpack_require__(162);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__symbol_cross__ = __webpack_require__(163);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__symbol_diamond__ = __webpack_require__(164);
@@ -35583,7 +35611,7 @@ function linkRadial() {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__symbol_square__ = __webpack_require__(166);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__symbol_triangle__ = __webpack_require__(167);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__symbol_wye__ = __webpack_require__(168);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__constant__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__constant__ = __webpack_require__(17);
 
 
 
@@ -36245,7 +36273,7 @@ function stepAfter(context) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__array__ = __webpack_require__(161);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__constant__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__constant__ = __webpack_require__(17);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__offset_none__ = __webpack_require__(32);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__order_none__ = __webpack_require__(33);
 
@@ -36780,7 +36808,7 @@ function rightBreakPoint(arc, directrix) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_d3_dispatch__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_d3_dispatch__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_d3_drag__ = __webpack_require__(51);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_d3_interpolate__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_d3_selection__ = __webpack_require__(1);
@@ -38572,7 +38600,8 @@ var addPoint = function addPoint(line, map, isLeftBar) {
         var lineStyle = annotations.lineStyle;
         lineStyle['pointer-events'] = 'none';
         L.geoJSON(output, {
-            style: lineStyle
+            color: '#FF4F4F',
+            weight: 3
         }).addTo(map);
     } else {
         var track = L.geoJSON(output, {
@@ -38607,10 +38636,10 @@ var showTrackOnMap = function showTrackOnMap(line, map, callback, gpxFile, mainS
     var pointArray = line._latlngs;
     var output = utilities.transformToGeoJSON(pointArray);
 
-    var lineStyle = annotations.lineStyle;
     // lineStyle['pointer-events']='none'
     var track = L.geoJSON(output, {
-        style: lineStyle
+        color: '#FF4F4F',
+        weight: 2
     });
     track.on('click', function () {
         callback(gpxFile, map, mainStatus);
@@ -38707,7 +38736,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.activateCallbackFilters = exports.showChangeViewButton = exports.removeAllTrackView = exports.hideLeftBar = exports.showLeftBar = undefined;
 
-var _d = __webpack_require__(17);
+var _d = __webpack_require__(12);
 
 var d3 = _interopRequireWildcard(_d);
 
@@ -38848,6 +38877,7 @@ var removeAllTrackView = function removeAllTrackView(mainStatus, map) {
         mainStatus.view = 0;
     }
     if (mainStatus.view == 2) {
+        map.removeLayer(mainStatus.currentTrackOutline);
         map.removeLayer(mainStatus.currentTrack);
         mainStatus.currentTrack = 0;
         mainStatus.view = 0;
@@ -38875,6 +38905,41 @@ exports.hideLeftBar = hideLeftBar;
 exports.removeAllTrackView = removeAllTrackView;
 exports.showChangeViewButton = showChangeViewButton;
 exports.activateCallbackFilters = activateCallbackFilters;
+
+/***/ }),
+/* 483 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _d = __webpack_require__(12);
+
+var d3 = _interopRequireWildcard(_d);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+var quotesButton = d3.select('#quotesButton');
+quotesButton.style('pointer-events', 'all');
+quotesButton.style('opacity', 1);
+
+var quotesCounter = 0;
+var quoresArray = ["The only one who can tell you 'you can't' is you. And you don't have to listen. (Nike)", "If you want to run, run a mile. If you want to experience a different life, run a marathon. (Emit Zatopek)", "When you run the marathon, you run against the distance, not against the other runners and not against the time. (Haile Gebrselassie)", "You have to forget your last marathon before you try another. You mind can’t know what’s coming. (Frank Shorter)", "If you are losing faith in human nature, go out and watch a marathon. (Katrine Switzer)", "Nothing hurts more, but is so rewarding at the same time. (Sandy Zanchi)", "No one said this would be easy, just know that nothing beats the feeling of accomplishment.", "You will never know your limits until you push yourself to them.", "It's not whether you get knocked down; it's whether you get up.(Vince Lombardi) ", "Marathoning. The triumph of desire over reason. (New Balance) ", "It is going to get harder before it gets easier. But it will get better, you just have to make it through the hard stuff first.", "When I do the best I can with what I have, then I have won my race. (Jay Foonberg, 72-year-old runner) ", "One day I will not be able to do this, today is not that day.", "There is a moment in every race. A moment where you can either quit, fold, or say to yourself, 'I can do this.' (Gatorade Ad)", "Victory is paid for in sweat, courage, and preparation. (Nike)", "You don't have to go fast; you just have to GO.", "The marathon. How an average runner becomes more than average.", "The person who starts the race is not the same person who finishes the race.", "If it was easy, everyone would do it."];
+
+quotesButton.on('click', function () {
+    document.getElementById("marathonQuote").innerHTML = quoresArray[quotesCounter];
+    quotesCounter = quotesCounter + 1;
+    if (quotesCounter == quoresArray.length) quotesCounter = 0;
+});
+quotesButton.on('mouseover', function () {
+    startButton.style('background', 'rgba(255,0,0,0.8)');
+    startButton.style('color', 'white');
+    startButton.style('cursor', 'pointer');
+});
+quotesButton.on('mouseout', function () {
+    startButton.style('background', 'rgba(255,255,255,0.8)');
+    startButton.style('color', 'red');
+});
 
 /***/ })
 /******/ ]);

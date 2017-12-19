@@ -3,13 +3,12 @@ import * as d3 from 'd3'
 /////  MAP ANNOTATIONS PROPERTIES   /////
 
 let lineStyle = {
-    "color": 'blue',
-    "weight": 7,
-    "opacity": 0.65
+    "color": '#FF4F4F',
+    "weight": 6,
+    "opacity": 1.0,
 }
 
 let circleStyle = { color: 'red',
-    fillColor:'red',
     fillOpacity:1,
     radius: 5,
     class: 1
@@ -74,7 +73,6 @@ let mouseoutOpacity = className => {
 ///////////////
 /// Runners ///
 let runnersStyle = { color: 'red',
-    fillColor:'red',
     opacity:1,
     fillOpacity:1,
     radius: 2,
@@ -87,43 +85,59 @@ let runnersStyle = { color: 'red',
 }
 
 let applyFilterToRunners = (runners,filterStatus) => {
-
-    
     for (let i=0;i<runners.length;i++) {
         const runner=runners[i]
-        if (filterStatus.gender) {
-            runner.setStyle({opacity:1,fillOpacity:1})
-            if (runner.male && (filterStatus.females_and_males || filterStatus.males_only)) {
-                runner.setStyle({color:'#49A8B1'})
-            }  else if (runner.male==0 && (filterStatus.females_and_males || filterStatus.females_only)) {
-                runner.setStyle({color:'#CA6FA8'})
-            } else {
-                runner.setStyle({opacity:0,fillOpacity:0})
-            }
+        let final_opacity = 0.65;
+        let final_color = 'red';
+
+        if (runner.male && (filterStatus.females_and_males || filterStatus.males_only)) {
+            if (filterStatus.gender) final_color = '#49A8B1'
+        }
+        else if (runner.male==0 && (filterStatus.females_and_males || filterStatus.females_only)) {
+            if (filterStatus.gender) final_color = '#CA6FA8'
+        }
+        else {
+            final_opacity = 0
         }
 
-        if (filterStatus.age) {
-            runner.setStyle({opacity:1,fillOpacity:1})
-            const age=runner.age
-            if (age < 20 && (filterStatus.ages_all || filterStatus.ages_7_20)) runner.setStyle({color : "#89D863"})
-            else if (age >= 20 && age < 33 && (filterStatus.ages_all || filterStatus.ages_20_33)) runner.setStyle({color : "#3CC46C"})
-            else if (age >= 33 && age < 47 && (filterStatus.ages_all || filterStatus.ages_33_47)) runner.setStyle({color : "#49ABD1"})
-            else if (age >= 47 && age < 60 && (filterStatus.ages_all || filterStatus.ages_47_60)) runner.setStyle({color : "#9267C4"})
-            else if (age >= 60 && (filterStatus.ages_all && filterStatus.ages_60_)) runner.setStyle({color : "#CA6FA8"})
-            else runner.setStyle({opacity:0,fillOpacity:0})
+        const age=runner.age
+        if (age < 20 && (filterStatus.ages_all || filterStatus.ages_7_20)) {
+          if (filterStatus.age) final_color =  "#89D863"
+        }
+        else if (age >= 20 && age < 33 && (filterStatus.ages_all || filterStatus.ages_20_33)) {
+          if (filterStatus.age) final_color = "#3CC46C"
+        }
+        else if (age >= 33 && age < 47 && (filterStatus.ages_all || filterStatus.ages_33_47)) {
+          if (filterStatus.age) final_color = "#49ABD1"
+        }
+        else if (age >= 47 && age < 60 && (filterStatus.ages_all || filterStatus.ages_47_60)) {
+          if (filterStatus.age) final_color =  "#9267C4"
+        }
+        else if (age >= 60 && (filterStatus.ages_all && filterStatus.ages_60_)) {
+          if (filterStatus.age) final_color = "#CA6FA8"
+        }
+        else {
+          final_opacity = 0
         }
 
-        if (filterStatus.experience) {
-            runner.setStyle({opacity:1,fillOpacity:1})
-            const experience=runner.count
-            if (experience == 1 && (filterStatus.count_all || filterStatus.count_1)) runner.setStyle({color : "#79DA4A"})
-            else if (experience >= 2 && experience <= 3 && (filterStatus.count_all || filterStatus.count_2_5)) runner.setStyle({color : "#00B9A6"})
-            else if (experience >= 4 && (filterStatus.count_all || filterStatus.count_6)) runner.setStyle({color : "#CA6FA8"})
-            else runner.setStyle({opacity:0,fillOpacity:0})
+        const experience=runner.count
+        if (experience == 1 && (filterStatus.count_all || filterStatus.count_1)) {
+          if (filterStatus.experience)  final_color = "#79DA4A"
         }
+        else if (experience >= 2 && experience <= 3 && (filterStatus.count_all || filterStatus.count_2_5)) {
+          if (filterStatus.experience) final_color = "#00B9A6"
+        }
+        else if (experience >= 4 && (filterStatus.count_all || filterStatus.count_6)) {
+          if (filterStatus.experience) final_color = "#CA6FA8"
+        }
+        else {
+          final_opacity = 0
+        }
+
+        runner.setStyle({color:final_color, opacity:final_opacity,fillOpacity:final_opacity})
     }
 }
- 
+
 let getFiltersStatus = () => {
 
     let females_and_males=d3.select('#females_and_males').node().checked
@@ -142,9 +156,9 @@ let getFiltersStatus = () => {
     let count_2_5=d3.select('#count_2_5').node().checked
     let count_6=d3.select('#count_6').node().checked
 
-    let gender=d3.select('#gender').node().checked
-    let age=d3.select('#age').node().checked
-    let experience=d3.select('#experience').node().checked
+    let gender=d3.select('#genderClassifier').node().checked
+    let age=d3.select('#ageClassifier').node().checked
+    let experience=d3.select('#experienceClassifier').node().checked
 
     return {gender:gender,age:age,experience:experience,females_and_males:females_and_males,
         males_only:males_only,females_only:females_only,ages_all:ages_all,ages_60_:ages_60_,

@@ -5,13 +5,22 @@ html,body {
 
  /* TOP BAR */
 
+ #introVideo {
+     height:40%;
+     top: 20%;
+     left: 30%;
+     position: fixed;
+     border:4px solid #FF4F4F;
+     color: '#FF4F4F';
+ }
+
 #header {
     width:100%;
     height:40px;
     font-size:24px;
     line-height:40px;
     background:rgba(255,0,0,0.8);
-    position: fixed; 
+    position: fixed;
     top: 00px; /* Position the navbar at the top of the page */
     margin:auto;
     color:white;
@@ -318,6 +327,31 @@ div.tooltip {
     user-select: none;
 }
 
+#quotesButton {
+    top: 72%;
+    right: 1%;
+    background: '#FF4F4F';
+    position:fixed;
+    font-size:18px;
+    color:red;
+    text-align:center;
+    padding:10px;
+    border-radius:10px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+#marathonQuote {
+    top: 77%;
+    right: 1%;
+    width: 17%;
+    position:fixed;
+    font-size:18px;
+    color:black;
+    text-align:right;
+}
+
 
 /* Left bar */
 #leftBar {width:20%;
@@ -335,7 +369,7 @@ div.tooltip {
     z-index:2;
 }
 
-#leftSideBarContainer { 
+#leftSideBarContainer {
     height: auto;
     width:100%;
     padding-left:5%;
@@ -359,7 +393,7 @@ div.tooltip {
 
 
 /* Bar */
-#map { height: 700px; 
+#map { height: 700px;
     width:100%;
     z-index:0;
     margin-top:40px;

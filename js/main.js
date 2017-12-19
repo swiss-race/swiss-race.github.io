@@ -11,8 +11,7 @@ import * as gpx_files from './gpx_files.js'
 import * as filters from './filters.js'
 import * as menu from './menu.js'
 import * as histogram from './histogram.js'
-
-
+import * as quotes from './quotes.js'
 
 let lastPosition=0
 window.onscroll = () => {
@@ -22,7 +21,7 @@ window.onscroll = () => {
             .style('background','rgba(255,255,255,0.6)')
             .style('color','red')
         lastPosition=position
-    
+
     } else {
         d3.select('#header')
             .style('background','rgba(255,0,0,0.8)')
@@ -30,15 +29,16 @@ window.onscroll = () => {
             .style('color','white')
         lastPosition=position
     }
-        
+
 }
 
 class MainStatus {
-    constructor(view,leftBar,currentTracks=0,currentTrack=0,currentPoints=0,gpxFile=0) {
+    constructor(view,leftBar,currentTracks=0,currentTrack=0,currentTrackOutline=0,currentPoints=0,gpxFile=0) {
         this._view = view;
         this._leftBar = leftBar;
         this._currentTracks = currentTracks;
         this._currentTrack = currentTrack;
+        this._currentTrackOutline = currentTrackOutline;
         this._currentPoints = currentPoints;
         this._gpxFile = gpxFile;
     }
@@ -173,8 +173,6 @@ let setUpView2 = (gpxFile,map,mainStatus) => {
     menu.showChangeViewButton(1)
     mainStatus.gpxFile=gpxFile
 
-
-    //
     // bars = g.selectAll(".bar")
     //     .data(histogram_data)
     //     .enter().append("rect")
@@ -188,19 +186,17 @@ let setUpView2 = (gpxFile,map,mainStatus) => {
     //         .attr("fill", "#49ABD1")
     //         .attr("opacity", "1.0")
     //         .attr("hist_index", d => d[2]);
-    //
 
     let mainMapPromise=new Promise((resolve,reject) => {
         trackUtils.addTrack(gpxFile[0],map,[400,0],resolve)
     })
-    
+
     // Add new moving points
     let sliderPromise=new Promise((resolve,reject) => {
         d3.csv(gpxFile[1],(data) => {
             resolve(data)
         })
     })
-
     sliderPromise.then((object) => {
         let timeContainer=filters.showTimeContainer()
         filters.showFilters()
@@ -208,11 +204,20 @@ let setUpView2 = (gpxFile,map,mainStatus) => {
         let runnersData=parseRunners(object)
         mainMapPromise.then((object) => {
             let track=object[1]._latlngs
-            
+
             let trackJSON=utilities.transformToGeoJSON(track)
-            let trackMap=L.geoJSON(trackJSON, {
-                style: annotations.lineStyle,
+            let trackMapOutline=L.geoJSON(trackJSON, {
+              color: '#D1B8B4',
+              weight: (2.2 * (map.getZoom()-7) + 4),
+              opacity: 1.0,
             }).addTo(map)
+
+            let trackMap=L.geoJSON(trackJSON, {
+              color: 'white',
+              weight: (2.2 * (map.getZoom()-7)),
+              opacity: 1.0,
+            }).addTo(map)
+            mainStatus.currentTrackOutline=trackMapOutline
             mainStatus.currentTrack=trackMap
             mainStatus.view=2
 
@@ -225,7 +230,7 @@ let setUpView2 = (gpxFile,map,mainStatus) => {
             let startButton=d3.select('#startButton')
             startButton.style('pointer-events','all')
             startButton.style('opacity',1)
-            startButton.node().innerHTML='Start!'
+            startButton.node().innerHTML='START'
             // let stopButton=d3.select('#stopButton')
             // stopButton.style('pointer-events','all')
             // stopButton.style('opacity',1)
@@ -282,7 +287,6 @@ for (let i=0;i<gpxList.length;i++) {
     let nameDivLeaflet='mapLeftBar'+i.toString()
     sheet.insertRule(nameDiv+leftSideBarRule)
 
-
     // Add container
     let leftSideBarContainer=leftBar.append('div')
         .attr('id','leftSideBarContainer')
@@ -303,7 +307,7 @@ for (let i=0;i<gpxList.length;i++) {
         d3.selectAll('.leftSideBarInfo').style('color','red')
         infoRace.style('color','white')
 
-        setUpView1(gpxList[i],map,mainStatus)
+        setUpView2(gpxList[i],map,mainStatus)
     })
     leftSideBarContainer.on('mouseover',() => {
         if (leftSideBarContainer.attr('data-colorchange')==1) {
@@ -355,9 +359,10 @@ let parseRunners= (data) => {
     // Rescale runners point distances based on zoom level
     let mapZoom=map.getZoom()
     mapZoom=(mapZoom-11)
-
     let stdX=0.002/mapZoom // standard deviation in terms of latitude and longitude
     let stdY=0.003/mapZoom // standard deviation in terms of latitude and longitude
+    //let stdX=0.002 * (0.022 * (map.getZoom() - 11))
+    //let stdY=0.003 * (0.022 * (map.getZoom() - 11))
     let runners_data = new Array(data.length);
     for (var i = 0; i < data.length; i++) {
     runners_data[i] = new Array(5);
@@ -402,11 +407,7 @@ let drawRunners = (data) => {
 }
 
 let animateMap = (elapsed) => {
-    
+  console.log(map.getZoom())
 
 
 }
-
-
-
-

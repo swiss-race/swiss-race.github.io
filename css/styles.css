@@ -192,7 +192,7 @@ div.tooltip {
 
 #experienceFilters {
     width: 10%;
-    top:65%;
+    top:64%;
     left:3%;
     background-color:rgba(255, 255, 255, 0.7);
     position: absolute;
@@ -427,10 +427,10 @@ div.tooltip {
     color:black;
 }
 
-
-
 /* Bar */
-#map { height: 700px;
+#map {
+    position: relative;
+    height: 800px;
     width:100%;
     z-index:0;
     margin-top:40px;
@@ -440,23 +440,17 @@ div.tooltip {
 /* Footer  */
 #info{
     background-color:white;
-    margin-top:40px;
-    margin-right:20%;
-    margin-bottom:50px;
+    margin-top:5%;
+    margin-left:2%;
     height:auto;
-    width:55%;
+    width:96%;
     float:right;
-    font-size:20px;
+    font-size:16px;
     font-family: "Verdana";
+    color:grey;
 }
 .infoTitle {
     text-align:left;
-    color:black;
-    font-size:24px;
-    padding:5px;
-}
-#footer{
-    height:10000px;
-    width:70%;
-    float:right;
+    font-size:18px;
+    color:grey;
 }

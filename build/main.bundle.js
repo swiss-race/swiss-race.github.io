@@ -23505,6 +23505,14 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var showFilters = function showFilters() {
+    var classifiersIitle = d3.select('#classifiersTitle');
+    classifiersIitle.style('opacity', 1);
+    classifiersIitle.style('pointer-events', 'all');
+
+    var filtersIitle = d3.select('#filtersTitle');
+    filtersIitle.style('opacity', 1);
+    filtersIitle.style('pointer-events', 'all');
+
     var genderFilters = d3.select('#genderFilters');
     genderFilters.style('opacity', 1);
     genderFilters.style('pointer-events', 'all');
@@ -23533,6 +23541,14 @@ var showTimeContainer = function showTimeContainer() {
 };
 
 var hideFilters = function hideFilters() {
+    var classifiersIitle = d3.select('#classifiersTitle');
+    classifiersIitle.style('opacity', 0);
+    classifiersIitle.style('pointer-events', 'none');
+
+    var filtersIitle = d3.select('#filtersTitle');
+    filtersIitle.style('opacity', 0);
+    filtersIitle.style('pointer-events', 'none');
+
     var genderFilters = d3.select('#genderFilters');
     genderFilters.style('opacity', 0);
     genderFilters.style('pointer-events', 'none');
@@ -38775,31 +38791,30 @@ var hideLeftBar = function hideLeftBar(mainStatus) {
     mainStatus.leftBar = 0;
 };
 
-var selectGender = function selectGender() {
-    d3.select('#gender').node().checked = true;
-};
-
-var selectAge = function selectAge() {
-    d3.select('#age').node().checked = true;
-};
-
-var selectCount = function selectCount() {
-    d3.select('#experience').node().checked = true;
-};
+/*let selectGender = () => {
+    d3.select('#gender').node().checked=true
+}
+let selectAge = () => {
+    d3.select('#age').node().checked=true
+}
+let selectCount = () => {
+    d3.select('#experience').node().checked=true
+}*/
 
 var activateCallbackFilters = function activateCallbackFilters() {
     var females_and_males = d3.select('#females_and_males');
     var males_only = d3.select('#males_only');
     var females_only = d3.select('#females_only');
-    males_only.on('click', function () {
-        selectGender();
-    });
-    females_only.on('click', function () {
-        selectGender();
-    });
-    females_and_males.on('click', function () {
-        selectGender();
-    });
+
+    /*males_only.on('click',() => {
+        selectGender()
+    })
+    females_only.on('click',() => {
+        selectGender()
+    })
+    females_and_males.on('click',() => {
+        selectGender()
+    })*/
 
     var ages_all = d3.select('#ages_all');
     var ages_7_20 = d3.select('#ages_7_20');
@@ -38807,41 +38822,41 @@ var activateCallbackFilters = function activateCallbackFilters() {
     var ages_33_47 = d3.select('#ages_33_47');
     var ages_47_60 = d3.select('#ages_47_60');
     var ages_60_ = d3.select('#ages_60_');
-    ages_all.on('click', function () {
-        selectAge();
-    });
-    ages_60_.on('click', function () {
-        selectAge();
-    });
-    ages_7_20.on('click', function () {
-        selectAge();
-    });
-    ages_47_60.on('click', function () {
-        selectAge();
-    });
-    ages_20_33.on('click', function () {
-        selectAge();
-    });
-    ages_33_47.on('click', function () {
-        selectAge();
-    });
+    /*ages_all.on('click',() => {
+        selectAge()
+    })
+    ages_60_.on('click',() => {
+        selectAge()
+    })
+    ages_7_20.on('click',() => {
+        selectAge()
+    })
+    ages_47_60.on('click',() => {
+        selectAge()
+    })
+    ages_20_33.on('click',() => {
+        selectAge()
+    })
+    ages_33_47.on('click',() => {
+        selectAge()
+    })*/
 
     var count_all = d3.select('#count_all');
     var count_1 = d3.select('#count_1');
     var count_2_5 = d3.select('#count_2_5');
     var count_6 = d3.select('#count_6');
-    count_1.on('click', function () {
-        selectCount();
-    });
-    count_all.on('click', function () {
-        selectCount();
-    });
-    count_2_5.on('click', function () {
-        selectCount();
-    });
-    count_6.on('click', function () {
-        selectCount();
-    });
+    /*count_1.on('click',() => {
+        selectCount()
+    })
+    count_all.on('click',() => {
+        selectCount()
+    })
+    count_2_5.on('click',() => {
+        selectCount()
+    })
+    count_6.on('click',() => {
+        selectCount()
+    })*/
 };
 
 var showChangeViewButton = function showChangeViewButton() {

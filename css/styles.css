@@ -142,12 +142,31 @@ div.tooltip {
     opacity:1;
 }
 
-/* Filters */
+#classifiersTitle {
+    width: 15%;
+    top:3%;
+    left:3%;
+    position: absolute;
+}
+#filtersTitle {
+    width: 15%;
+    top:21%;
+    left:3%;
+    position: absolute;
+}
+#classifiers {
+    width: 15%;
+    top:7%;
+    left:3%;
+    background-color: #CBE3E8;
+    position: absolute;
+    pointer-events:none;
+    opacity:0;
+}
 #genderFilters {
-    width: 300px;
-    /* height:100px; */
-    top:25px;
-    left:75px;
+    width: 15%;
+    top:25%;
+    left:3%;
     background-color: #CBE3E8;
     position: absolute;
     pointer-events:none;
@@ -155,10 +174,9 @@ div.tooltip {
 }
 
 #ageFilters {
-    width: 300px;
-    /* height:100px; */
-    top:125px;
-    left:75px;
+    width: 15%;
+    top:39%;
+    left:3%;
     background-color: #CBE3E8;
     position: absolute;
     pointer-events:none;
@@ -166,21 +184,9 @@ div.tooltip {
 }
 
 #experienceFilters {
-    width: 300px;
-    /* height:100px; */
-    top:325px;
-    left:75px;
-    background-color: #CBE3E8;
-    position: absolute;
-    pointer-events:none;
-    opacity:0;
-}
-
-#classifiers {
-    width: 300px;
-    /* height:100px; */
-    top:500px;
-    left:75px;
+    width: 15%;
+    top:65%;
+    left:3%;
     background-color: #CBE3E8;
     position: absolute;
     pointer-events:none;
@@ -188,13 +194,13 @@ div.tooltip {
 }
 
 #slidecontainer {
-    background-color: #F9E8DC;
+    background-color: #CBE3E8;
     position: absolute;
     opacity:0;
     pointer-events:none;
-    width: 300px;
-    top: 600px;
-    left: 75px;
+    width: 15%;
+    top: 85%;
+    left:3%;
     font-size: 1.3vmin;
     -moz-user-select: -moz-none;
    -khtml-user-select: none;
@@ -235,28 +241,44 @@ div.tooltip {
     user-select: none;
     font-size: 1.3vmin;
 }
-
 .checkmark {
     position: absolute;
     top: 0;
     left: 0;
     height: 25px;
     width: 25px;
-    background-color: #eee;
-    /*border-radius: 50%;*/
+    background-color: #C0C0C0;
 }
-
 .filterContainer input {
     position: absolute;
     opacity: 0;
 }
-
 .filterContainer:hover input ~ .checkmark {
-    background-color: #ccc;
+    opacity: 0.5;
 }
 .filterContainer input:checked ~ .checkmark {
     background-color: #C0C0C0;
 }
+.filterContainer input:checked ~ .checkmark_females { background: #CA6FA8;}
+.checkmark_females { background-color: #CA6FA8;}
+.filterContainer input:checked ~ .checkmark_males { background: #49A8B1;}
+.checkmark_males { background-color: #49A8B1;}
+.filterContainer input:checked ~ .checkmark_ages_7_20 { background: #89D863;}
+.checkmark_ages_7_20 { background-color: #89D863 ;}
+.filterContainer input:checked ~ .checkmark_ages_20_33 { background: #3CC46C ;}
+.checkmark_ages_20_33 { background-color: #3CC46C ;}
+.filterContainer input:checked ~ .checkmark_ages_33_47 { background: #49ABD1 ;}
+.checkmark_ages_33_47 { background-color: #49ABD1 ;}
+.filterContainer input:checked ~ .checkmark_ages_47_60 { background: #9267C4 ;}
+.checkmark_ages_47_60 { background-color: #9267C4 ;}
+.filterContainer input:checked ~ .checkmark_ages_60_ { background: #CA6FA8 ;}
+.checkmark_ages_60_ { background-color: #CA6FA8 ;}
+.filterContainer input:checked ~ .checkmark_count_1 { background: #79DA4A  ;}
+.checkmark_count_1 { background-color: #79DA4A  ;}
+.filterContainer input:checked ~ .checkmark_count_2_3 { background: #00B9A6  ;}
+.checkmark_count_2_3 { background-color: #00B9A6  ;}
+.filterContainer input:checked ~ .checkmark_count_4_ { background: #CA6FA8  ;}
+.checkmark_count_4_ { background-color: #CA6FA8  ;}
 
 /* Create the indicator (the dot/circle - hidden when not checked) */
 .checkmark:after {
@@ -264,19 +286,16 @@ div.tooltip {
     position: absolute;
     display: none;
 }
-
 /* Show the indicator (dot/circle) when checked */
 .filterContainer input:checked ~ .checkmark:after {
     display: block;
 }
-
 /* Style the indicator (dot/circle) */
 .filterContainer .checkmark:after {
  	top: 8px;
 	left: 8px;
 	width: 8px;
 	height: 8px;
-	/*border-radius: 50%;*/
 	background: white;
 }
 

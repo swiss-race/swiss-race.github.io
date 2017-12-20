@@ -58,12 +58,19 @@ let hideFilters = () => {
 }
 
 
-let runSimulation = (trackVector,runnersCircles,positionsArray,map) => {
+let runSimulation = (trackVector,runnersCircles,positionsArray,map,binsList) => {
+
+
     let timeContainer=d3.select('#time')
     let startFractionRace=[...new Array(runnersCircles.length)].map(x => 0)
     let timeStep=30
     let timeStart=new Date(0)
     let t=d3.interval(elapsed => {
+        // Randomly update binsList
+        let binIndex=Math.floor(Math.random()*75)
+        let bin=binsList[binIndex]
+        let randomHeight=Math.floor(Math.random()*100+50)
+        bin.attr('height',randomHeight)
 
         // 10 min = 1s
         let speedSlider=d3.select('#speed_slider').node()

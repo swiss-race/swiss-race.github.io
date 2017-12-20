@@ -23544,7 +23544,8 @@ var hideFilters = function hideFilters() {
     timeContainer.style('opacity', 0);
 };
 
-var runSimulation = function runSimulation(trackVector, runnersCircles, positionsArray, map) {
+var runSimulation = function runSimulation(trackVector, runnersCircles, positionsArray, map, binsList) {
+
     var timeContainer = d3.select('#time');
     var startFractionRace = [].concat(_toConsumableArray(new Array(runnersCircles.length))).map(function (x) {
         return 0;
@@ -23552,6 +23553,11 @@ var runSimulation = function runSimulation(trackVector, runnersCircles, position
     var timeStep = 30;
     var timeStart = new Date(0);
     var t = d3.interval(function (elapsed) {
+        // Randomly update binsList
+        var binIndex = Math.floor(Math.random() * 75);
+        var bin = binsList[binIndex];
+        var randomHeight = Math.floor(Math.random() * 100 + 50);
+        bin.attr('height', randomHeight);
 
         // 10 min = 1s
         var speedSlider = d3.select('#speed_slider').node();
@@ -23631,38 +23637,66 @@ var setUpHistogram = function setUpHistogram(histogramData) {
   // Set backgroundPlot 
   d3.select('#backgroundPlot').style('opacity', 1);
 
-  var svg = d3.select('#plot').append('svg');
+  var svgContainer = d3.select('#plot').append('svg');
   // let svg=d3.select('svg')
-  svg.attr('position', 'absolute').attr('left', '0.5%').attr('top', '17%').attr('width', '99%').attr('bottom', '99%');
+  svgContainer.attr('position', 'absolute').attr('left', '0.5%').attr('top', '17%').attr('width', '500px').attr('height', '200px').attr('bottom', '99%').style('background-color', 'grey');
+
+  console.log(svgContainer.attr('width'));
+
+  var width = 500;
+  var numBins = 75;
+  var binWidth = width / numBins;
+
+  var binsList = [];
+  for (var i = 0; i < numBins; i++) {
+    var x = i * width / numBins;
+
+    var bin = svgContainer.append('rect').attr('width', binWidth - 1).attr('height', 50).attr('x', x).style('fill', 'blue');
+    binsList.push(bin);
+  }
+  return binsList;
 
   // let histogram_margin = {top:  window.innerWidth * image_ratio + 5, right: -17, bottom: 20, left: 12};
-  var histogram_margin = { top: 0, right: -17, bottom: 20, left: 12 };
-  var histogram_width = +svg.attr("width") - histogram_margin.left - histogram_margin.right;
-  var histogram_height = +svg.attr("height") - histogram_margin.top - histogram_margin.bottom;
+  // let histogram_margin = {top:  0 , right: -17, bottom: 20, left: 12};
+  // let histogram_width = +svg.attr("width") - histogram_margin.left - histogram_margin.right;
+  // let histogram_height = +svg.attr("height") - histogram_margin.top - histogram_margin.bottom;
 
-  var x_axis = d3.scaleBand().rangeRound([0, histogram_width]).padding(0.1);
-  var y_axis = d3.scaleLinear().rangeRound([histogram_height, 0]);
 
-  svg.append("rect").attr("width", "100%").attr("height", "100%").attr("transform", "translate(" + histogram_margin.left + "," + histogram_margin.top + ")").attr("fill", "#E7E5E6");
-
-  var g = svg.append("g").attr("transform", "translate(" + histogram_margin.left + "," + histogram_margin.top + ")");
-
-  x_axis.domain(utilities.numberRange(0, 75));
-  y_axis.domain([0, 1]);
-  console.log(x_axis.domain());
+  // let x_axis = d3.scaleBand().rangeRound([0, histogram_width]).padding(0.1);
+  // let y_axis = d3.scaleLinear().rangeRound([histogram_height, 0]);
+  //
+  // svg.append("rect")
+  //     .attr("width", "100%")
+  //     .attr("height", "100%")
+  //     .attr("transform", "translate(" + histogram_margin.left + "," + histogram_margin.top + ")")
+  //     .attr("fill", "#E7E5E6");
+  //
+  // var g = svg.append("g")
+  //     .attr("transform", "translate(" + histogram_margin.left + "," + histogram_margin.top + ")");
+  //
+  // x_axis.domain(utilities.numberRange(0,75))
+  // y_axis.domain([0,1])
+  // console.log(x_axis.domain())
   // x_axis.domain(histogramData.map(function(d) { return d[0]; }));
   // let y_limit = d3.max(histogramData, function(d) { return d[1]; })
   // y_axis.domain([0, y_limit]);
 
 
-  console.log(histogramData.map(function (d) {
-    return d[0];
-  }));
-
-  g.append("g").attr("class", "axis_x").attr("transform", "translate(0," + histogram_height + ")").attr("stroke-width", "3px").attr("stroke", "#B8B8B8").attr("stroke-opacity", "0.45");
-  // .call(d3.axisBottom(x_axis));
-
-  g.append("g").attr("class", "axis_y").attr("stroke-width", "3px").attr("stroke-opacity", "0.45").call(d3.axisLeft(y_axis).ticks(10, ""));
+  // console.log(histogramData.map(d => {return d[0]}))
+  //
+  // g.append("g")
+  //     .attr("class", "axis_x")
+  //     .attr("transform", "translate(0," + histogram_height + ")")
+  //     .attr("stroke-width", "3px")
+  //     .attr("stroke", "#B8B8B8")
+  //     .attr("stroke-opacity", "0.45")
+  //     // .call(d3.axisBottom(x_axis));
+  //
+  // g.append("g")
+  //     .attr("class", "axis_y")
+  //     .attr("stroke-width", "3px")
+  // .attr("stroke-opacity", "0.45")
+  // .call(d3.axisLeft(y_axis).ticks(10, ""))
 };
 
 var computeHistogramData = function computeHistogramData(trackVector, runnersCircles, positionsArray) {
@@ -24052,10 +24086,10 @@ var setUpView2 = function setUpView2(gpxFile, map, mainStatus) {
                 annotations.setCirclesInPositions(runnersCircles, positionsArray);
                 annotations.addCirclesToMap(runnersCircles, map);
 
-                // let histogramData=histogram.computeHistogramData(trackVector,runnersCircles,positionsArray)
-                // histogram.setUpHistogram(histogramData)
+                var histogramData = histogram.computeHistogramData(trackVector, runnersCircles, positionsArray);
+                var binsList = histogram.setUpHistogram(histogramData);
 
-                filters.runSimulation(trackVector, runnersCircles, positionsArray, map);
+                filters.runSimulation(trackVector, runnersCircles, positionsArray, map, binsList);
             });
             startButton.on('mouseover', function () {
                 startButton.style('background', 'rgba(255,0,0,0.8)');

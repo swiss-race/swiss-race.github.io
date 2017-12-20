@@ -251,10 +251,10 @@ let setUpView2 = (gpxFile,map,mainStatus) => {
                 annotations.setCirclesInPositions(runnersCircles,positionsArray)
                 annotations.addCirclesToMap(runnersCircles,map)
 
-                // let histogramData=histogram.computeHistogramData(trackVector,runnersCircles,positionsArray)
-                // histogram.setUpHistogram(histogramData)
+                let histogramData=histogram.computeHistogramData(trackVector,runnersCircles,positionsArray)
+                let binsList=histogram.setUpHistogram(histogramData)
 
-                filters.runSimulation(trackVector,runnersCircles,positionsArray,map)
+                filters.runSimulation(trackVector,runnersCircles,positionsArray,map,binsList)
             })
             startButton.on('mouseover', () => {
                 startButton.style('background','rgba(255,0,0,0.8)')

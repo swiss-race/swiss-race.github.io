@@ -6,55 +6,77 @@ let setUpHistogram = (histogramData) => {
     // Set backgroundPlot 
     d3.select('#backgroundPlot').style('opacity',1)
 
-    let svg=d3.select('#plot').append('svg')
+    let svgContainer=d3.select('#plot').append('svg')
     // let svg=d3.select('svg')
-    svg.attr('position','absolute')
+    svgContainer.attr('position','absolute')
         .attr('left','0.5%')
         .attr('top','17%')
-        .attr('width','99%')
+        .attr('width','500px')
+        .attr('height','200px')
         .attr('bottom','99%')
+        .style('background-color','grey')
+
+    console.log(svgContainer.attr('width'))
+        
+    let width=500
+    let numBins=75
+    let binWidth=width/numBins
+
+    let binsList=[]
+    for (let i=0;i<numBins;i++) {
+        let x=i*width/numBins
+
+        let bin=svgContainer.append('rect')
+            .attr('width',binWidth-1)
+            .attr('height',50)
+            .attr('x',x)
+            .style('fill','blue')
+        binsList.push(bin)
+
+    }
+    return binsList
 
     // let histogram_margin = {top:  window.innerWidth * image_ratio + 5, right: -17, bottom: 20, left: 12};
-    let histogram_margin = {top:  0 , right: -17, bottom: 20, left: 12};
-    let histogram_width = +svg.attr("width") - histogram_margin.left - histogram_margin.right;
-    let histogram_height = +svg.attr("height") - histogram_margin.top - histogram_margin.bottom;
+    // let histogram_margin = {top:  0 , right: -17, bottom: 20, left: 12};
+    // let histogram_width = +svg.attr("width") - histogram_margin.left - histogram_margin.right;
+    // let histogram_height = +svg.attr("height") - histogram_margin.top - histogram_margin.bottom;
 
 
-    let x_axis = d3.scaleBand().rangeRound([0, histogram_width]).padding(0.1);
-    let y_axis = d3.scaleLinear().rangeRound([histogram_height, 0]);
-
-    svg.append("rect")
-        .attr("width", "100%")
-        .attr("height", "100%")
-        .attr("transform", "translate(" + histogram_margin.left + "," + histogram_margin.top + ")")
-        .attr("fill", "#E7E5E6");
-
-    var g = svg.append("g")
-        .attr("transform", "translate(" + histogram_margin.left + "," + histogram_margin.top + ")");
-
-    x_axis.domain(utilities.numberRange(0,75))
-    y_axis.domain([0,1])
-    console.log(x_axis.domain())
+    // let x_axis = d3.scaleBand().rangeRound([0, histogram_width]).padding(0.1);
+    // let y_axis = d3.scaleLinear().rangeRound([histogram_height, 0]);
+    //
+    // svg.append("rect")
+    //     .attr("width", "100%")
+    //     .attr("height", "100%")
+    //     .attr("transform", "translate(" + histogram_margin.left + "," + histogram_margin.top + ")")
+    //     .attr("fill", "#E7E5E6");
+    //
+    // var g = svg.append("g")
+    //     .attr("transform", "translate(" + histogram_margin.left + "," + histogram_margin.top + ")");
+    //
+    // x_axis.domain(utilities.numberRange(0,75))
+    // y_axis.domain([0,1])
+    // console.log(x_axis.domain())
     // x_axis.domain(histogramData.map(function(d) { return d[0]; }));
     // let y_limit = d3.max(histogramData, function(d) { return d[1]; })
     // y_axis.domain([0, y_limit]);
 
 
-    console.log(histogramData.map(d => {return d[0]}))
-
-    g.append("g")
-        .attr("class", "axis_x")
-        .attr("transform", "translate(0," + histogram_height + ")")
-        .attr("stroke-width", "3px")
-        .attr("stroke", "#B8B8B8")
-        .attr("stroke-opacity", "0.45")
-        // .call(d3.axisBottom(x_axis));
-
-    g.append("g")
-        .attr("class", "axis_y")
-        .attr("stroke-width", "3px")
-        .attr("stroke-opacity", "0.45")
-        .call(d3.axisLeft(y_axis).ticks(10, ""))
+    // console.log(histogramData.map(d => {return d[0]}))
+    //
+    // g.append("g")
+    //     .attr("class", "axis_x")
+    //     .attr("transform", "translate(0," + histogram_height + ")")
+    //     .attr("stroke-width", "3px")
+    //     .attr("stroke", "#B8B8B8")
+    //     .attr("stroke-opacity", "0.45")
+    //     // .call(d3.axisBottom(x_axis));
+    //
+    // g.append("g")
+    //     .attr("class", "axis_y")
+    //     .attr("stroke-width", "3px")
+        // .attr("stroke-opacity", "0.45")
+        // .call(d3.axisLeft(y_axis).ticks(10, ""))
 }
 
 let computeHistogramData = (trackVector,runnersCircles,positionsArray) =>  {

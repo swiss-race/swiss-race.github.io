@@ -91,6 +91,7 @@ div.tooltip {
     right:25px;
     margin-left:00px;
     margin-top:00px;
+    padding:25px;
     /* outline:1px solid green; */
     pointer-events:none;
     color:black;
@@ -239,6 +240,12 @@ div.tooltip {
 	height: 8px;
 	/*border-radius: 50%;*/
 	background: white;
+}
+
+/* Histogram */
+#histogramRectangle {
+
+
 }
 
 /* Time div */

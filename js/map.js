@@ -42,7 +42,8 @@ let addPoint = (line,map,isLeftBar) => {
         let lineStyle=annotations.lineStyle
         lineStyle['pointer-events']='none'
         L.geoJSON(output, {
-            style: lineStyle,
+            color: '#FF4F4F',
+            weight: 3,
         }).addTo(map)
     }
     else {
@@ -56,16 +57,16 @@ let addPoint = (line,map,isLeftBar) => {
 
                     let latitude=e.latlng.lat;
                     let longitude=e.latlng.lng;
-                    
+
                     let km=feature.cumulativeDistance[0].toString().substr(0,5)+'km<br />'
                     let elevation=feature.elevation[0].toString()+'m'
-         
-                    
+
+
                     let popupString='<p style="text-align:center">'+km+elevation+'</p>'
                     annotations.setCircleInPosition(annotations.circle,index,popupString,latitude,longitude,map)
 
                 });
-                
+
                 layer.on('mouseout', () =>{})
             }
         })
@@ -77,17 +78,20 @@ let addPoint = (line,map,isLeftBar) => {
 
 }
 
-let showTrackOnMap = (line,map,callback,gpxFile,mainStatus) => {
+let showTrackOnMap = (line,map,callback,gpxFile,mainStatus, trackName) => {
     let pointArray=line._latlngs
     let output=utilities.transformToGeoJSON(pointArray)
 
-    let lineStyle=annotations.lineStyle
     // lineStyle['pointer-events']='none'
     let track=L.geoJSON(output, {
-        style: lineStyle,
+        color: '#FF4F4F',
+        weight: 3,
     })
     track.on('click',() => {
         callback(gpxFile,map,mainStatus)
+    })
+    track.on('mouseover',() => {
+        document.getElementById("raceName").innerHTML = trackName;
     })
     track.addTo(map)
 

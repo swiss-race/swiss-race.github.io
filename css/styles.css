@@ -5,17 +5,25 @@ html,body {
 
  /* TOP BAR */
 
+ #introVideo {
+     width:40%;
+     top: 20%;
+     left: 30%;
+     position: fixed;
+     border:4px solid #FF4F4F;
+     color: '#FF4F4F';
+ }
+
 #header {
     width:100%;
     height:40px;
     font-size:24px;
     line-height:40px;
     background:rgba(255,0,0,0.8);
-    position: fixed; 
+    position: fixed;
     top: 00px; /* Position the navbar at the top of the page */
     margin:auto;
     color:white;
-    z-index:2;
     transition: 0.5s;
 }
 
@@ -23,7 +31,7 @@ html,body {
     margin-top:00px;
     width: 70px;
     height:100%;
-    text-align:center
+    text-align:center;
 }
 
 #raceButton {
@@ -34,20 +42,51 @@ html,body {
     -moz-user-select: none;
     -khtml-user-select: none;
     -ms-user-select: none;
+    font-family: "Verdana";
 }
 
-#searchButton {
-    width:10%;
-    height:70px;
+#raceName {
+  width:20%;
+  font-size:24px;
+  position: fixed;
+  right: 40%;
+  color:#A1F8D1;
+  text-align:center;
+  font-family: "Verdana";
+}
+
+#quotesButton {
+    left: 1%;
+    position:fixed;
+    font-size:24px;
     text-align:center;
-    float:right;
-    line-height:40px;
     -webkit-user-select: none;
     -moz-user-select: none;
-    -khtml-user-select: none;
     -ms-user-select: none;
+    user-select: none;
+    margin-left:70px;
+    background:rgba(255,0,0,0);
+    padding: 0;
+    border: none;
+    background: none;
+    font-family: "Verdana";
+    color:white;
 }
 
+#marathonQuote {
+  width:100%;
+  height:40px;
+  font-size:18px;
+  line-height:40px;
+  background:rgba(255,0,0,0.8);
+  position: fixed;
+  bottom: 1%
+  margin:auto;
+  color:white;
+  transition: 0.5s;
+  text-align:center;
+  font-family: "Verdana";
+}
 
 
 
@@ -104,12 +143,31 @@ div.tooltip {
     opacity:1;
 }
 
-/* Filters */
+#classifiersTitle {
+    width: 15%;
+    top:3%;
+    left:3%;
+    position: absolute;
+}
+#filtersTitle {
+    width: 15%;
+    top:21%;
+    left:3%;
+    position: absolute;
+}
+#classifiers {
+    width: 15%;
+    top:7%;
+    left:3%;
+    background-color: #CBE3E8;
+    position: absolute;
+    pointer-events:none;
+    opacity:0;
+}
 #genderFilters {
-    width: 300px;
-    /* height:100px; */
-    top:25px;
-    left:75px;
+    width: 15%;
+    top:25%;
+    left:3%;
     background-color: #CBE3E8;
     position: absolute;
     pointer-events:none;
@@ -117,10 +175,9 @@ div.tooltip {
 }
 
 #ageFilters {
-    width: 300px;
-    /* height:100px; */
-    top:125px;
-    left:75px;
+    width: 15%;
+    top:39%;
+    left:3%;
     background-color: #CBE3E8;
     position: absolute;
     pointer-events:none;
@@ -128,21 +185,9 @@ div.tooltip {
 }
 
 #experienceFilters {
-    width: 300px;
-    /* height:100px; */
-    top:325px;
-    left:75px;
-    background-color: #CBE3E8;
-    position: absolute;
-    pointer-events:none;
-    opacity:0;
-}
-
-#classifiers {
-    width: 300px;
-    /* height:100px; */
-    top:500px;
-    left:75px;
+    width: 15%;
+    top:65%;
+    left:3%;
     background-color: #CBE3E8;
     position: absolute;
     pointer-events:none;
@@ -150,13 +195,13 @@ div.tooltip {
 }
 
 #slidecontainer {
-    background-color: #F9E8DC;
+    background-color: #CBE3E8;
     position: absolute;
     opacity:0;
     pointer-events:none;
-    width: 300px;
-    top: 600px;
-    left: 75px;
+    width: 15%;
+    top: 85%;
+    left:3%;
     font-size: 1.3vmin;
     -moz-user-select: -moz-none;
    -khtml-user-select: none;
@@ -197,28 +242,44 @@ div.tooltip {
     user-select: none;
     font-size: 1.3vmin;
 }
-
 .checkmark {
     position: absolute;
     top: 0;
     left: 0;
     height: 25px;
     width: 25px;
-    background-color: #eee;
-    /*border-radius: 50%;*/
+    background-color: #C0C0C0;
 }
-
 .filterContainer input {
     position: absolute;
     opacity: 0;
 }
-
 .filterContainer:hover input ~ .checkmark {
-    background-color: #ccc;
+    opacity: 0.5;
 }
 .filterContainer input:checked ~ .checkmark {
     background-color: #C0C0C0;
 }
+.filterContainer input:checked ~ .checkmark_females { background: #CA6FA8;}
+.checkmark_females { background-color: #CA6FA8;}
+.filterContainer input:checked ~ .checkmark_males { background: #49A8B1;}
+.checkmark_males { background-color: #49A8B1;}
+.filterContainer input:checked ~ .checkmark_ages_7_20 { background: #89D863;}
+.checkmark_ages_7_20 { background-color: #89D863 ;}
+.filterContainer input:checked ~ .checkmark_ages_20_33 { background: #3CC46C ;}
+.checkmark_ages_20_33 { background-color: #3CC46C ;}
+.filterContainer input:checked ~ .checkmark_ages_33_47 { background: #49ABD1 ;}
+.checkmark_ages_33_47 { background-color: #49ABD1 ;}
+.filterContainer input:checked ~ .checkmark_ages_47_60 { background: #9267C4 ;}
+.checkmark_ages_47_60 { background-color: #9267C4 ;}
+.filterContainer input:checked ~ .checkmark_ages_60_ { background: #CA6FA8 ;}
+.checkmark_ages_60_ { background-color: #CA6FA8 ;}
+.filterContainer input:checked ~ .checkmark_count_1 { background: #79DA4A  ;}
+.checkmark_count_1 { background-color: #79DA4A  ;}
+.filterContainer input:checked ~ .checkmark_count_2_3 { background: #00B9A6  ;}
+.checkmark_count_2_3 { background-color: #00B9A6  ;}
+.filterContainer input:checked ~ .checkmark_count_4_ { background: #CA6FA8  ;}
+.checkmark_count_4_ { background-color: #CA6FA8  ;}
 
 /* Create the indicator (the dot/circle - hidden when not checked) */
 .checkmark:after {
@@ -226,19 +287,16 @@ div.tooltip {
     position: absolute;
     display: none;
 }
-
 /* Show the indicator (dot/circle) when checked */
 .filterContainer input:checked ~ .checkmark:after {
     display: block;
 }
-
 /* Style the indicator (dot/circle) */
 .filterContainer .checkmark:after {
  	top: 8px;
 	left: 8px;
 	width: 8px;
 	height: 8px;
-	/*border-radius: 50%;*/
 	background: white;
 }
 
@@ -250,21 +308,21 @@ div.tooltip {
 
 /* Time div */
 #time {
-    top: 50px;
+    top: 3%;
     margin-left: 50%;
-    padding:15px;
+    padding:10px;
     border-radius:10px;
-    font-size:36px;
+    font-size:24px;
     color:black;
     text-align:center;
     position:absolute;
-    width:200px;
+    width:8%;
+    right:46%;
     z-index:2;
-    background: rgba(255,255,255,0.6);
+    background: rgba(255,255,255,0.5);
     opacity:0;
     pointer-events:none;
-
-
+    font-family: "Verdana";
 }
 
 /* Change view button */
@@ -275,33 +333,33 @@ div.tooltip {
     opacity:0;
     position:absolute;
     width:150px;
-    font-size:24px;
-    color:red;
+    font-size:18px;
+    color:black;
     text-align:center;
     pointer-events:none;
     padding:10px;
     border-radius:10px;
+    font-family: "Verdana";
 }
 
 #startButton {
-    top: 550px;
-    right:800px;
+    bottom: 3%;
+    right:46%;
     background: rgba(255,255,255,0.8);
     opacity:0;
     position:absolute;
-    width:150px;
+    width:8%;
     font-size:24px;
     color:red;
     text-align:center;
     pointer-events:none;
     padding:10px;
     border-radius:10px;
-    /* border-bottom-right-radius:10px; */
-    /* border-top-right-radius:10px; */
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    font-family: "Verdana";
 }
 
 #stopButton {
@@ -323,7 +381,10 @@ div.tooltip {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    font-family: "Verdana";
 }
+
+
 
 
 /* Left bar */
@@ -340,9 +401,10 @@ div.tooltip {
     margin-top:40px;
     padding-bottom:40px;
     z-index:2;
+    font-family: "Verdana";
 }
 
-#leftSideBarContainer { 
+#leftSideBarContainer {
     height: auto;
     width:100%;
     padding-left:5%;
@@ -350,23 +412,25 @@ div.tooltip {
     padding-top:10px;
     padding-bottom:10px;
     opacity:1;
-    color:red;
+    color:black;
     background: rgba(255,255,255,0.01);
     /* background-color:blue; */
+    font-family: "Verdana";
 }
 
 .leftSideBarInfo {
     width:90%;
     /* background:rgba(255,0,0,0.6); */
-    font-size:25px;
+    font-size:20px;
     text-align:center;
     margin:0;
+    color:black;
 }
 
 
 
 /* Bar */
-#map { height: 700px; 
+#map { height: 700px;
     width:100%;
     z-index:0;
     margin-top:40px;
@@ -382,12 +446,13 @@ div.tooltip {
     height:auto;
     width:55%;
     float:right;
-    font-size:17px;
+    font-size:20px;
+    font-family: "Verdana";
 }
 .infoTitle {
     text-align:left;
     color:black;
-    font-size:34px;
+    font-size:24px;
     padding:5px;
 }
 #footer{

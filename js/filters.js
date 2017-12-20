@@ -4,6 +4,14 @@ import * as histogram from './histogram.js'
 
 
 let showFilters = () => {
+    let classifiersIitle = d3.select('#classifiersTitle')
+    classifiersIitle.style('opacity',1)
+    classifiersIitle.style('pointer-events','all')
+
+    let filtersIitle = d3.select('#filtersTitle')
+    filtersIitle.style('opacity',1)
+    filtersIitle.style('pointer-events','all')
+
     let genderFilters=d3.select('#genderFilters')
     genderFilters.style('opacity',1)
     genderFilters.style('pointer-events','all')
@@ -32,6 +40,14 @@ let showTimeContainer = () => {
 }
 
 let hideFilters = () => {
+    let classifiersIitle = d3.select('#classifiersTitle')
+    classifiersIitle.style('opacity',0)
+    classifiersIitle.style('pointer-events','none')
+
+    let filtersIitle = d3.select('#filtersTitle')
+    filtersIitle.style('opacity',0)
+    filtersIitle.style('pointer-events','none')
+
     let genderFilters=d3.select('#genderFilters')
     genderFilters.style('opacity',0)
     genderFilters.style('pointer-events','none')

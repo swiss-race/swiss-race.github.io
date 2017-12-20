@@ -4,6 +4,10 @@ import * as histogram from './histogram.js'
 
 
 let showFilters = () => {
+    let histogramTitleIitle = d3.select('#histogramTitle')
+    histogramTitleIitle.style('opacity',1)
+    histogramTitleIitle.style('pointer-events','all')
+
     let classifiersIitle = d3.select('#classifiersTitle')
     classifiersIitle.style('opacity',1)
     classifiersIitle.style('pointer-events','all')
@@ -40,6 +44,10 @@ let showTimeContainer = () => {
 }
 
 let hideFilters = () => {
+    let histogramTitleIitle = d3.select('#histogramTitle')
+    histogramTitleIitle.style('opacity',0)
+    histogramTitleIitle.style('pointer-events','none')
+
     let classifiersIitle = d3.select('#classifiersTitle')
     classifiersIitle.style('opacity',0)
     classifiersIitle.style('pointer-events','none')
@@ -82,12 +90,6 @@ let runSimulation = (trackVector,runnersCircles,positionsArray,map,binsList) => 
     let timeStep=30
     let timeStart=new Date(0)
     let t=d3.interval(elapsed => {
-        // Randomly update binsList
-        let binIndex=Math.floor(Math.random()*75)
-        let bin=binsList[binIndex]
-        let randomHeight=Math.floor(Math.random()*100+50)
-        bin.attr('height',randomHeight)
-
         // 10 min = 1s
         let speedSlider=d3.select('#speed_slider').node()
         let increaseFactor=speedSlider.value*50
@@ -126,9 +128,10 @@ let runSimulation = (trackVector,runnersCircles,positionsArray,map,binsList) => 
                 }
             }
         }
-        // histogram.computeHistogramData(trackVector,runnersCircles,positionsArray)
+
         annotations.setCirclesInPositions(runnersCircles,positionsArray)
         annotations.addCirclesToMap(runnersCircles,map)
+        histogram.updateHistogram(trackVector,runnersCircles,binsList,positionsArray)
 
         if (stopSimulation) t.stop()
     },timeStep)

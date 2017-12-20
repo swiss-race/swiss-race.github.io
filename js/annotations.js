@@ -113,7 +113,7 @@ let applyFilterToRunners = (runners,filterStatus) => {
         else if (age >= 47 && age < 60 && (filterStatus.ages_all || filterStatus.ages_47_60)) {
           if (filterStatus.age) final_color =  "#9267C4"
         }
-        else if (age >= 60 && (filterStatus.ages_all && filterStatus.ages_60_)) {
+        else if (age >= 60 && (filterStatus.ages_all || filterStatus.ages_60_)) {
           if (filterStatus.age) final_color = "#CA6FA8"
         }
         else {
@@ -159,6 +159,10 @@ let getFiltersStatus = () => {
     let gender=d3.select('#genderClassifier').node().checked
     let age=d3.select('#ageClassifier').node().checked
     let experience=d3.select('#experienceClassifier').node().checked
+
+    if (gender) document.getElementById("histogramTitle").innerHTML = "Distibution of Runner Positions by Gender";
+    if (age) document.getElementById("histogramTitle").innerHTML = "Distibution of Runner Positions by Age";
+    if (experience) document.getElementById("histogramTitle").innerHTML = "Distibution of Runner Positions by Experience";
 
     return {gender:gender,age:age,experience:experience,females_and_males:females_and_males,
         males_only:males_only,females_only:females_only,ages_all:ages_all,ages_60_:ages_60_,

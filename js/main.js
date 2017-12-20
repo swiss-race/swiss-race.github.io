@@ -14,6 +14,7 @@ import * as histogram from './histogram.js'
 import * as quotes from './quotes.js'
 
 let lastPosition=0
+
 window.onscroll = () => {
     let position=window.pageYOffset
     if(position>40 && lastPosition<position){
@@ -176,19 +177,6 @@ let setUpView2 = (gpxFile,map,mainStatus) => {
     //menu.showChangeViewButton(1)
     mainStatus.gpxFile=gpxFile
 
-    // bars = g.selectAll(".bar")
-    //     .data(histogram_data)
-    //     .enter().append("rect")
-    //         .attr("class", "bar")
-    //         .attr("x", d => x_axis(d[0]))
-    //         .attr("y", d => histogram_height * d[1])
-    //         .attr("bin_index", d => d[0])
-    //         .attr("bin_count", d => d[1])
-    //         .attr("width", x_axis.bandwidth())
-    //         .attr("height", d => histogram_height * (1 - d[1]))
-    //         .attr("fill", "#49ABD1")
-    //         .attr("opacity", "1.0")
-    //         .attr("hist_index", d => d[2]);
 
     let mainMapPromise=new Promise((resolve,reject) => {
         trackUtils.addTrack(gpxFile[0],map,[400,0],resolve)
@@ -233,15 +221,10 @@ let setUpView2 = (gpxFile,map,mainStatus) => {
 
             const totalLength=trackVector[trackVector.length-1].cumulativeDistance
 
-
             let startButton=d3.select('#startButton')
             startButton.style('pointer-events','all')
             startButton.style('opacity',1)
             startButton.node().innerHTML='START'
-            // let stopButton=d3.select('#stopButton')
-            // stopButton.style('pointer-events','all')
-            // stopButton.style('opacity',1)
-            // stopButton.node().innerHTML='Stop!'
 
             startButton.on('click',() => {
 
@@ -264,7 +247,7 @@ let setUpView2 = (gpxFile,map,mainStatus) => {
                 annotations.addCirclesToMap(runnersCircles,map)
 
                 let histogramData=histogram.computeHistogramData(trackVector,runnersCircles,positionsArray)
-                let binsList=histogram.setUpHistogram(histogramData)
+                let binsList = histogram.setUpHistogram(histogramData)
 
                 filters.runSimulation(trackVector,runnersCircles,positionsArray,map,binsList)
             })
@@ -368,8 +351,7 @@ let parseRunners= (data) => {
     mapZoom=(mapZoom-11)
     let stdX=0.002/mapZoom // standard deviation in terms of latitude and longitude
     let stdY=0.003/mapZoom // standard deviation in terms of latitude and longitude
-    //let stdX=0.002 * (0.022 * (map.getZoom() - 11))
-    //let stdY=0.003 * (0.022 * (map.getZoom() - 11))
+
     let runners_data = new Array(data.length);
     for (var i = 0; i < data.length; i++) {
     runners_data[i] = new Array(5);

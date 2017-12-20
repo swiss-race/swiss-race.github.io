@@ -123,83 +123,89 @@ div.tooltip {
 }
 
 #backgroundPlot {
-    width: 500px;
+    width: 25%;
     height: 200px;
     position:absolute;
-    top:25px;
-    right:25px;
-    margin-left:00px;
-    margin-top:00px;
-    padding:25px;
-    /* outline:1px solid green; */
+    top:7%;
+    right:3%;
+    padding:12px;
     pointer-events:none;
-    color:black;
-    /* background-color:white; */
-    background:rgba(255,255,255,0.8);
+    background:rgba(255,255,255,0.7);
     opacity:0;
-    border-radius:10px;
+    border-radius:7px;
 }
-#plot {
+#histogramPlot {
     opacity:1;
 }
 
 #classifiersTitle {
-    width: 15%;
+    font-size:20px;
+    width: 10%;
     top:3%;
     left:3%;
     position: absolute;
 }
 #filtersTitle {
-    width: 15%;
+    font-size:20px;
+    width: 10%;
     top:21%;
     left:3%;
     position: absolute;
 }
+#histogramTitle {
+    font-size:20px;
+    width: 25%;
+    top:3%;
+    right:3%;
+    position: absolute;
+    font-family: "Verdana";
+    text-align:center;
+    font-size:
+}
 #classifiers {
-    width: 15%;
+    width: 10%;
     top:7%;
     left:3%;
-    background-color: #CBE3E8;
+    background-color:rgba(255, 255, 255, 0.7);
     position: absolute;
     pointer-events:none;
-    opacity:0;
 }
 #genderFilters {
-    width: 15%;
+    width: 10%;
     top:25%;
     left:3%;
-    background-color: #CBE3E8;
+    background-color:rgba(255, 255, 255, 0.7);
     position: absolute;
     pointer-events:none;
-    opacity:0;
+    opacity:0.7;
 }
 
 #ageFilters {
-    width: 15%;
+    width: 10%;
     top:39%;
     left:3%;
-    background-color: #CBE3E8;
+    background-color:rgba(255, 255, 255, 0.7);
     position: absolute;
     pointer-events:none;
-    opacity:0;
+    opacity:0.7;
 }
 
 #experienceFilters {
-    width: 15%;
+    width: 10%;
     top:65%;
     left:3%;
-    background-color: #CBE3E8;
+    background-color:rgba(255, 255, 255, 0.7);
     position: absolute;
     pointer-events:none;
-    opacity:0;
+    opacity:0.7;
 }
 
 #slidecontainer {
-    background-color: #CBE3E8;
+    background-color:rgba(255, 255, 255, 0.7);
     position: absolute;
-    opacity:0;
+    opacity:0.7;
     pointer-events:none;
-    width: 15%;
+    width: 10%;
     top: 85%;
     left:3%;
     font-size: 1.3vmin;
@@ -255,7 +261,7 @@ div.tooltip {
     opacity: 0;
 }
 .filterContainer:hover input ~ .checkmark {
-    opacity: 0.5;
+    opacity: 0.7;
 }
 .filterContainer input:checked ~ .checkmark {
     background-color: #C0C0C0;
@@ -300,12 +306,6 @@ div.tooltip {
 	background: white;
 }
 
-/* Histogram */
-#histogramRectangle {
-
-
-}
-
 /* Time div */
 #time {
     top: 3%;
@@ -319,7 +319,7 @@ div.tooltip {
     width:8%;
     right:46%;
     z-index:2;
-    background: rgba(255,255,255,0.5);
+    background: rgba(255,255,255,0.7);
     opacity:0;
     pointer-events:none;
     font-family: "Verdana";

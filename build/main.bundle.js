@@ -1771,7 +1771,7 @@ var applyFilterToRunners = function applyFilterToRunners(runners, filterStatus) 
             if (filterStatus.age) final_color = "#49ABD1";
         } else if (age >= 47 && age < 60 && (filterStatus.ages_all || filterStatus.ages_47_60)) {
             if (filterStatus.age) final_color = "#9267C4";
-        } else if (age >= 60 && filterStatus.ages_all && filterStatus.ages_60_) {
+        } else if (age >= 60 && (filterStatus.ages_all || filterStatus.ages_60_)) {
             if (filterStatus.age) final_color = "#CA6FA8";
         } else {
             final_opacity = 0;
@@ -1813,6 +1813,10 @@ var getFiltersStatus = function getFiltersStatus() {
     var gender = d3.select('#genderClassifier').node().checked;
     var age = d3.select('#ageClassifier').node().checked;
     var experience = d3.select('#experienceClassifier').node().checked;
+
+    if (gender) document.getElementById("histogramTitle").innerHTML = "Distibution of Runner Positions by Gender";
+    if (age) document.getElementById("histogramTitle").innerHTML = "Distibution of Runner Positions by Age";
+    if (experience) document.getElementById("histogramTitle").innerHTML = "Distibution of Runner Positions by Experience";
 
     return { gender: gender, age: age, experience: experience, females_and_males: females_and_males,
         males_only: males_only, females_only: females_only, ages_all: ages_all, ages_60_: ages_60_,
@@ -23505,6 +23509,10 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var showFilters = function showFilters() {
+    var histogramTitleIitle = d3.select('#histogramTitle');
+    histogramTitleIitle.style('opacity', 1);
+    histogramTitleIitle.style('pointer-events', 'all');
+
     var classifiersIitle = d3.select('#classifiersTitle');
     classifiersIitle.style('opacity', 1);
     classifiersIitle.style('pointer-events', 'all');
@@ -23541,6 +23549,10 @@ var showTimeContainer = function showTimeContainer() {
 };
 
 var hideFilters = function hideFilters() {
+    var histogramTitleIitle = d3.select('#histogramTitle');
+    histogramTitleIitle.style('opacity', 0);
+    histogramTitleIitle.style('pointer-events', 'none');
+
     var classifiersIitle = d3.select('#classifiersTitle');
     classifiersIitle.style('opacity', 0);
     classifiersIitle.style('pointer-events', 'none');
@@ -23582,12 +23594,6 @@ var runSimulation = function runSimulation(trackVector, runnersCircles, position
     var timeStep = 30;
     var timeStart = new Date(0);
     var t = d3.interval(function (elapsed) {
-        // Randomly update binsList
-        var binIndex = Math.floor(Math.random() * 75);
-        var bin = binsList[binIndex];
-        var randomHeight = Math.floor(Math.random() * 100 + 50);
-        bin.attr('height', randomHeight);
-
         // 10 min = 1s
         var speedSlider = d3.select('#speed_slider').node();
         var increaseFactor = speedSlider.value * 50;
@@ -23623,9 +23629,10 @@ var runSimulation = function runSimulation(trackVector, runnersCircles, position
                 }
             }
         }
-        // histogram.computeHistogramData(trackVector,runnersCircles,positionsArray)
+
         annotations.setCirclesInPositions(runnersCircles, positionsArray);
         annotations.addCirclesToMap(runnersCircles, map);
+        histogram.updateHistogram(trackVector, runnersCircles, binsList, positionsArray);
 
         if (stopSimulation) t.stop();
     }, timeStep);
@@ -23644,9 +23651,9 @@ exports.runSimulation = runSimulation;
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
-exports.computeHistogramData = exports.setUpHistogram = undefined;
+exports.computeHistogramData = exports.updateHistogram = exports.setUpHistogram = undefined;
 
 var _d = __webpack_require__(12);
 
@@ -23662,143 +23669,146 @@ var utilities = _interopRequireWildcard(_utilities);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+var numBins = 60;
+var numHistograms = 5;
+var histogramHeight = 200;
+
 var setUpHistogram = function setUpHistogram(histogramData) {
-  // Set backgroundPlot 
-  d3.select('#backgroundPlot').style('opacity', 1);
+    d3.select('#backgroundPlot').style('opacity', 1);
 
-  var svgContainer = d3.select('#plot').append('svg');
-  // let svg=d3.select('svg')
-  svgContainer.attr('position', 'absolute').attr('left', '0.5%').attr('top', '17%').attr('width', '500px').attr('height', '200px').attr('bottom', '99%').style('background-color', 'grey');
+    var svgContainer = d3.select('#histogramPlot').append('svg');
 
-  console.log(svgContainer.attr('width'));
+    svgContainer.attr('position', 'absolute').attr('left', '0%').attr('top', '0%').attr('width', '100%').attr('height', '200px').style('background-color', 'white');
 
-  var width = 500;
-  var numBins = 75;
-  var binWidth = width / numBins;
+    var histogramWidth = 0.25 * window.innerWidth;
+    //let histogramHeight = 0.25 * window.innerHeight
 
-  var binsList = [];
-  for (var i = 0; i < numBins; i++) {
-    var x = i * width / numBins;
+    var binWidth = histogramWidth / numBins;
 
-    var bin = svgContainer.append('rect').attr('width', binWidth - 1).attr('height', 50).attr('x', x).style('fill', 'blue');
-    binsList.push(bin);
-  }
-  return binsList;
-
-  // let histogram_margin = {top:  window.innerWidth * image_ratio + 5, right: -17, bottom: 20, left: 12};
-  // let histogram_margin = {top:  0 , right: -17, bottom: 20, left: 12};
-  // let histogram_width = +svg.attr("width") - histogram_margin.left - histogram_margin.right;
-  // let histogram_height = +svg.attr("height") - histogram_margin.top - histogram_margin.bottom;
-
-
-  // let x_axis = d3.scaleBand().rangeRound([0, histogram_width]).padding(0.1);
-  // let y_axis = d3.scaleLinear().rangeRound([histogram_height, 0]);
-  //
-  // svg.append("rect")
-  //     .attr("width", "100%")
-  //     .attr("height", "100%")
-  //     .attr("transform", "translate(" + histogram_margin.left + "," + histogram_margin.top + ")")
-  //     .attr("fill", "#E7E5E6");
-  //
-  // var g = svg.append("g")
-  //     .attr("transform", "translate(" + histogram_margin.left + "," + histogram_margin.top + ")");
-  //
-  // x_axis.domain(utilities.numberRange(0,75))
-  // y_axis.domain([0,1])
-  // console.log(x_axis.domain())
-  // x_axis.domain(histogramData.map(function(d) { return d[0]; }));
-  // let y_limit = d3.max(histogramData, function(d) { return d[1]; })
-  // y_axis.domain([0, y_limit]);
-
-
-  // console.log(histogramData.map(d => {return d[0]}))
-  //
-  // g.append("g")
-  //     .attr("class", "axis_x")
-  //     .attr("transform", "translate(0," + histogram_height + ")")
-  //     .attr("stroke-width", "3px")
-  //     .attr("stroke", "#B8B8B8")
-  //     .attr("stroke-opacity", "0.45")
-  //     // .call(d3.axisBottom(x_axis));
-  //
-  // g.append("g")
-  //     .attr("class", "axis_y")
-  //     .attr("stroke-width", "3px")
-  // .attr("stroke-opacity", "0.45")
-  // .call(d3.axisLeft(y_axis).ticks(10, ""))
+    var binsList = [];
+    for (var j = 0; j < numHistograms; j++) {
+        for (var i = 0; i < numBins; i++) {
+            var k = i + j * numBins;
+            var x = i * histogramWidth / numBins;
+            var bin = svgContainer.append('rect').attr('width', binWidth - 1).attr('height', histogramHeight * histogramData[k][1]).attr('x', x).attr('y', histogramHeight * (1 - histogramData[k][1])).style('fill', 'white');
+            binsList.push(bin);
+        }
+    }
+    return binsList;
 };
 
 var computeHistogramData = function computeHistogramData(trackVector, runnersCircles, positionsArray) {
-  var num_bins = 75;
-  var bin_width = 1.0 / num_bins;
-  var num_histograms = 5; //Maximum number of filters
-  var bin_counts = new Array(num_bins);
-  var filterStatus = annotations.getFiltersStatus();
-  var trackLength = trackVector[trackVector.length - 1].cumulativeDistance;
 
-  for (i = 0; i < num_bins; i++) {
-    bin_counts[i] = new Array(num_histograms).fill(0);
-  }
-  // max_distance = marathon_distance / 60.0
+    var bin_width = 1.0 / numBins;
+    var bin_counts = new Array(numBins);
+    var filterStatus = annotations.getFiltersStatus();
+    var trackLength = trackVector[trackVector.length - 1].cumulativeDistance;
 
-  for (i = 0; i < positionsArray.length; i++) {
-    // var t = runners_data[i][0]
-    // if (change_speed == true) {
-    //   var shift = speedup * marathon_distance/(t + 1)
-    //   distances_all_runners[i] = distances_all_runners[i] + shift
-    // }
-    // if (change_time == true) {
-    //   distances_all_runners[i] =  runners_datastep * speedup * marathon_distance/(t + 1)
-    // }
-    // let distance = distances_all_runners[i] / 10
-
-    var histogram_index = 0;
-    if (filterStatus.gender) {
-      if (runnersCircles[i].male == 0) histogram_index = 1;
+    for (i = 0; i < numBins; i++) {
+        bin_counts[i] = new Array(numHistograms).fill(0);
     }
-    if (filterStatus.age) {
-      var age = runnersCircles[i].age;
-      if (age < 20) histogram_index = 4;
-      if (age >= 20 && age < 33) histogram_index = 1;
-      if (age >= 33 && age < 47) histogram_index = 0;
-      if (age >= 47 && age < 60) histogram_index = 2;
-      if (age >= 60) histogram_index = 3;
+    // max_distance = marathon_distance / 60.0
+
+    for (i = 0; i < positionsArray.length; i++) {
+        // var t = runners_data[i][0]
+        // if (change_speed == true) {
+        //   var shift = speedup * marathon_distance/(t + 1)
+        //   distances_all_runners[i] = distances_all_runners[i] + shift
+        // }
+        // if (change_time == true) {
+        //   distances_all_runners[i] =  runners_datastep * speedup * marathon_distance/(t + 1)
+        // }
+        // let distance = distances_all_runners[i] / 10
+
+        var histogram_index = void 0;
+        if (filterStatus.gender) {
+            if (!runnersCircles[i].male) histogram_index = 4;
+            if (runnersCircles[i].male) histogram_index = 3;
+        }
+        if (filterStatus.age) {
+            var age = runnersCircles[i].age;
+            if (age < 20) histogram_index = 4;
+            if (age >= 20 && age < 33) histogram_index = 1;
+            if (age >= 33 && age < 47) histogram_index = 0;
+            if (age >= 47 && age < 60) histogram_index = 2;
+            if (age >= 60) histogram_index = 3;
+        }
+        if (filterStatus.experience) {
+            var experience = runnersCircles[i].count;
+            if (experience == 1) histogram_index = 2;
+            if (experience >= 2 && experience <= 3) histogram_index = 3;
+            if (experience >= 4) histogram_index = 4;
+        }
+
+        var normalized_distance = positionsArray[i][2] / trackLength * numBins;
+        var bin_index = Math.floor(normalized_distance);
+        if (bin_index > numBins - 1) bin_index = numBins - 1;
+        bin_counts[bin_index][histogram_index] = bin_counts[bin_index][histogram_index] + 1.0;
     }
-    if (filterStatus.experience) {
-      var experience = runnersCircles[i].count;
-      if (experience == 1) histogram_index = 0;
-      if (experience >= 2 && experience <= 3) histogram_index = 1;
-      if (experience >= 4) histogram_index = 2;
+
+    var histogram_data = new Array(numBins * numHistograms);
+    var max_value = 0;
+    for (var j = 0; j < numHistograms; j++) {
+        for (var i = 0; i < numBins; i++) {
+            var k = i + j * numBins;
+            histogram_data[k] = new Array(3);
+            histogram_data[k][0] = i;
+            histogram_data[k][1] = bin_counts[i][j];
+            histogram_data[k][2] = j;
+            if (histogram_data[k][1] > max_value) max_value = histogram_data[k][1];
+        }
+    }
+    for (var i = 0; i < numBins * numHistograms; i++) {
+        histogram_data[i][1] = histogram_data[i][1] / max_value;
     }
 
-    var normalized_distance = positionsArray[i][2] / trackLength * num_bins;
-    var bin_index = Math.floor(normalized_distance);
-    if (bin_index > num_bins - 1) bin_index = num_bins - 1;
-    bin_counts[bin_index][histogram_index] = bin_counts[bin_index][histogram_index] + 1.0;
-  }
+    // console.log(histogram_data)
 
-  var histogram_data = new Array(num_bins * num_histograms);
-  var max_value = 0;
-  for (var j = 0; j < num_histograms; j++) {
-    for (var i = 0; i < num_bins; i++) {
-      var k = i + j * num_bins;
-      histogram_data[k] = new Array(3);
-      histogram_data[k][0] = i;
-      histogram_data[k][1] = bin_counts[i][j];
-      histogram_data[k][2] = j;
-      if (histogram_data[k][1] > max_value) max_value = histogram_data[k][1];
+    return histogram_data;
+};
+
+var updateHistogram = function updateHistogram(trackVector, runnersCircles, binsList, positionsArray) {
+
+    var histogramData = computeHistogramData(trackVector, runnersCircles, positionsArray);
+    var filterStatus = annotations.getFiltersStatus();
+
+    var histogramWidth = 0.25 * window.innerWidth;
+    for (var j = 0; j < numHistograms; j++) {
+        for (var i = 0; i < numBins; i++) {
+            var k = i + j * numBins;
+            var bin = binsList[k];
+            var x = i * histogramWidth / numBins;
+            bin.attr('height', histogramHeight * histogramData[k][1]);
+            bin.attr('x', x);
+            bin.attr('y', histogramHeight * (1 - histogramData[k][1]));
+
+            var histIndex = j;
+
+            var color;
+            if (filterStatus.gender && histIndex == 0) color = "#FFFFFF";
+            if (filterStatus.gender && histIndex == 1) color = "#FFFFFF";
+            if (filterStatus.gender && histIndex == 2) color = "#FFFFFF";
+            if (filterStatus.gender && histIndex == 3) color = "#49ABD1";
+            if (filterStatus.gender && histIndex == 4) color = "#CA6FA8";
+
+            if (filterStatus.age && histIndex == 4) color = "#89D863";
+            if (filterStatus.age && histIndex == 1) color = "#3CC46C";
+            if (filterStatus.age && histIndex == 0) color = "#49ABD1";
+            if (filterStatus.age && histIndex == 2) color = "#9267C4";
+            if (filterStatus.age && histIndex == 3) color = "#CA6FA8";
+
+            if (filterStatus.experience && histIndex == 0) color = "#FFFFFF";
+            if (filterStatus.experience && histIndex == 1) color = "#FFFFFF";
+            if (filterStatus.experience && histIndex == 2) color = "#79DA4A";
+            if (filterStatus.experience && histIndex == 3) color = "#00B9A6";
+            if (filterStatus.experience && histIndex == 4) color = "#CA6FA8";
+            bin.style('fill', color);
+        }
     }
-  }
-  for (var i = 0; i < num_bins * num_histograms; i++) {
-    histogram_data[i][1] = histogram_data[i][1] / max_value;
-  }
-
-  // console.log(histogram_data)
-
-  return histogram_data;
 };
 
 exports.setUpHistogram = setUpHistogram;
+exports.updateHistogram = updateHistogram;
 exports.computeHistogramData = computeHistogramData;
 
 /***/ }),
@@ -23869,6 +23879,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var lastPosition = 0;
+
 window.onscroll = function () {
     var position = window.pageYOffset;
     if (position > 40 && lastPosition < position) {
@@ -24050,20 +24061,6 @@ var setUpView2 = function setUpView2(gpxFile, map, mainStatus) {
     //menu.showChangeViewButton(1)
     mainStatus.gpxFile = gpxFile;
 
-    // bars = g.selectAll(".bar")
-    //     .data(histogram_data)
-    //     .enter().append("rect")
-    //         .attr("class", "bar")
-    //         .attr("x", d => x_axis(d[0]))
-    //         .attr("y", d => histogram_height * d[1])
-    //         .attr("bin_index", d => d[0])
-    //         .attr("bin_count", d => d[1])
-    //         .attr("width", x_axis.bandwidth())
-    //         .attr("height", d => histogram_height * (1 - d[1]))
-    //         .attr("fill", "#49ABD1")
-    //         .attr("opacity", "1.0")
-    //         .attr("hist_index", d => d[2]);
-
     var mainMapPromise = new Promise(function (resolve, reject) {
         trackUtils.addTrack(gpxFile[0], map, [400, 0], resolve);
     });
@@ -24110,10 +24107,6 @@ var setUpView2 = function setUpView2(gpxFile, map, mainStatus) {
             startButton.style('pointer-events', 'all');
             startButton.style('opacity', 1);
             startButton.node().innerHTML = 'START';
-            // let stopButton=d3.select('#stopButton')
-            // stopButton.style('pointer-events','all')
-            // stopButton.style('opacity',1)
-            // stopButton.node().innerHTML='Stop!'
 
             startButton.on('click', function () {
 
@@ -24237,8 +24230,7 @@ var parseRunners = function parseRunners(data) {
     mapZoom = mapZoom - 11;
     var stdX = 0.002 / mapZoom; // standard deviation in terms of latitude and longitude
     var stdY = 0.003 / mapZoom; // standard deviation in terms of latitude and longitude
-    //let stdX=0.002 * (0.022 * (map.getZoom() - 11))
-    //let stdY=0.003 * (0.022 * (map.getZoom() - 11))
+
     var runners_data = new Array(data.length);
     for (var i = 0; i < data.length; i++) {
         runners_data[i] = new Array(5);

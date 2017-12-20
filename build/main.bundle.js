@@ -23940,14 +23940,15 @@ raceButton.on('click', function () {
     }
 });
 
-var changeView = d3.select('#changeView');
-changeView.on('click', function () {
-    if (mainStatus.view == 1) {
-        setUpView2(mainStatus.gpxFile, map, mainStatus);
-    } else if (mainStatus.view == 2) {
-        setUpView1(mainStatus.gpxFile, map, mainStatus);
+/*let changeView=d3.select('#changeView')
+changeView.on('click', () => {
+    if (mainStatus.view==1) {
+        setUpView2(mainStatus.gpxFile,map,mainStatus)
+
+    } else if (mainStatus.view==2) {
+        setUpView1(mainStatus.gpxFile,map,mainStatus)
     }
-});
+})*/
 
 var setUpView0 = function setUpView0(gpxList, map, mainStatus) {
     menu.removeAllTrackView(mainStatus, map);
@@ -23960,7 +23961,10 @@ var setUpView0 = function setUpView0(gpxList, map, mainStatus) {
         });
         mainMapPromise.then(function (object) {
             var line = object[1];
-            var currentTrack = mapUtils.showTrackOnMap(line, map, setUpView1, gpxList[i], mainStatus);
+            var track = object[0];
+            var trackName = track._info.name;
+
+            var currentTrack = mapUtils.showTrackOnMap(line, map, setUpView2, gpxList[i], mainStatus, trackName);
             currentTracks.push(currentTrack);
             mainStatus.currentTracks = currentTracks;
         });
@@ -23974,7 +23978,7 @@ var setUpView0 = function setUpView0(gpxList, map, mainStatus) {
 
 var setUpView1 = function setUpView1(gpxFile, map, mainStatus) {
     menu.removeAllTrackView(mainStatus, map);
-    menu.showChangeViewButton(0);
+    //menu.showChangeViewButton(0)
     mainStatus.gpxFile = gpxFile;
     annotations.circle.addTo(map);
     annotations.circle.setLatLng([-46.5, 6.8]);
@@ -23993,7 +23997,7 @@ var setUpView1 = function setUpView1(gpxFile, map, mainStatus) {
 
 var setUpView2 = function setUpView2(gpxFile, map, mainStatus) {
     menu.removeAllTrackView(mainStatus, map);
-    menu.showChangeViewButton(1);
+    //menu.showChangeViewButton(1)
     mainStatus.gpxFile = gpxFile;
 
     // bars = g.selectAll(".bar")
@@ -24026,6 +24030,10 @@ var setUpView2 = function setUpView2(gpxFile, map, mainStatus) {
 
         var runnersData = parseRunners(object);
         mainMapPromise.then(function (object) {
+            var track_name = object[0];
+            var trackName = track_name._info.name;
+            document.getElementById("raceName").innerHTML = trackName;
+
             var track = object[1]._latlngs;
 
             var trackJSON = utilities.transformToGeoJSON(track);
@@ -38632,17 +38640,20 @@ var addPoint = function addPoint(line, map, isLeftBar) {
     }
 };
 
-var showTrackOnMap = function showTrackOnMap(line, map, callback, gpxFile, mainStatus) {
+var showTrackOnMap = function showTrackOnMap(line, map, callback, gpxFile, mainStatus, trackName) {
     var pointArray = line._latlngs;
     var output = utilities.transformToGeoJSON(pointArray);
 
     // lineStyle['pointer-events']='none'
     var track = L.geoJSON(output, {
         color: '#FF4F4F',
-        weight: 2
+        weight: 3
     });
     track.on('click', function () {
         callback(gpxFile, map, mainStatus);
+    });
+    track.on('mouseover', function () {
+        document.getElementById("raceName").innerHTML = trackName;
     });
     track.addTo(map);
 

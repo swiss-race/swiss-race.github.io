@@ -16,14 +16,10 @@
 
 
 <div id="container">
-
     <div id='header'>
+        <div id="raceName">Select a Race</div>
         <div id="homeButton" class="fa fa-home"></div>
-        <span id='raceButton'>
-            Races
-        </span>
-        <div id='searchButton' class="fa fa-search">
-        </div>
+        <span id='raceButton'> Races </span>
     </div>
 <div id="map">
 </div>
@@ -33,18 +29,9 @@
     <!-- </div> -->
 </div>
 
-<div id='time'>
-    0h 0:00
-</div>
+<div id='time'> 0h 0:00</div>
 
-<div id='startButton'>
-</div>
-<div id='stopButton'>
-</div>
-<div id='changeView'>
-</div>
-
-
+<div id='startButton'></div>
 
 <div id="backgroundPlot">
     <div id="plot">
@@ -159,7 +146,11 @@ var vid = document.getElementById("introVideo");
 vid.addEventListener('ended', function(){
     vid.remove();
 }, false);
+vid.addEventListener('click', function(){
+    vid.remove();
+}, false);
 </script>
+
 
 <div id="marathonQuote">If you want to run, run a mile. If you want to experience a different life, run a marathon. (Emit Zatopek)</div>
 <button id="quotesButton">Next Quote</button>

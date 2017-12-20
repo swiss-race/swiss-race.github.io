@@ -78,17 +78,20 @@ let addPoint = (line,map,isLeftBar) => {
 
 }
 
-let showTrackOnMap = (line,map,callback,gpxFile,mainStatus) => {
+let showTrackOnMap = (line,map,callback,gpxFile,mainStatus, trackName) => {
     let pointArray=line._latlngs
     let output=utilities.transformToGeoJSON(pointArray)
 
     // lineStyle['pointer-events']='none'
     let track=L.geoJSON(output, {
         color: '#FF4F4F',
-        weight: 2
+        weight: 3,
     })
     track.on('click',() => {
         callback(gpxFile,map,mainStatus)
+    })
+    track.on('mouseover',() => {
+        document.getElementById("raceName").innerHTML = trackName;
     })
     track.addTo(map)
 

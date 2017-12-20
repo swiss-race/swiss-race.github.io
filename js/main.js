@@ -120,7 +120,7 @@ raceButton.on('click',() => {
     }
 })
 
-let changeView=d3.select('#changeView')
+/*let changeView=d3.select('#changeView')
 changeView.on('click', () => {
     if (mainStatus.view==1) {
         setUpView2(mainStatus.gpxFile,map,mainStatus)
@@ -128,7 +128,7 @@ changeView.on('click', () => {
     } else if (mainStatus.view==2) {
         setUpView1(mainStatus.gpxFile,map,mainStatus)
     }
-})
+})*/
 
 
 let setUpView0 = (gpxList,map,mainStatus) => {
@@ -141,7 +141,10 @@ let setUpView0 = (gpxList,map,mainStatus) => {
         })
         mainMapPromise.then((object) => {
             let line=object[1]
-            let currentTrack=mapUtils.showTrackOnMap(line,map,setUpView1,gpxList[i],mainStatus)
+            let track=object[0]
+            const trackName=track._info.name
+
+            let currentTrack=mapUtils.showTrackOnMap(line,map,setUpView2,gpxList[i],mainStatus,trackName)
             currentTracks.push(currentTrack)
             mainStatus.currentTracks=currentTracks
         })
@@ -151,7 +154,7 @@ let setUpView0 = (gpxList,map,mainStatus) => {
 
 let setUpView1 = (gpxFile,map,mainStatus) => {
     menu.removeAllTrackView(mainStatus,map)
-    menu.showChangeViewButton(0)
+    //menu.showChangeViewButton(0)
     mainStatus.gpxFile=gpxFile
     annotations.circle.addTo(map)
     annotations.circle.setLatLng([-46.5, 6.8])
@@ -170,7 +173,7 @@ let setUpView1 = (gpxFile,map,mainStatus) => {
 
 let setUpView2 = (gpxFile,map,mainStatus) => {
     menu.removeAllTrackView(mainStatus,map)
-    menu.showChangeViewButton(1)
+    //menu.showChangeViewButton(1)
     mainStatus.gpxFile=gpxFile
 
     // bars = g.selectAll(".bar")
@@ -203,6 +206,10 @@ let setUpView2 = (gpxFile,map,mainStatus) => {
 
         let runnersData=parseRunners(object)
         mainMapPromise.then((object) => {
+            let track_name=object[0]
+            const trackName=track_name._info.name
+            document.getElementById("raceName").innerHTML = trackName;
+
             let track=object[1]._latlngs
 
             let trackJSON=utilities.transformToGeoJSON(track)

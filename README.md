@@ -8,7 +8,7 @@ At every change:
 - http-server
 
 # Intended Usage 
-A short presentation of this visualization is provided in the [screencast](https://drive.google.com/open?id=1Ua945rhCfUoaArzNTVsUnsePWYA-LyAt)
+A short presentation of this visualization is provided in the [screencast] (https://drive.google.com/open?id=1Ua945rhCfUoaArzNTVsUnsePWYA-LyAt)
 
 ## ES6 Tutorial
 

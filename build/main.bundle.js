@@ -1734,8 +1734,6 @@ var mouseoutOpacity = function mouseoutOpacity(className) {
     d3.select('.' + className).style('opacity', 0);
 };
 
-///////////////
-/// Runners ///
 var runnersStyle = { color: 'red',
     opacity: 1,
     fillOpacity: 1,
@@ -1825,8 +1823,6 @@ var getFiltersStatus = function getFiltersStatus() {
 };
 
 var createRunnersCircles = function createRunnersCircles(runnersData) {
-
-    // let gender=document.getElementById('females_and_males')
 
     var runnersCircles = [];
     var filterStatus = getFiltersStatus();
@@ -23707,19 +23703,8 @@ var computeHistogramData = function computeHistogramData(trackVector, runnersCir
     for (i = 0; i < numBins; i++) {
         bin_counts[i] = new Array(numHistograms).fill(0);
     }
-    // max_distance = marathon_distance / 60.0
 
     for (i = 0; i < runnersCircles.length; i++) {
-        // var t = runners_data[i][0]
-        // if (change_speed == true) {
-        //   var shift = speedup * marathon_distance/(t + 1)
-        //   distances_all_runners[i] = distances_all_runners[i] + shift
-        // }
-        // if (change_time == true) {
-        //   distances_all_runners[i] =  runners_datastep * speedup * marathon_distance/(t + 1)
-        // }
-        // let distance = distances_all_runners[i] / 10
-
         var histogram_index = void 0;
         if (filterStatus.gender) {
             if (!runnersCircles[i].male) histogram_index = 4;
@@ -24015,17 +24000,6 @@ raceButton.on('click', function () {
     }
 });
 
-// let changeView=d3.select('#changeView')
-// changeView.on('click', () => {
-//     if (mainStatus.view==1) {
-//         setUpView2(mainStatus.gpxFile,map,mainStatus)
-//
-//     } else if (mainStatus.view==2) {
-//         setUpView1(mainStatus.gpxFile,map,mainStatus)
-//     }
-// })
-
-
 var setUpView0 = function setUpView0(gpxList, map, mainStatus) {
     menu.removeAllTrackView(mainStatus, map);
 
@@ -24273,8 +24247,6 @@ var parseRunners = function parseRunners(data) {
         runners_data[i][0] = seconds;
         runners_data[i][1] = (0.5 - Math.random()) * stdX;
         runners_data[i][2] = (0.5 - Math.random()) * stdY;
-        // runners_data[i][1] = 0
-        // runners_data[i][2] = 0
         if (data[i].Sex == "F") runners_data[i][3] = 0;
         if (data[i].Sex == "M") runners_data[i][3] = 1;
         runners_data[i][4] = data[i].RaceYear - data[i].Year;
@@ -24296,9 +24268,7 @@ var drawRunners = function drawRunners(data) {
     return runnersCircles;
 };
 
-var animateMap = function animateMap(elapsed) {
-    console.log(map.getZoom());
-};
+var animateMap = function animateMap(elapsed) {};
 
 /***/ }),
 /* 179 */

@@ -1814,9 +1814,9 @@ var getFiltersStatus = function getFiltersStatus() {
     var age = d3.select('#ageClassifier').node().checked;
     var experience = d3.select('#experienceClassifier').node().checked;
 
-    if (gender) document.getElementById("histogramTitle").innerHTML = "Distibution of Runner Positions by Gender";
-    if (age) document.getElementById("histogramTitle").innerHTML = "Distibution of Runner Positions by Age";
-    if (experience) document.getElementById("histogramTitle").innerHTML = "Distibution of Runner Positions by Experience";
+    if (gender) document.getElementById("histogramTitle").innerHTML = "Distribution of Runner Positions by Gender";
+    if (age) document.getElementById("histogramTitle").innerHTML = "Distribution of Runner Positions by Age";
+    if (experience) document.getElementById("histogramTitle").innerHTML = "Distribution of Runner Positions by Experience";
 
     return { gender: gender, age: age, experience: experience, females_and_males: females_and_males,
         males_only: males_only, females_only: females_only, ages_all: ages_all, ages_60_: ages_60_,
@@ -23651,7 +23651,7 @@ exports.runSimulation = runSimulation;
 
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 exports.computeHistogramData = exports.updateHistogram = exports.setUpHistogram = undefined;
 
@@ -23674,137 +23674,141 @@ var numHistograms = 5;
 var histogramHeight = 200;
 
 var setUpHistogram = function setUpHistogram(histogramData) {
-    d3.select('#backgroundPlot').style('opacity', 1);
+  d3.select('#backgroundPlot').style('opacity', 1);
 
-    var svgContainer = d3.select('#histogramPlot').append('svg');
+  var svgContainer = d3.select('#histogramPlot').append('svg');
 
-    svgContainer.attr('position', 'absolute').attr('left', '0%').attr('top', '0%').attr('width', '100%').attr('height', '200px').style('background-color', 'white');
+  svgContainer.attr('position', 'absolute').attr('left', '0%').attr('top', '0%').attr('width', '100%').attr('height', '200px').style('background-color', 'white');
 
-    var histogramWidth = 0.25 * window.innerWidth;
-    //let histogramHeight = 0.25 * window.innerHeight
+  var histogramWidth = 0.25 * window.innerWidth;
+  //let histogramHeight = 0.25 * window.innerHeight
 
-    var binWidth = histogramWidth / numBins;
+  var binWidth = histogramWidth / numBins;
 
-    var binsList = [];
-    for (var j = 0; j < numHistograms; j++) {
-        for (var i = 0; i < numBins; i++) {
-            var k = i + j * numBins;
-            var x = i * histogramWidth / numBins;
-            var bin = svgContainer.append('rect').attr('width', binWidth - 1).attr('height', histogramHeight * histogramData[k][1]).attr('x', x).attr('y', histogramHeight * (1 - histogramData[k][1])).style('fill', 'white');
-            binsList.push(bin);
-        }
+  var binsList = [];
+  for (var j = 0; j < numHistograms; j++) {
+    for (var i = 0; i < numBins; i++) {
+      var k = i + j * numBins;
+      var x = i * histogramWidth / numBins;
+      var bin = svgContainer.append('rect').attr('width', binWidth - 1).attr('height', histogramHeight * histogramData[k][1]).attr('x', x).attr('y', histogramHeight * (1 - histogramData[k][1])).style('fill', 'white');
+      binsList.push(bin);
     }
-    return binsList;
+  }
+  return binsList;
 };
 
 var computeHistogramData = function computeHistogramData(trackVector, runnersCircles, positionsArray) {
 
-    var bin_width = 1.0 / numBins;
-    var bin_counts = new Array(numBins);
-    var filterStatus = annotations.getFiltersStatus();
-    var trackLength = trackVector[trackVector.length - 1].cumulativeDistance;
+  var bin_width = 1.0 / numBins;
+  var bin_counts = new Array(numBins);
+  var filterStatus = annotations.getFiltersStatus();
+  var trackLength = trackVector[trackVector.length - 1].cumulativeDistance;
 
-    for (i = 0; i < numBins; i++) {
-        bin_counts[i] = new Array(numHistograms).fill(0);
+  for (i = 0; i < numBins; i++) {
+    bin_counts[i] = new Array(numHistograms).fill(0);
+  }
+  // max_distance = marathon_distance / 60.0
+
+  for (i = 0; i < runnersCircles.length; i++) {
+    // var t = runners_data[i][0]
+    // if (change_speed == true) {
+    //   var shift = speedup * marathon_distance/(t + 1)
+    //   distances_all_runners[i] = distances_all_runners[i] + shift
+    // }
+    // if (change_time == true) {
+    //   distances_all_runners[i] =  runners_datastep * speedup * marathon_distance/(t + 1)
+    // }
+    // let distance = distances_all_runners[i] / 10
+
+    var histogram_index = void 0;
+    if (filterStatus.gender) {
+      if (!runnersCircles[i].male) histogram_index = 4;
+      if (runnersCircles[i].male) histogram_index = 3;
     }
-    // max_distance = marathon_distance / 60.0
-
-    for (i = 0; i < positionsArray.length; i++) {
-        // var t = runners_data[i][0]
-        // if (change_speed == true) {
-        //   var shift = speedup * marathon_distance/(t + 1)
-        //   distances_all_runners[i] = distances_all_runners[i] + shift
-        // }
-        // if (change_time == true) {
-        //   distances_all_runners[i] =  runners_datastep * speedup * marathon_distance/(t + 1)
-        // }
-        // let distance = distances_all_runners[i] / 10
-
-        var histogram_index = void 0;
-        if (filterStatus.gender) {
-            if (!runnersCircles[i].male) histogram_index = 4;
-            if (runnersCircles[i].male) histogram_index = 3;
-        }
-        if (filterStatus.age) {
-            var age = runnersCircles[i].age;
-            if (age < 20) histogram_index = 4;
-            if (age >= 20 && age < 33) histogram_index = 1;
-            if (age >= 33 && age < 47) histogram_index = 0;
-            if (age >= 47 && age < 60) histogram_index = 2;
-            if (age >= 60) histogram_index = 3;
-        }
-        if (filterStatus.experience) {
-            var experience = runnersCircles[i].count;
-            if (experience == 1) histogram_index = 2;
-            if (experience >= 2 && experience <= 3) histogram_index = 3;
-            if (experience >= 4) histogram_index = 4;
-        }
-
-        var normalized_distance = positionsArray[i][2] / trackLength * numBins;
-        var bin_index = Math.floor(normalized_distance);
-        if (bin_index > numBins - 1) bin_index = numBins - 1;
-        bin_counts[bin_index][histogram_index] = bin_counts[bin_index][histogram_index] + 1.0;
+    if (filterStatus.age) {
+      var age = runnersCircles[i].age;
+      if (age < 20) histogram_index = 4;
+      if (age >= 20 && age < 33) histogram_index = 1;
+      if (age >= 33 && age < 47) histogram_index = 0;
+      if (age >= 47 && age < 60) histogram_index = 2;
+      if (age >= 60) histogram_index = 3;
+    }
+    if (filterStatus.experience) {
+      var experience = runnersCircles[i].count;
+      if (experience == 1) histogram_index = 2;
+      if (experience >= 2 && experience <= 3) histogram_index = 3;
+      if (experience >= 4) histogram_index = 4;
     }
 
-    var histogram_data = new Array(numBins * numHistograms);
-    var max_value = 0;
-    for (var j = 0; j < numHistograms; j++) {
-        for (var i = 0; i < numBins; i++) {
-            var k = i + j * numBins;
-            histogram_data[k] = new Array(3);
-            histogram_data[k][0] = i;
-            histogram_data[k][1] = bin_counts[i][j];
-            histogram_data[k][2] = j;
-            if (histogram_data[k][1] > max_value) max_value = histogram_data[k][1];
-        }
-    }
-    for (var i = 0; i < numBins * numHistograms; i++) {
-        histogram_data[i][1] = histogram_data[i][1] / max_value;
-    }
+    var normalized_distance = positionsArray[i][2] / trackLength * numBins;
+    var bin_index = Math.floor(normalized_distance);
+    if (bin_index > numBins - 1) bin_index = numBins - 1;
+    bin_counts[bin_index][histogram_index] = bin_counts[bin_index][histogram_index] + 1.0;
+  }
 
-    // console.log(histogram_data)
+  var histogram_data = new Array(numBins * numHistograms);
+  var max_value = 0;
+  for (var j = 0; j < numHistograms; j++) {
+    for (var i = 0; i < numBins; i++) {
+      var k = i + j * numBins;
+      histogram_data[k] = new Array(3);
+      histogram_data[k][0] = i;
+      histogram_data[k][1] = bin_counts[i][j];
+      histogram_data[k][2] = j;
+      if (histogram_data[k][1] > max_value) max_value = histogram_data[k][1];
+    }
+  }
+  for (var i = 0; i < numBins * numHistograms; i++) {
+    histogram_data[i][1] = histogram_data[i][1] / max_value;
+  }
 
-    return histogram_data;
+  // console.log(histogram_data)
+
+  return histogram_data;
 };
 
 var updateHistogram = function updateHistogram(trackVector, runnersCircles, binsList, positionsArray) {
 
-    var histogramData = computeHistogramData(trackVector, runnersCircles, positionsArray);
-    var filterStatus = annotations.getFiltersStatus();
+  if (!runnersCircles.length) {
+    return;
+  }
 
-    var histogramWidth = 0.25 * window.innerWidth;
-    for (var j = 0; j < numHistograms; j++) {
-        for (var i = 0; i < numBins; i++) {
-            var k = i + j * numBins;
-            var bin = binsList[k];
-            var x = i * histogramWidth / numBins;
-            bin.attr('height', histogramHeight * histogramData[k][1]);
-            bin.attr('x', x);
-            bin.attr('y', histogramHeight * (1 - histogramData[k][1]));
+  var histogramData = computeHistogramData(trackVector, runnersCircles, positionsArray);
+  var filterStatus = annotations.getFiltersStatus();
 
-            var histIndex = j;
+  var histogramWidth = 0.25 * window.innerWidth;
+  for (var j = 0; j < numHistograms; j++) {
+    for (var i = 0; i < numBins; i++) {
+      var k = i + j * numBins;
+      var bin = binsList[k];
+      var x = i * histogramWidth / numBins;
+      bin.attr('height', histogramHeight * histogramData[k][1]);
+      bin.attr('x', x);
+      bin.attr('y', histogramHeight * (1 - histogramData[k][1]));
 
-            var color;
-            if (filterStatus.gender && histIndex == 0) color = "#FFFFFF";
-            if (filterStatus.gender && histIndex == 1) color = "#FFFFFF";
-            if (filterStatus.gender && histIndex == 2) color = "#FFFFFF";
-            if (filterStatus.gender && histIndex == 3) color = "#49ABD1";
-            if (filterStatus.gender && histIndex == 4) color = "#CA6FA8";
+      var histIndex = j;
 
-            if (filterStatus.age && histIndex == 4) color = "#89D863";
-            if (filterStatus.age && histIndex == 1) color = "#3CC46C";
-            if (filterStatus.age && histIndex == 0) color = "#49ABD1";
-            if (filterStatus.age && histIndex == 2) color = "#9267C4";
-            if (filterStatus.age && histIndex == 3) color = "#CA6FA8";
+      var color;
+      if (filterStatus.gender && histIndex == 0) color = "#FFFFFF";
+      if (filterStatus.gender && histIndex == 1) color = "#FFFFFF";
+      if (filterStatus.gender && histIndex == 2) color = "#FFFFFF";
+      if (filterStatus.gender && histIndex == 3) color = "#49ABD1";
+      if (filterStatus.gender && histIndex == 4) color = "#CA6FA8";
 
-            if (filterStatus.experience && histIndex == 0) color = "#FFFFFF";
-            if (filterStatus.experience && histIndex == 1) color = "#FFFFFF";
-            if (filterStatus.experience && histIndex == 2) color = "#79DA4A";
-            if (filterStatus.experience && histIndex == 3) color = "#00B9A6";
-            if (filterStatus.experience && histIndex == 4) color = "#CA6FA8";
-            bin.style('fill', color);
-        }
+      if (filterStatus.age && histIndex == 4) color = "#89D863";
+      if (filterStatus.age && histIndex == 1) color = "#3CC46C";
+      if (filterStatus.age && histIndex == 0) color = "#49ABD1";
+      if (filterStatus.age && histIndex == 2) color = "#9267C4";
+      if (filterStatus.age && histIndex == 3) color = "#CA6FA8";
+
+      if (filterStatus.experience && histIndex == 0) color = "#FFFFFF";
+      if (filterStatus.experience && histIndex == 1) color = "#FFFFFF";
+      if (filterStatus.experience && histIndex == 2) color = "#79DA4A";
+      if (filterStatus.experience && histIndex == 3) color = "#00B9A6";
+      if (filterStatus.experience && histIndex == 4) color = "#CA6FA8";
+      bin.style('fill', color);
     }
+  }
 };
 
 exports.setUpHistogram = setUpHistogram;
@@ -23900,6 +23904,7 @@ var MainStatus = function () {
         var currentTrackOutline = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
         var currentPoints = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 0;
         var gpxFile = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : 0;
+        var binsList = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : 0;
 
         _classCallCheck(this, MainStatus);
 
@@ -23910,6 +23915,7 @@ var MainStatus = function () {
         this._currentTrackOutline = currentTrackOutline;
         this._currentPoints = currentPoints;
         this._gpxFile = gpxFile;
+        this._binsList = binsList;
     }
 
     _createClass(MainStatus, [{
@@ -23960,6 +23966,14 @@ var MainStatus = function () {
         set: function set(newGpxFile) {
             this._gpxFile = newGpxFile;
         }
+    }, {
+        key: 'binsList',
+        get: function get() {
+            return this._binsList;
+        },
+        set: function set(newBinsList) {
+            this._binsList = newBinsList;
+        }
     }]);
 
     return MainStatus;
@@ -24001,15 +24015,16 @@ raceButton.on('click', function () {
     }
 });
 
-/*let changeView=d3.select('#changeView')
-changeView.on('click', () => {
-    if (mainStatus.view==1) {
-        setUpView2(mainStatus.gpxFile,map,mainStatus)
+// let changeView=d3.select('#changeView')
+// changeView.on('click', () => {
+//     if (mainStatus.view==1) {
+//         setUpView2(mainStatus.gpxFile,map,mainStatus)
+//
+//     } else if (mainStatus.view==2) {
+//         setUpView1(mainStatus.gpxFile,map,mainStatus)
+//     }
+// })
 
-    } else if (mainStatus.view==2) {
-        setUpView1(mainStatus.gpxFile,map,mainStatus)
-    }
-})*/
 
 var setUpView0 = function setUpView0(gpxList, map, mainStatus) {
     menu.removeAllTrackView(mainStatus, map);
@@ -24109,11 +24124,18 @@ var setUpView2 = function setUpView2(gpxFile, map, mainStatus) {
             startButton.node().innerHTML = 'START';
 
             startButton.on('click', function () {
+                if (mainStatus.binsList.length > 0) {
+                    for (var i = 0; i < mainStatus.binsList.length; i++) {
+                        mainStatus.binsList[i].remove();
+                    }
+                    mainStatus.binsList.length = 0;
+                }
+                d3.select('#histogramPlot').select('svg').remove();
+                d3.select('#backgroundPlot').style('opacity', 0);
 
                 if (mainStatus.currentPoints.length > 0) {
-                    for (var i = 0; i < mainStatus.currentPoints.length; i++) {
-                        console.log('here');
-                        map.removeLayer(mainStatus.currentPoints[i]);
+                    for (var _i = 0; _i < mainStatus.currentPoints.length; _i++) {
+                        map.removeLayer(mainStatus.currentPoints[_i]);
                     }
                     mainStatus.currentPoints.length = 0;
                 }
@@ -24122,7 +24144,7 @@ var setUpView2 = function setUpView2(gpxFile, map, mainStatus) {
                 mainStatus.currentPoints = runnersCircles;
 
                 var positionsArray = [];
-                for (var _i = 0; _i < runnersCircles.length; _i++) {
+                for (var _i2 = 0; _i2 < runnersCircles.length; _i2++) {
                     positionsArray.push([track[0].lat, track[0].lng, 0]);
                 }
                 annotations.setCirclesInPositions(runnersCircles, positionsArray);
@@ -24130,6 +24152,7 @@ var setUpView2 = function setUpView2(gpxFile, map, mainStatus) {
 
                 var histogramData = histogram.computeHistogramData(trackVector, runnersCircles, positionsArray);
                 var binsList = histogram.setUpHistogram(histogramData);
+                mainStatus.binsList = binsList;
 
                 filters.runSimulation(trackVector, runnersCircles, positionsArray, map, binsList);
             });
@@ -38762,7 +38785,6 @@ var HallwilerseelaufBeinwilamSee10 = ['gps_data/Hallwilerseelauf,BeinwilamSee10.
 var HallwilerseelaufBeinwilamSee21 = ['gps_data/Hallwilerseelauf,BeinwilamSee21.gpx', 'gps_data/Hallwilerseelauf,BeinwilamSee21.csv'];
 var IntGreifenseelaufUster10 = ['gps_data/IntGreifenseelauf,Uster10.gpx', 'gps_data/IntGreifenseelauf,Uster10.csv'];
 var IntGreifenseelaufUster21 = ['gps_data/IntGreifenseelauf,Uster21.gpx', 'gps_data/IntGreifenseelauf,Uster21.csv'];
-var JungfrauMarathonInterlaken42 = ['gps_data/Jungfrau-Marathon,Interlaken42.gpx', 'gps_data/Jungfrau-Marathon,Interlaken42.csv'];
 var LausanneMarathon10 = ['gps_data/LausanneMarathon10.gpx', 'gps_data/LausanneMarathon10.csv'];
 var LausanneMarathon21 = ['gps_data/LausanneMarathon21.gpx', 'gps_data/LausanneMarathon21.csv'];
 var LausanneMarathon42 = ['gps_data/LausanneMarathon42.gpx', 'gps_data/LausanneMarathon42.csv'];
@@ -38773,7 +38795,7 @@ var WinterthurMarathon21 = ['gps_data/WinterthurMarathon21.gpx', 'gps_data/Winte
 var ZermattMarathonZermatt42 = ['gps_data/ZermattMarathon,Zermatt42.gpx', 'gps_data/ZermattMarathon,Zermatt42.csv'];
 var ZurichMarathonTeamrunundCityrun42 = ['gps_data/ZurichMarathon,TeamrunundCityrun42.gpx', 'gps_data/ZurichMarathon,TeamrunundCityrun42.csv'];
 
-var gpxList = [n20kmdeLausanne10, n20kmdeLausanne20, AletschHalbmarathonBettmeralp21, Frauenfelder21, Frauenfelder42, HallwilerseelaufBeinwilamSee10, HallwilerseelaufBeinwilamSee21, IntGreifenseelaufUster10, IntGreifenseelaufUster21, JungfrauMarathonInterlaken42, LausanneMarathon10, LausanneMarathon21, LausanneMarathon42, LucerneMarathonLuzern21, LucerneMarathonLuzern42, WinterthurMarathon10, WinterthurMarathon21, ZermattMarathonZermatt42, ZurichMarathonTeamrunundCityrun42];
+var gpxList = [n20kmdeLausanne10, n20kmdeLausanne20, AletschHalbmarathonBettmeralp21, Frauenfelder21, Frauenfelder42, HallwilerseelaufBeinwilamSee10, HallwilerseelaufBeinwilamSee21, IntGreifenseelaufUster10, IntGreifenseelaufUster21, LausanneMarathon10, LausanneMarathon21, LausanneMarathon42, LucerneMarathonLuzern21, LucerneMarathonLuzern42, WinterthurMarathon10, WinterthurMarathon21, ZermattMarathonZermatt42, ZurichMarathonTeamrunundCityrun42];
 
 exports.gpxList = gpxList;
 
@@ -38939,6 +38961,14 @@ var removeAllTrackView = function removeAllTrackView(mainStatus, map) {
             }
             mainStatus.currentPoints.length = 0;
         }
+        if (mainStatus.binsList.length > 0) {
+            for (var _i2 = 0; _i2 < mainStatus.binsList.length; _i2++) {
+                mainStatus.binsList[_i2].remove();
+            }
+            mainStatus.binsList.length = 0;
+        }
+        d3.select('#histogramPlot').select('svg').remove();
+        d3.select('#backgroundPlot').style('opacity', 0);
     }
     annotations.hideCircle();
     d3.select('#elevationPlotSVG').remove();

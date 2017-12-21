@@ -34,7 +34,7 @@ window.onscroll = () => {
 }
 
 class MainStatus {
-    constructor(view,leftBar,currentTracks=0,currentTrack=0,currentTrackOutline=0,currentPoints=0,gpxFile=0) {
+    constructor(view,leftBar,currentTracks=0,currentTrack=0,currentTrackOutline=0,currentPoints=0,gpxFile=0,binsList=0) {
         this._view = view;
         this._leftBar = leftBar;
         this._currentTracks = currentTracks;
@@ -42,6 +42,7 @@ class MainStatus {
         this._currentTrackOutline = currentTrackOutline;
         this._currentPoints = currentPoints;
         this._gpxFile = gpxFile;
+        this._binsList = binsList;
     }
     get view() {
         return this._view
@@ -78,6 +79,12 @@ class MainStatus {
     }
     set gpxFile(newGpxFile) {
         this._gpxFile=newGpxFile
+    }
+    get binsList() {
+        return this._binsList
+    }
+    set binsList(newBinsList) {
+        this._binsList=newBinsList
     }
 }
 
@@ -121,15 +128,15 @@ raceButton.on('click',() => {
     }
 })
 
-/*let changeView=d3.select('#changeView')
-changeView.on('click', () => {
-    if (mainStatus.view==1) {
-        setUpView2(mainStatus.gpxFile,map,mainStatus)
-
-    } else if (mainStatus.view==2) {
-        setUpView1(mainStatus.gpxFile,map,mainStatus)
-    }
-})*/
+// let changeView=d3.select('#changeView')
+// changeView.on('click', () => {
+//     if (mainStatus.view==1) {
+//         setUpView2(mainStatus.gpxFile,map,mainStatus)
+//
+//     } else if (mainStatus.view==2) {
+//         setUpView1(mainStatus.gpxFile,map,mainStatus)
+//     }
+// })
 
 
 let setUpView0 = (gpxList,map,mainStatus) => {
@@ -227,10 +234,17 @@ let setUpView2 = (gpxFile,map,mainStatus) => {
             startButton.node().innerHTML='START'
 
             startButton.on('click',() => {
+                if (mainStatus.binsList.length>0) {
+                    for (let i=0;i<mainStatus.binsList.length;i++) {
+                        mainStatus.binsList[i].remove()
+                    }
+                    mainStatus.binsList.length=0
+                }
+                d3.select('#histogramPlot').select('svg').remove()
+                d3.select('#backgroundPlot').style('opacity',0)
 
                 if (mainStatus.currentPoints.length>0) {
                     for (let i=0;i<mainStatus.currentPoints.length;i++) {
-                        console.log('here')
                         map.removeLayer(mainStatus.currentPoints[i])
                     }
                     mainStatus.currentPoints.length=0
@@ -248,6 +262,7 @@ let setUpView2 = (gpxFile,map,mainStatus) => {
 
                 let histogramData=histogram.computeHistogramData(trackVector,runnersCircles,positionsArray)
                 let binsList = histogram.setUpHistogram(histogramData)
+                mainStatus.binsList=binsList
 
                 filters.runSimulation(trackVector,runnersCircles,positionsArray,map,binsList)
             })

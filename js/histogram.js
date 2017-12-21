@@ -52,7 +52,7 @@ let computeHistogramData = (trackVector,runnersCircles,positionsArray) =>  {
     }
     // max_distance = marathon_distance / 60.0
 
-    for (i = 0; i < positionsArray.length; i++) {
+    for (i = 0; i < runnersCircles.length; i++) {
       // var t = runners_data[i][0]
       // if (change_speed == true) {
       //   var shift = speedup * marathon_distance/(t + 1)
@@ -113,6 +113,10 @@ let computeHistogramData = (trackVector,runnersCircles,positionsArray) =>  {
 }
 
 let updateHistogram = (trackVector,runnersCircles,binsList,positionsArray) =>  {
+
+  if (!runnersCircles.length){
+      return
+  }
 
   let histogramData = computeHistogramData(trackVector,runnersCircles,positionsArray)
   let filterStatus = annotations.getFiltersStatus()

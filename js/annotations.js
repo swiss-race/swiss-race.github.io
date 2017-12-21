@@ -160,9 +160,9 @@ let getFiltersStatus = () => {
     let age=d3.select('#ageClassifier').node().checked
     let experience=d3.select('#experienceClassifier').node().checked
 
-    if (gender) document.getElementById("histogramTitle").innerHTML = "Distibution of Runner Positions by Gender";
-    if (age) document.getElementById("histogramTitle").innerHTML = "Distibution of Runner Positions by Age";
-    if (experience) document.getElementById("histogramTitle").innerHTML = "Distibution of Runner Positions by Experience";
+    if (gender) document.getElementById("histogramTitle").innerHTML = "Distribution of Runner Positions by Gender";
+    if (age) document.getElementById("histogramTitle").innerHTML = "Distribution of Runner Positions by Age";
+    if (experience) document.getElementById("histogramTitle").innerHTML = "Distribution of Runner Positions by Experience";
 
     return {gender:gender,age:age,experience:experience,females_and_males:females_and_males,
         males_only:males_only,females_only:females_only,ages_all:ages_all,ages_60_:ages_60_,

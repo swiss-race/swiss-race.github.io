@@ -139,6 +139,15 @@ let removeAllTrackView = (mainStatus,map) => {
             }
             mainStatus.currentPoints.length=0
         }
+        if (mainStatus.binsList.length>0) {
+            for (let i=0;i<mainStatus.binsList.length;i++) {
+                mainStatus.binsList[i].remove()
+            }
+            mainStatus.binsList.length=0
+        }
+        d3.select('#histogramPlot').select('svg').remove()
+        d3.select('#backgroundPlot').style('opacity',0)
+
     }
     annotations.hideCircle()
     d3.select('#elevationPlotSVG').remove()

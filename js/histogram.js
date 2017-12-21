@@ -50,19 +50,8 @@ let computeHistogramData = (trackVector,runnersCircles,positionsArray) =>  {
     for (i = 0; i < numBins; i++) {
       bin_counts[i] = new Array(numHistograms).fill(0);
     }
-    // max_distance = marathon_distance / 60.0
 
     for (i = 0; i < runnersCircles.length; i++) {
-      // var t = runners_data[i][0]
-      // if (change_speed == true) {
-      //   var shift = speedup * marathon_distance/(t + 1)
-      //   distances_all_runners[i] = distances_all_runners[i] + shift
-      // }
-      // if (change_time == true) {
-      //   distances_all_runners[i] =  runners_datastep * speedup * marathon_distance/(t + 1)
-      // }
-      // let distance = distances_all_runners[i] / 10
-
       let histogram_index;
       if (filterStatus.gender) {
         if (!runnersCircles[i].male) histogram_index = 4

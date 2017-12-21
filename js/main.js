@@ -128,17 +128,6 @@ raceButton.on('click',() => {
     }
 })
 
-// let changeView=d3.select('#changeView')
-// changeView.on('click', () => {
-//     if (mainStatus.view==1) {
-//         setUpView2(mainStatus.gpxFile,map,mainStatus)
-//
-//     } else if (mainStatus.view==2) {
-//         setUpView1(mainStatus.gpxFile,map,mainStatus)
-//     }
-// })
-
-
 let setUpView0 = (gpxList,map,mainStatus) => {
     menu.removeAllTrackView(mainStatus,map)
 
@@ -386,8 +375,6 @@ let parseRunners= (data) => {
         runners_data[i][0] = seconds
         runners_data[i][1] =(0.5 - Math.random()) * stdX
         runners_data[i][2] = (0.5 - Math.random()) * stdY
-        // runners_data[i][1] = 0
-        // runners_data[i][2] = 0
         if (data[i].Sex == "F") runners_data[i][3] = 0
         if (data[i].Sex == "M") runners_data[i][3] = 1
         runners_data[i][4] = data[i].RaceYear - data[i].Year
@@ -411,7 +398,4 @@ let drawRunners = (data) => {
 }
 
 let animateMap = (elapsed) => {
-  console.log(map.getZoom())
-
-
 }

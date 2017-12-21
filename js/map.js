@@ -98,8 +98,4 @@ let showTrackOnMap = (line,map,callback,gpxFile,mainStatus, trackName) => {
     return track
 }
 
-
-
-
-
 export {disableMapInteractions,getMap,addPoint,showTrackOnMap}

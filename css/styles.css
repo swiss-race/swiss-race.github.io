@@ -375,8 +375,6 @@ div.tooltip {
     pointer-events:none;
     padding:10px;
     border-radius:10px;
-    /* border-bottom-left-radius:10px; */
-    /* border-top-left-radius:10px; */
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -420,7 +418,6 @@ div.tooltip {
 
 .leftSideBarInfo {
     width:90%;
-    /* background:rgba(255,0,0,0.6); */
     font-size:20px;
     text-align:center;
     margin:0;

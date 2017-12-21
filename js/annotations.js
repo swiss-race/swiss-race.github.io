@@ -70,8 +70,6 @@ let mouseoutOpacity = className => {
 }
 
 
-///////////////
-/// Runners ///
 let runnersStyle = { color: 'red',
     opacity:1,
     fillOpacity:1,
@@ -171,8 +169,6 @@ let getFiltersStatus = () => {
 }
 
 let createRunnersCircles = (runnersData) => {
-
-    // let gender=document.getElementById('females_and_males')
 
     let runnersCircles=[]
     let filterStatus=getFiltersStatus()
